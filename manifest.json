@@ -60,15 +60,21 @@
       "purpose": "maskable any"
     }
   ],
-  "shortcuts": [
-    {
-      "name": "Atualizar Painel",
-      "short_name": "Atualizar",
-      "description": "Abre o painel e atualiza os dados",
-      "url": "/?action=refresh",
-      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
-    }
-  ],
+"shortcuts": [
+  {
+    "name": "Atualizar Painel",
+    "short_name": "Atualizar",
+    "description": "Abre o painel e atualiza os dados",
+    "url": "/Hydrosistem/?action=refresh",
+    "icons": [
+      {
+        "src": "icons/icon-96.png",
+        "sizes": "96x96",
+        "type": "image/png"
+      }
+    ]
+  }
+],
   "screenshots": [],
   "prefer_related_applications": false
 }
