@@ -10,7 +10,7 @@ const SHELL_FILES = [
   "./manifest.json"
 ];
 
-// ── INSTALL ───────────────────────────────────
+// ── INSTALL ───────────────────────────────────s
 self.addEventListener("install", function(e) {
   e.waitUntil(
     caches.open(CACHE_SHELL)
