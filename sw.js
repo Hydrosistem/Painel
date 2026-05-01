@@ -6,7 +6,7 @@
 //  • Fontes Google         → Cache First
 // ══════════════════════════════════════════════
 
-const CACHE_SHELL  = "hyd-shell-v1";
+const CACHE_SHELL  = "hyd-shell-v2";
 const CACHE_IMG    = "hyd-images-v1";
 const CACHE_API    = "hyd-api-v1";
 
@@ -74,47 +74,61 @@ self.addEventListener("fetch", function(e) {
 
 // ── ESTRATÉGIAS ───────────────────────────────
 
-function networkFirst(req, cacheName) {
-  return fetch(req.clone())
-    .then(function(res) {
-      if (res && res.status === 200) {
-        caches.open(cacheName).then(function(c) { c.put(req, res.clone()); });
-      }
-      return res;
-    })
-    .catch(function() {
-      return caches.match(req).then(function(cached) {
-        if (cached) return cached;
-        return new Response(
-          JSON.stringify([]),   // array vazio → painel exibe "Tudo limpo" offline
-          { headers: { "Content-Type": "application/json" } }
-        );
-      });
-    });
-}
+async function networkFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
 
-function cacheFirst(req, cacheName) {
-  return caches.match(req).then(function(cached) {
-    if (cached) return cached;
-    return fetch(req.clone()).then(function(res) {
-      if (res && res.status === 200) {
-        caches.open(cacheName).then(function(c) { c.put(req, res.clone()); });
-      }
-      return res;
-    }).catch(function() {
-      if (req.mode === "navigate") return caches.match("./index.html");
-    });
-  });
-}
+  try {
+    const res = await fetch(req);
 
-function staleWhileRevalidate(req, cacheName) {
-  var fetchPromise = fetch(req.clone()).then(function(res) {
     if (res && res.status === 200) {
-      caches.open(cacheName).then(function(c) { c.put(req, res.clone()); });
+      cache.put(req, res.clone()); // ✔ clone correto
+    }
+
+    return res;
+
+  } catch (err) {
+    const cached = await cache.match(req);
+    if (cached) return cached;
+
+    return new Response(
+      JSON.stringify([]),
+      { headers: { "Content-Type": "application/json" } }
+    );
+  }
+}
+
+async function cacheFirst(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(req);
+
+  if (cached) return cached;
+
+  try {
+    const res = await fetch(req);
+
+    if (res && res.status === 200) {
+      cache.put(req, res.clone());
+    }
+
+    return res;
+
+  } catch (err) {
+    if (req.mode === "navigate") {
+      return cache.match("./index.html");
+    }
+  }
+}
+
+async function staleWhileRevalidate(req, cacheName) {
+  const cache = await caches.open(cacheName);
+  const cached = await cache.match(req);
+
+  const fetchPromise = fetch(req).then(res => {
+    if (res && res.status === 200) {
+      cache.put(req, res.clone());
     }
     return res;
   });
-  return caches.match(req).then(function(cached) {
-    return cached || fetchPromise;
-  });
+
+  return cached || fetchPromise;
 }
