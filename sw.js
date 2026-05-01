@@ -2,7 +2,7 @@
 //  HYDROSISTEM — Service Worker (SIMPLES)
 // ══════════════════════════════════════════════
 
-const CACHE_SHELL = "hyd-shell-v7";
+const CACHE_SHELL = "hyd-shell-v8";
 
 const SHELL_FILES = [
   "./",
