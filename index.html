@@ -787,28 +787,3 @@ carregarDados();
 </script>
 </body>
 </html>
-
-
-<button id="btnInstall" style="display:none;">Instalar App</button>
-
-<script>
-let deferredPrompt;
-
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-
-  document.getElementById('btnInstall').style.display = 'block';
-});
-
-document.getElementById('btnInstall').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-
-  deferredPrompt.prompt();
-
-  const { outcome } = await deferredPrompt.userChoice;
-  console.log('Resultado instalação:', outcome);
-
-  deferredPrompt = null;
-});
-</script>
