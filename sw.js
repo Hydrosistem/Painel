@@ -6,7 +6,7 @@
 //  • Fontes Google         → Cache First
 // ══════════════════════════════════════════════
 
-const CACHE_SHELL  = "hyd-shell-v3";
+const CACHE_SHELL  = "hyd-shell-v4";
 const CACHE_IMG    = "hyd-images-v1";
 const CACHE_API    = "hyd-api-v1";
 
