@@ -819,28 +819,5 @@ window.addEventListener("appinstalled", function() {
 setInterval(carregarDados, 15000);
 carregarDados();
 </script>
-
-// ═══════════════════════════════════════
-// DETECÇÃO DE AMBIENTE
-// ═══════════════════════════════════════
-function getAmbiente() {
-  const ua = navigator.userAgent.toLowerCase();
-
-  const isIOS = /iphone|ipad|ipod/.test(ua);
-  const isAndroid = /android/.test(ua);
-  const isMobile = isIOS || isAndroid;
-
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-
-  return {
-    isIOS,
-    isAndroid,
-    isMobile,
-    isDesktop: !isMobile,
-    isStandalone
-  };
-}
 </body>
 </html>
