@@ -55,3 +55,10 @@ self.addEventListener("fetch", function(e) {
   // API → só rede
   e.respondWith(fetch(e.request));
 });
+
+// ── RECEBER COMANDO PARA ATUALIZAR ─────────────
+self.addEventListener("message", (event) => {
+  if (event.data === "SKIP_WAITING") {
+    self.skipWaiting();
+  }
+});
