@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hydrosistem</title>
+  <!-- Redireciona qualquer rota desconhecida de volta ao index.html -->
+  <script>
+    // GitHub Pages não tem server-side routing, então qualquer URL
+    // desconhecida cai aqui. Redirecionamos para a raiz preservando
+    // o caminho como query string (técnica padrão para SPAs no GH Pages).
+    var seg = 1; // número de segmentos do repositório (1 = root domain, 0 = user.github.io)
+    var l = window.location;
+    l.replace(
+      l.protocol + "//" + l.hostname +
+      (l.port ? ":" + l.port : "") +
+      l.pathname.split("/").slice(0, 1 + seg).join("/") + "/?p=/" +
+      l.pathname.slice(1).split("/").slice(seg).join("/").replace(/&/g, "~and~") +
+      (l.search ? "&q=" + l.search.slice(1).replace(/&/g, "~and~") : "") +
+      l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>

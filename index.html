@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Hydrosistem">
+<meta name="theme-color" content="#003D7A">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144.png">
+<link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128.png">
+<link rel="apple-touch-icon" sizes="96x96"   href="./icons/icon-96.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="96x96"   href="./icons/icon-96.png">
+<title>Hydrosistem — Entulhos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:        #0057A8;
+  --azul-esc:    #003D7A;
+  --azul-bg:     #E8F2FC;
+  --verde:       #1A7A3C;
+  --verde-bg:    #E6F4EC;
+  --amarelo:     #B87C00;
+  --amarelo-bg:  #FFF8E6;
+  --vermelho:    #C0392B;
+  --vermelho-bg: #FDECEA;
+  --atrasado:    #7B0000;
+  --atrasado-bg: #FFE5E5;
+  --exec:        #6B21A8;
+  --exec-bg:     #F3E8FF;
+  --exec-borda:  #A855F7;
+  --cinza-bg:    #F0F4F8;
+  --texto:       #111827;
+  --texto2:      #6B7280;
+  --borda:       #E2E8F0;
+  --branco:      #FFFFFF;
+  --radius:      16px;
+  --radius-sm:   10px;
+  --shadow:      0 2px 8px rgba(0,0,0,.08);
+  --shadow-md:   0 4px 20px rgba(0,0,0,.12);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+body {
+  font-family: "DM Sans", sans-serif;
+  background: var(--cinza-bg);
+  color: var(--texto);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+header {
+  background: linear-gradient(135deg, var(--azul-esc) 0%, var(--azul) 100%);
+  padding: 0 16px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,87,.3);
+}
+.h-brand { display: flex; align-items: center; gap: 10px; }
+.h-logo {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,.15); padding: 3px;
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.h-logo svg { width: 100%; height: 100%; }
+.h-nome { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: .3px; line-height: 1.1; }
+.h-sub  { font-size: 10px; color: rgba(255,255,255,.65); font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; }
+.btn-reload {
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff; border-radius: 10px; padding: 0 14px; height: 38px;
+  font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: background .15s;
+}
+.btn-reload:active, .btn-reload:hover { background: rgba(255,255,255,.25); }
+.btn-reload.spin svg { animation: rot .9s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+
+/* Botão instalar PWA — oculto por padrão, aparece via JS */
+.btn-install {
+  display: none;
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff; border-radius: 10px; padding: 0 14px; height: 38px;
+  font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
+  cursor: pointer; align-items: center; gap: 6px;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: background .15s;
+}
+.btn-install:active, .btn-install:hover { background: rgba(255,255,255,.25); }
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--branco);
+  border-bottom: 1px solid var(--borda);
+}
+.stat { padding: 10px 4px; text-align: center; border-right: 1px solid var(--borda); }
+.stat:last-child { border-right: none; }
+.stat-n {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 700; line-height: 1;
+  font-family: "DM Mono", monospace;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.stat-n.bump { transform: scale(1.25); }
+.stat-t { font-size: 9px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--texto2); margin-top: 2px; }
+.stat.s-pen  .stat-n { color: var(--amarelo);  }
+.stat.s-exec .stat-n { color: var(--exec);     }
+.stat.s-urg  .stat-n { color: var(--vermelho); }
+.stat.s-ok   .stat-n { color: var(--verde);    }
+.main { padding: 14px; }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  max-width: 720px;
+  margin: 0 auto;
+}
+@media (min-width: 600px)  { .main { padding: 20px; } .grid { gap: 16px; } }
+@media (min-width: 1024px) { .main { padding: 28px 24px; } }
+.sec-label {
+  grid-column: 1/-1;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2);
+  display: flex; align-items: center; gap: 8px; margin-top: 4px;
+}
+.sec-label::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+.card {
+  background: var(--branco);
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--borda);
+  display: flex; flex-direction: column;
+  transition: box-shadow .2s, transform .2s;
+}
+.card:active { transform: scale(.995); }
+.card.t-execucao {
+  border: 2px solid var(--exec-borda);
+  box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md);
+}
+.card-inner { display: flex; flex: 1; }
+.card-stripe { width: 6px; flex-shrink: 0; }
+.card.t-urgente   .card-stripe { background: var(--vermelho); }
+.card.t-pendente  .card-stripe { background: var(--amarelo);  }
+.card.t-atrasado  .card-stripe { background: var(--atrasado); }
+.card.t-execucao  .card-stripe { background: var(--exec);     }
+.card-body { flex: 1; padding: 14px 14px 0; display: flex; flex-direction: column; gap: 10px; }
+.card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.card-top-left { display: flex; flex-direction: column; gap: 4px; }
+.card-top-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+.prot-num { font-family: "DM Mono",monospace; font-size: 11px; font-weight: 500; color: var(--texto2); letter-spacing: 1px; }
+.badge {
+  font-size: 10px; font-weight: 700;
+  padding: 3px 9px; border-radius: 20px;
+  letter-spacing: .5px; white-space: nowrap;
+}
+.badge.t-urgente   { background: var(--vermelho-bg); color: var(--vermelho); }
+.badge.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
+.badge.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
+.badge.t-execucao  { background: var(--exec-bg);     color: var(--exec);     }
+.badge-exec {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: var(--exec-bg); color: var(--exec);
+  font-size: 10px; font-weight: 700;
+  padding: 4px 10px; border-radius: 20px;
+  border: 1px solid var(--exec-borda);
+  letter-spacing: .3px; white-space: nowrap;
+}
+.badge-exec .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--exec);
+  animation: pulseDot 1.4s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: .4; transform: scale(.7); }
+}
+.exec-info {
+  font-size: 11px; color: var(--exec); font-weight: 500;
+  display: flex; align-items: center; gap: 4px;
+  background: var(--exec-bg); border-radius: 8px;
+  padding: 6px 10px; border: 1px solid rgba(168,85,247,.25);
+}
+.exec-info svg { flex-shrink: 0; }
+.endereco { font-size: 15px; font-weight: 600; color: var(--texto); line-height: 1.35; }
+@media (min-width: 600px) { .endereco { font-size: 16px; } }
+.meta { display: flex; flex-wrap: wrap; gap: 6px 12px; }
+.meta-item { font-size: 12px; color: var(--texto2); display: flex; align-items: center; gap: 3px; }
+@media (min-width: 600px) { .meta-item { font-size: 13px; } }
+.card-foto {
+  width: 100%; aspect-ratio: 4/3; object-fit: cover;
+  border-radius: 10px; display: block; cursor: pointer;
+  border: 1px solid var(--borda); background: #f0f4f8;
+}
+.prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
+.prazo-fill { height: 100%; border-radius: 10px; transition: width .4s; }
+.t-urgente  .prazo-fill { background: var(--vermelho); }
+.t-pendente .prazo-fill { background: var(--amarelo);  }
+.t-atrasado .prazo-fill { background: var(--atrasado); }
+.t-execucao .prazo-fill { background: var(--exec);     }
+.card-footer { padding: 12px 14px 14px; }
+.btn-concluir {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 52px; padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--azul); color: #fff;
+  font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700;
+  text-decoration: none; text-align: center;
+  border: none; cursor: pointer;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: opacity .15s, transform .1s;
+  position: relative; overflow: hidden;
+}
+.btn-concluir::after {
+  content: ""; position: absolute; inset: 0;
+  background: rgba(255,255,255,0); transition: background .15s;
+}
+.btn-concluir:active::after { background: rgba(255,255,255,.12); }
+.btn-concluir:active { transform: scale(.98); }
+.card.t-urgente  .btn-concluir { background: var(--vermelho); }
+.card.t-atrasado .btn-concluir { background: var(--atrasado); }
+.card.t-execucao .btn-concluir { background: var(--exec);     }
+.btn-concluir.bloqueado {
+  background: #9CA3AF !important;
+  cursor: not-allowed; opacity: .75; pointer-events: none;
+}
+.btn-minha-exec {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 52px; padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--exec); color: #fff;
+  font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700;
+  text-decoration: none; text-align: center;
+  border: none; cursor: pointer;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: opacity .15s;
+}
+.btn-minha-exec:active { opacity: .85; }
+.card.t-urgente, .card.t-atrasado {
+  animation: pulseCard 2.2s ease-in-out infinite;
+}
+@keyframes pulseCard {
+  0%, 100% { box-shadow: var(--shadow); }
+  50%       { box-shadow: 0 0 0 3px rgba(192,57,43,.2); }
+}
+.lb { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 999; align-items: center; justify-content: center; padding: 16px; touch-action: none; }
+.lb.open { display: flex; }
+.lb img { max-width: 100%; max-height: 88vh; border-radius: 12px; object-fit: contain; }
+.lb-close {
+  position: fixed; top: 12px; right: 12px;
+  background: rgba(255,255,255,.18); border: none; color: #fff;
+  width: 44px; height: 44px; border-radius: 50%; font-size: 20px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.empty, .loading-wrap { grid-column: 1/-1; text-align: center; padding: 52px 20px; color: var(--texto2); }
+.empty-icon  { font-size: 52px; margin-bottom: 12px; }
+.empty-title { font-size: 18px; font-weight: 700; color: var(--verde); margin-bottom: 4px; }
+.empty-sub   { font-size: 13px; }
+.spinner { width: 36px; height: 36px; border: 3px solid var(--borda); border-top-color: var(--azul); border-radius: 50%; animation: rot .8s linear infinite; margin: 0 auto 14px; }
+.btn-foto-fallback {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; padding: 14px;
+  background: var(--azul-bg); border: 1.5px dashed var(--azul); border-radius: 10px;
+  color: var(--azul); font-size: 14px; font-weight: 700;
+  text-decoration: none; text-align: center;
+}
+.ts { grid-column: 1/-1; text-align: center; font-size: 11px; color: var(--texto2); padding: 10px; }
+#toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+  background: #1F2937; color: #fff;
+  padding: 10px 20px; border-radius: 10px;
+  font-size: 13px; font-weight: 600;
+  box-shadow: 0 4px 20px rgba(0,0,0,.25);
+  z-index: 1000; white-space: nowrap;
+  transition: transform .3s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0; pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+#toast.erro { background: var(--vermelho); }
+#toast.exec { background: var(--exec); }
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.55); z-index: 500;
+  align-items: center; justify-content: center; padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--branco); border-radius: var(--radius);
+  padding: 28px 24px; max-width: 380px; width: 100%;
+  box-shadow: var(--shadow-md); text-align: center;
+}
+.modal-icon  { font-size: 44px; margin-bottom: 12px; }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.modal-sub   { font-size: 13px; color: var(--texto2); margin-bottom: 24px; line-height: 1.5; }
+.modal-btns  { display: flex; gap: 10px; }
+.modal-btns button {
+  flex: 1; min-height: 48px; border-radius: var(--radius-sm);
+  font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700;
+  cursor: pointer; border: none; transition: opacity .15s;
+}
+.modal-btns button:active { opacity: .8; }
+.btn-cancelar  { background: var(--cinza-bg); color: var(--texto); }
+.btn-confirmar { background: var(--exec); color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header>
+  <div class="h-brand">
+    <div class="h-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="6" stroke-dasharray="28 8"/>
+        <text x="50" y="67" font-family="Arial Black,sans-serif" font-size="52" font-weight="900" fill="#fff" text-anchor="middle">H</text>
+      </svg>
+    </div>
+    <div>
+      <div class="h-nome">HYDROSISTEM</div>
+      <div class="h-sub">Painel de Entulhos</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center;">
+    <button class="btn-install" id="btnInstall" onclick="instalarPWA()">
+      📲 Instalar
+    </button>
+    <button class="btn-reload" id="btnReload" onclick="carregarDados()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Atualizar
+    </button>
+  </div>
+</header>
+
+<!-- ══ STATS ════════════════════════════════════════════════ -->
+<div class="stats">
+  <div class="stat s-pen"><div class="stat-n" id="nPen">—</div><div class="stat-t">Pendente</div></div>
+  <div class="stat s-exec"><div class="stat-n" id="nExec">—</div><div class="stat-t">Em execução</div></div>
+  <div class="stat s-urg"><div class="stat-n" id="nUrg">—</div><div class="stat-t">Atrasado</div></div>
+  <div class="stat s-ok"><div class="stat-n" id="nOk">—</div><div class="stat-t">Concluído</div></div>
+</div>
+
+<!-- ══ GRID ═════════════════════════════════════════════════ -->
+<div class="main">
+  <div class="grid" id="grid">
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div>Carregando protocolos…</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ LIGHTBOX ═════════════════════════════════════════════ -->
+<div class="lb" id="lb" onclick="fecharFoto()">
+  <button class="lb-close" onclick="fecharFoto()">✕</button>
+  <img id="lbImg" src="" alt="Foto">
+</div>
+
+<!-- ══ TOAST ═════════════════════════════════════════════════ -->
+<div id="toast"></div>
+
+<!-- ══ MODAL CONFIRMAÇÃO ════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-icon">🚧</div>
+    <div class="modal-title" id="modalTitulo">Iniciar execução?</div>
+    <div class="modal-sub" id="modalSub">Você será redirecionado para o formulário de conclusão.</div>
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+      <button class="btn-confirmar" id="btnConfirmar" onclick="confirmarExecucao()">▶ Iniciar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SCRIPTS ═══════════════════════════════════════════════ -->
+<script>
+// ══════════════════════════════════════════════
+//  CONFIG
+// ══════════════════════════════════════════════
+var API_BASE  = "https://script.google.com/macros/s/AKfycbwo7OLjz7_2WVhW9dgsOnUOeOkXYkbS4GFujFyp88BfojGd3QoJ2oF1FNrVknoExAr4/exec";
+var FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuk2or5P9XK8yCytnVdByHNINk0uGHLDpLbEdgiS2IYu1leQ/viewform";
+var PRAZO     = 24;
+var LOCK_TTL  = 600;
+var API       = API_BASE + "?acao=dados";
+
+// ══════════════════════════════════════════════
+//  SESSION ID
+// ══════════════════════════════════════════════
+var SESSION_ID = (function() {
+  var k = "hyd_session_id";
+  try {
+    var s = localStorage.getItem(k);
+    if (!s) {
+      s = "s_" + Math.random().toString(36).slice(2) + "_" + Date.now();
+      localStorage.setItem(k, s);
+    }
+    return s;
+  } catch(e) {
+    return "s_" + Math.random().toString(36).slice(2) + "_" + Date.now();
+  }
+})();
+
+var meusLocks        = {};
+var protocoloPendente = null;
+var enderecoPendente  = null;
+
+// ══════════════════════════════════════════════
+//  UTILITÁRIOS
+// ══════════════════════════════════════════════
+function fotoSrc(id) {
+  return id ? "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w1600" : null;
+}
+function onFotoErro(img, u, id) {
+  if (!img.dataset.r1 && id) {
+    img.dataset.r1 = "1";
+    img.src = "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w1200";
+    return;
+  }
+  var w = img.parentNode;
+  if (w) w.outerHTML = "<a class='btn-foto-fallback' href='" + (u||"#") + "' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
+}
+function tempo(iso) {
+  var h = (new Date() - new Date(iso)) / 36e5;
+  var r = PRAZO - h;
+  var pct = Math.min(h / PRAZO * 100, 100);
+  if (r <= 0) return { txt: "VENCIDO",             r: 0, pct: 100, tipo: "atrasado" };
+  if (r <= 4) return { txt: ar(r) + "h restantes", r: r, pct: pct, tipo: "urgente"  };
+  return           { txt: ar(r) + "h restantes",   r: r, pct: pct, tipo: "pendente" };
+}
+function ar(n) { return n < 1 ? Math.round(n * 60) + "min" : Math.round(n) + "h"; }
+function fdt(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+}
+function abrirFoto(u) { document.getElementById("lbImg").src = u; document.getElementById("lb").classList.add("open"); }
+function fecharFoto() { document.getElementById("lb").classList.remove("open"); document.getElementById("lbImg").src = ""; }
+
+var _toastTimer = null;
+function toast(msg, tipo) {
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "show " + (tipo || "");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(function() { el.className = ""; }, 3500);
+}
+function bump(id) {
+  var el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove("bump");
+  void el.offsetWidth;
+  el.classList.add("bump");
+  setTimeout(function() { el.classList.remove("bump"); }, 400);
+}
+
+// ══════════════════════════════════════════════
+//  LOCK API
+// ══════════════════════════════════════════════
+function postLock(payload) {
+  var params = Object.keys(payload).map(function(k) {
+    return encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]);
+  }).join("&");
+  return fetch(API_BASE + "?" + params)
+    .then(function(r) { return r.json(); })
+    .catch(function(err) { console.error("[postLock]", err); return { ok: false }; });
+}
+function liberarLockApi(protocolo) {
+  return postLock({ acao: "liberar", protocolo: protocolo, sessionId: SESSION_ID });
+}
+function iniciarHeartbeat(protocolo) {
+  if (meusLocks[protocolo]) return;
+  meusLocks[protocolo] = setInterval(function() {
+    postLock({ acao: "heartbeat", protocolo: protocolo, sessionId: SESSION_ID });
+  }, 60000);
+}
+function pararHeartbeat(protocolo) {
+  if (meusLocks[protocolo]) { clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; }
+}
+
+// ══════════════════════════════════════════════
+//  MODAL
+// ══════════════════════════════════════════════
+function abrirModal(protocolo, endereco) {
+  protocoloPendente = protocolo;
+  enderecoPendente  = endereco;
+  document.getElementById("modalTitulo").textContent = "Iniciar execução?";
+  document.getElementById("modalSub").textContent =
+    "Protocolo " + protocolo + " • " + endereco + ".\n" +
+    "O serviço ficará marcado como Em Execução para os demais usuários enquanto " +
+    "você estiver com o formulário aberto.";
+  document.getElementById("modalOverlay").classList.add("open");
+}
+function fecharModal() {
+  document.getElementById("modalOverlay").classList.remove("open");
+  protocoloPendente = null;
+}
+function confirmarExecucao() {
+  var protocolo    = protocoloPendente;
+  var enderecoAtual = enderecoPendente;
+  if (!protocolo) return;
+  fecharModal();
+  toast("⏳ Registrando execução...", "exec");
+
+  postLock({ acao: "adquirir", protocolo: protocolo, sessionId: SESSION_ID, usuario: "Usuário" })
+    .then(function(res) {
+      if (!res.ok) {
+        toast("⚠️ Este serviço já está sendo executado por outro usuário!", "erro");
+        carregarDados();
+        return;
+      }
+      iniciarHeartbeat(protocolo);
+      toast("▶ Execução iniciada — abrindo formulário...", "exec");
+      carregarDados();
+
+      var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + encodeURIComponent(enderecoAtual);
+      var win = window.open(url, "_blank");
+      if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.", "erro"); return; }
+
+      var watcher = setInterval(function() {
+        try {
+          if (win.closed) {
+            clearInterval(watcher);
+            setTimeout(function() {
+              liberarLockApi(protocolo).then(function() {
+                pararHeartbeat(protocolo);
+                toast("🔓 Formulário fechado — serviço liberado.", "");
+                carregarDados();
+              });
+            }, 2000);
+          }
+        } catch(e) { clearInterval(watcher); }
+      }, 1000);
+    })
+    .catch(function(err) { console.error("[confirmarExecucao]", err); toast("❌ Erro ao iniciar execução", "erro"); });
+}
+
+// ══════════════════════════════════════════════
+//  RENDER CARDS
+// ══════════════════════════════════════════════
+function badgeTxt(t) {
+  return { urgente:"⚠️ Urgente", pendente:"🟡 Pendente", atrasado:"🔴 Atrasado", execucao:"🟣 Em execução" }[t] || t;
+}
+function esc(s) {
+  return String(s || "").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function renderCard(p) {
+  var t   = p._t;
+  var pct = t.pct.toFixed(0);
+  var lock = p.lock;
+  var minhaExecucao = lock && lock.sessionId === SESSION_ID;
+  var outraExecucao = lock && lock.sessionId !== SESSION_ID;
+  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
+  var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 " + esc(p.obs) + "</span>" : "";
+  var foto = "", src = fotoSrc(p.fotoId);
+  if (src) {
+    foto = "<div><img class='card-foto' src='" + src + "' loading='lazy'" +
+           " onclick='abrirFoto(\"" + esc(p.fotoUrl || src) + "\")'" +
+           " onerror='onFotoErro(this,\"" + esc(p.fotoUrl || "") + "\",\"" + esc(p.fotoId || "") + "\")'></div>";
+  }
+
+  var execBadge = (outraExecucao || minhaExecucao)
+    ? "<span class='badge-exec'><span class='dot'></span>Em execução</span>" : "";
+
+  var execInfoHtml = "";
+  if (outraExecucao) {
+    var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    execInfoHtml = "<div class='exec-info'>" +
+      "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
+      "<circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>" +
+      "Iniciado há " + (min < 1 ? "menos de 1 min" : min + " min") + "</div>";
+  } else if (minhaExecucao) {
+    execInfoHtml = "<div class='exec-info' style='background:#dcfce7;color:#166534;border-color:rgba(74,222,128,.3)'>" +
+      "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
+      "<polyline points='20 6 9 17 4 12'/></svg>Você está executando este serviço</div>";
+  }
+
+  var btnHtml;
+  if (outraExecucao) {
+    btnHtml = "<div class='btn-concluir bloqueado'>🔒 Em execução por outro usuário</div>";
+  } else if (minhaExecucao) {
+    btnHtml = "<a class='btn-minha-exec' href='" + FORMS_URL + "' target='_blank'>📋 Abrir formulário novamente</a>" +
+      "<div style='margin-top:8px'><button onclick='cancelarMinhaExecucao(\"" + esc(p.protocolo) + "\")' " +
+      "style='background:none;border:1px solid #d1d5db;border-radius:8px;width:100%;padding:10px;" +
+      "font-family:\"DM Sans\",sans-serif;font-size:13px;color:var(--texto2);cursor:pointer;'>" +
+      "✕ Cancelar execução</button></div>";
+  } else {
+    btnHtml = "<button class='btn-concluir' onclick='clicarConcluir(\"" + esc(p.protocolo) + "\",\"" +
+              esc(p.endereco) + "\")'>✅ Concluir este serviço</button>";
+  }
+
+  return "<div class='card t-" + tipoCard + "'>" +
+    "<div class='card-inner'><div class='card-stripe'></div>" +
+    "<div class='card-body'>" +
+      "<div class='card-top'>" +
+        "<div class='card-top-left'>" +
+          "<span class='prot-num'>" + esc(p.protocolo) + "</span>" +
+          (tipoCard !== "execucao" ? "<span class='badge t-" + tipoCard + "'>" + badgeTxt(tipoCard) + "</span>" : "") +
+        "</div>" +
+        "<div class='card-top-right'>" + execBadge + "</div>" +
+      "</div>" +
+      "<div class='endereco'>📍 " + esc(p.endereco) + "</div>" +
+      "<div class='meta'>" +
+        "<span class='meta-item'>🕐 " + fdt(p.dataHora) + "</span>" +
+        "<span class='meta-item'>👷 " + esc(p.registradoPor || "—") + "</span>" + obs +
+      "</div>" +
+      execInfoHtml + foto +
+      "<div class='prazo-wrap'>" +
+        "<div class='prazo-row'><span>" + t.txt + "</span><span style='color:var(--texto2)'>" + pct + "% do prazo</span></div>" +
+        "<div class='prazo-bar'><div class='prazo-fill' style='width:" + pct + "%'></div></div>" +
+      "</div>" +
+    "</div></div>" +
+    "<div class='card-footer'>" + btnHtml + "</div></div>";
+}
+
+// ══════════════════════════════════════════════
+//  AÇÕES
+// ══════════════════════════════════════════════
+function clicarConcluir(protocolo, endereco) { abrirModal(protocolo, endereco); }
+function cancelarMinhaExecucao(protocolo) {
+  liberarLockApi(protocolo).then(function() {
+    pararHeartbeat(protocolo);
+    toast("🔓 Execução cancelada — serviço liberado.", "");
+    carregarDados();
+  });
+}
+
+// ══════════════════════════════════════════════
+//  RENDER GRID
+// ══════════════════════════════════════════════
+var _prevStats = {};
+function render(lista) {
+  var pen = 0, exec = 0, urg = 0, ok = 0, ativos = [];
+  var hoje = new Date().toDateString();
+
+  lista.forEach(function(p) {
+    var st = (p.status || "").toUpperCase().trim();
+    if (st === "CONCLUÍDO" || st === "CONCLUIDO") {
+      if (p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje) ok++;
+      if (meusLocks[p.protocolo]) { pararHeartbeat(p.protocolo); toast("✅ Protocolo " + p.protocolo + " concluído!", ""); }
+      return;
+    }
+    p._t = tempo(p.dataHora);
+    if (p.lock) exec++; else if (p._t.tipo === "atrasado") urg++; else pen++;
+    ativos.push(p);
+  });
+
+  function setCounter(id, val) {
+    var el = document.getElementById(id); if (!el) return;
+    var prev = _prevStats[id]; el.textContent = val;
+    if (prev !== undefined && prev !== val) bump(id);
+    _prevStats[id] = val;
+  }
+  setCounter("nPen", pen); setCounter("nExec", exec);
+  setCounter("nUrg", urg); setCounter("nOk",   ok);
+
+  var g = document.getElementById("grid");
+  if (!ativos.length) {
+    g.innerHTML = "<div class='empty'><div class='empty-icon'>✅</div>" +
+                  "<div class='empty-title'>Tudo limpo!</div>" +
+                  "<div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";
+    return;
+  }
+
+  ativos.sort(function(a, b) {
+    var rank = function(p) {
+      if (p.lock && p.lock.sessionId === SESSION_ID) return 0;
+      if (p.lock) return 1;
+      if (p._t.r <= 0 || p._t.tipo === "atrasado") return 2;
+      if (p._t.r <= 4) return 3;
+      return 4;
+    };
+    var d = rank(a) - rank(b);
+    return d !== 0 ? d : a._t.r - b._t.r;
+  });
+
+  var execL = ativos.filter(function(p) { return !!p.lock; });
+  var urgL  = ativos.filter(function(p) { return !p.lock && (p._t.tipo === "atrasado" || p._t.r <= 4); });
+  var norL  = ativos.filter(function(p) { return !p.lock && p._t.tipo === "pendente" && p._t.r > 4; });
+
+  var h = "";
+  if (execL.length) h += "<div class='sec-label'>🟣 Em execução agora</div>" + execL.map(renderCard).join("");
+  if (urgL.length)  h += "<div class='sec-label'>🔴 Atenção imediata</div>"  + urgL.map(renderCard).join("");
+  if (norL.length)  h += "<div class='sec-label'>📋 Fila de serviços</div>"  + norL.map(renderCard).join("");
+  h += "<div class='ts'>Atualizado em " +
+       new Date().toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" }) + "</div>";
+  g.innerHTML = h;
+}
+
+// ══════════════════════════════════════════════
+//  CARREGAR DADOS
+// ══════════════════════════════════════════════
+function carregarDados() {
+  var btn = document.getElementById("btnReload");
+  btn.classList.add("spin"); btn.disabled = true;
+  fetch(API + "&t=" + Date.now())
+    .then(function(r) { return r.json(); })
+    .then(render)
+    .catch(function(err) {
+      console.error("[carregarDados]", err);
+      document.getElementById("grid").innerHTML =
+        "<div class='empty'><div class='empty-icon'>⚠️</div>" +
+        "<div class='empty-title'>Erro ao carregar</div>" +
+        "<div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";
+    })
+    .finally(function() { btn.classList.remove("spin"); btn.disabled = false; });
+}
+
+// ══════════════════════════════════════════════
+//  LIBERAR LOCKS AO FECHAR
+// ══════════════════════════════════════════════
+window.addEventListener("beforeunload", function() {
+  Object.keys(meusLocks).forEach(function(prot) {
+    pararHeartbeat(prot);
+    var params = "acao=liberar&protocolo=" + encodeURIComponent(prot) + "&sessionId=" + encodeURIComponent(SESSION_ID);
+    try { if (navigator.sendBeacon) navigator.sendBeacon(API_BASE + "?" + params); } catch(e) {}
+  });
+});
+
+// ══════════════════════════════════════════════
+//  PWA — Service Worker + Prompt de instalação
+// ══════════════════════════════════════════════
+var deferredPrompt = null;
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js", { scope: "./" })
+      .then(function(reg) {
+        console.log("[PWA] SW registrado:", reg.scope);
+        reg.addEventListener("updatefound", function() {
+          var sw = reg.installing;
+          sw.addEventListener("statechange", function() {
+            if (sw.state === "installed" && navigator.serviceWorker.controller) {
+              toast("🔄 Nova versão disponível — recarregue para atualizar.", "");
+            }
+          });
+        });
+      })
+      .catch(function(err) { console.warn("[PWA] SW falhou:", err); });
+  });
+}
+
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var btn = document.getElementById("btnInstall");
+  if (btn) btn.style.display = "flex";
+});
+
+function instalarPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(choice) {
+    if (choice.outcome === "accepted") toast("✅ App instalado com sucesso!", "");
+    deferredPrompt = null;
+    var btn = document.getElementById("btnInstall");
+    if (btn) btn.style.display = "none";
+  });
+}
+
+window.addEventListener("appinstalled", function() {
+  toast("📲 Hydrosistem instalado!", "");
+  deferredPrompt = null;
+});
+
+// ══════════════════════════════════════════════
+//  INICIAR
+// ══════════════════════════════════════════════
+setInterval(carregarDados, 15000);
+carregarDados();
+</script>
+</body>
+</html>
