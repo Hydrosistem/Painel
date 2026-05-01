@@ -2,7 +2,7 @@
 //  HYDROSISTEM — Service Worker (SIMPLES)
 // ══════════════════════════════════════════════
 
-const CACHE_SHELL = "hyd-shell-v8";
+const CACHE_SHELL = "hyd-shell-v9";
 
 const SHELL_FILES = [
   "./",
@@ -24,9 +24,9 @@ self.addEventListener("activate", function(e) {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-        keys.map(k => {
-          if (k !== CACHE_SHELL) return caches.delete(k);
-        })
+       keys
+         .filter(k => k !== CACHE_SHELL)
+         .map(k => caches.delete(k))
       )
     ).then(() => self.clients.claim())
   );
