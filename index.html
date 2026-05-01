@@ -335,8 +335,18 @@ header {
       <div class="h-sub">Painel de Entulhos</div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center;">
-    <button class="btn-install" id="btnInstall" onclick="instalarPWA()">
+<div style="display:flex;gap:8px;align-items:center;">
+  
+  <button class="btn-install" id="btnInstall" onclick="instalarPWA()">
+    📲 Instalar
+  </button>
+
+  <!-- 🔥 NOVO BOTÃO -->
+  <button class="btn-install" id="btnUpdate" style="display:none;">
+    🔄 Atualizar
+  </button>
+
+  <button class="btn-reload" id="btnReload" onclick="carregarDados()">
       📲 Instalar
     </button>
     <button class="btn-reload" id="btnReload" onclick="carregarDados()">
@@ -782,6 +792,28 @@ window.addEventListener("appinstalled", function() {
   toast("📲 Hydrosistem instalado!", "");
   deferredPrompt = null;
 });
+
+  function mostrarBotaoAtualizar(reg) {
+  const btn = document.getElementById("btnUpdate");
+  if (!btn) return;
+
+  btn.style.display = "flex";
+
+  btn.onclick = () => {
+    const newWorker = reg.waiting;
+
+    if (newWorker) {
+      newWorker.postMessage("SKIP_WAITING");
+    }
+
+    // 🔄 recarrega quando atualizar
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      window.location.reload();
+    });
+  };
+
+  toast("🔄 Nova versão disponível!", "");
+}
 
 // ══════════════════════════════════════════════
 //  INICIAR
