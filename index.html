@@ -749,18 +749,13 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").then((reg) => {
 
-      console.log("[PWA] SW registrado:", reg.scope);
-
-      // 🔥 Detecta nova versão automaticamente
       reg.addEventListener("updatefound", () => {
         const newWorker = reg.installing;
 
         newWorker.addEventListener("statechange", () => {
           if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            
-            console.log("[PWA] Nova versão encontrada");
 
-            // 🔥 força ativar sem botão
+            // 🔥 ISSO AQUI É O CORAÇÃO DO AUTO UPDATE
             newWorker.postMessage({ type: "SKIP_WAITING" });
           }
         });
@@ -768,9 +763,7 @@ if ("serviceWorker" in navigator) {
 
     });
 
-    // 🔥 quando atualizar, recarrega automático
     navigator.serviceWorker.addEventListener("controllerchange", () => {
-      console.log("[PWA] Atualizado — recarregando");
       window.location.reload();
     });
   });
