@@ -1,42 +1,39 @@
-// ══════════════════════════════════════════════
-//  HYDROSISTEM — Service Worker (SIMPLES)
-// ══════════════════════════════════════════════
+// ═══════════════════════════════════════
+//  HYDROSISTEM SW — AUTO UPDATE
+// ═══════════════════════════════════════
 
-const CACHE_SHELL = "hyd-shell-v9";
+const CACHE = "hyd-v9"; // 🔥 sempre mude versão quando atualizar
 
-const SHELL_FILES = [
+const ASSETS = [
   "./",
   "./index.html",
-  "./manifest.json"
+  "./manifest.json",
+  "./icons/icon-192.png",
+  "./icons/icon-96.png"
 ];
 
-// ── INSTALL ───────────────────────────────────s
-self.addEventListener("install", function(e) {
+// ── INSTALL ───────────────────────────
+self.addEventListener("install", (e) => {
+  self.skipWaiting(); // 🔥 ativa imediatamente
+
   e.waitUntil(
-    caches.open(CACHE_SHELL)
-      .then(cache => cache.addAll(SHELL_FILES))
-      .then(() => self.skipWaiting())
+    caches.open(CACHE).then(cache => cache.addAll(ASSETS))
   );
 });
 
-// ── ACTIVATE ──────────────────────────────────
-self.addEventListener("activate", function(e) {
+// ── ACTIVATE ──────────────────────────
+self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys().then(keys =>
       Promise.all(
-       keys
-         .filter(k => k !== CACHE_SHELL)
-         .map(k => caches.delete(k))
+        keys.map(k => k !== CACHE && caches.delete(k))
       )
-    ).then(() => self.clients.claim())
+    ).then(() => self.clients.claim()) // 🔥 assume controle
   );
 });
 
-// ── FETCH ─────────────────────────────────────
-self.addEventListener("fetch", function(e) {
-  const url = e.request.url;
-
-  // Navegação (HTML)
+// ── FETCH ─────────────────────────────
+self.addEventListener("fetch", (e) => {
   if (e.request.mode === "navigate") {
     e.respondWith(
       fetch(e.request).catch(() => caches.match("./index.html"))
@@ -44,21 +41,7 @@ self.addEventListener("fetch", function(e) {
     return;
   }
 
-  // Arquivos do próprio site
-  if (url.startsWith(self.location.origin)) {
-    e.respondWith(
-      caches.match(e.request).then(cached => cached || fetch(e.request))
-    );
-    return;
-  }
-
-  // API → só rede
-  e.respondWith(fetch(e.request));
-});
-
-// ── RECEBER COMANDO PARA ATUALIZAR ─────────────
-self.addEventListener("message", (event) => {
-  if (event.data === "SKIP_WAITING") {
-    self.skipWaiting();
-  }
+  e.respondWith(
+    caches.match(e.request).then(res => res || fetch(e.request))
+  );
 });
