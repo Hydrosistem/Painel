@@ -407,6 +407,69 @@ var PRAZO     = 24;
 var LOCK_TTL  = 600;
 var API       = API_BASE + "?acao=dados";
 
+function getAmbiente() {
+  const ua = navigator.userAgent.toLowerCase();
+
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = /android/.test(ua);
+  const isMobile = isIOS || isAndroid;
+
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  return {
+    isIOS,
+    isAndroid,
+    isMobile,
+    isDesktop: !isMobile,
+    isStandalone
+  };
+}
+
+var deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", function(e) {
+  console.log("🔥 Install disponível");
+
+  e.preventDefault();
+  deferredPrompt = e;
+
+  atualizarBotaoInstalacao();
+});
+
+function atualizarBotaoInstalacao() {
+  const env = getAmbiente();
+  const btn = document.getElementById("btnInstall");
+
+  if (!btn) return;
+
+  // 📱 ANDROID / DESKTOP (Chrome, Brave etc)
+  if (deferredPrompt) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar app";
+    btn.onclick = instalarPWA;
+    return;
+  }
+
+  // 🍎 iOS (Safari)
+  if (env.isIOS && !env.isStandalone) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar (Safari)";
+    btn.onclick = function() {
+      alert("No iPhone:\nToque em compartilhar ⬆️\nDepois 'Adicionar à Tela de Início'");
+    };
+    return;
+  }
+
+  // ❌ instalado ou sem suporte
+  btn.style.display = "none";
+}
+
+window.addEventListener("load", function() {
+  atualizarBotaoInstalacao();
+});
+
 // ══════════════════════════════════════════════
 //  SESSION ID
 // ══════════════════════════════════════════════
@@ -777,12 +840,19 @@ window.addEventListener("beforeinstallprompt", function(e) {
 
 function instalarPWA() {
   if (!deferredPrompt) return;
+
   deferredPrompt.prompt();
+
   deferredPrompt.userChoice.then(function(choice) {
-    if (choice.outcome === "accepted") toast("✅ App instalado com sucesso!", "");
+    if (choice.outcome === "accepted") {
+      toast("✅ App instalado!", "");
+    }
+
+    // limpa
     deferredPrompt = null;
-    var btn = document.getElementById("btnInstall");
-    if (btn) btn.style.display = "none";
+
+    // 🔥 atualiza botão automaticamente
+    atualizarBotaoInstalacao();
   });
 }
 
