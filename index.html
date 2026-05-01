@@ -746,24 +746,32 @@ window.addEventListener("beforeunload", function() {
 var deferredPrompt = null;
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", function() {
-    navigator.serviceWorker.register("./sw.js").then(function(reg) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").then((reg) => {
 
       console.log("[PWA] SW registrado:", reg.scope);
 
-      // 🔥 Detecta nova versão
-      reg.addEventListener("updatefound", function() {
+      // 🔥 Detecta nova versão automaticamente
+      reg.addEventListener("updatefound", () => {
         const newWorker = reg.installing;
 
-        newWorker.addEventListener("statechange", function() {
+        newWorker.addEventListener("statechange", () => {
           if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
             
-            // 👉 NOVA VERSÃO DISPONÍVEL
-            mostrarBotaoAtualizar(reg);
+            console.log("[PWA] Nova versão encontrada");
+
+            // 🔥 força ativar sem botão
+            newWorker.postMessage({ type: "SKIP_WAITING" });
           }
         });
       });
 
+    });
+
+    // 🔥 quando atualizar, recarrega automático
+    navigator.serviceWorker.addEventListener("controllerchange", () => {
+      console.log("[PWA] Atualizado — recarregando");
+      window.location.reload();
     });
   });
 }
