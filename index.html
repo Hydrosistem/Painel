@@ -429,15 +429,6 @@ function getAmbiente() {
 
 var deferredPrompt = null;
 
-window.addEventListener("beforeinstallprompt", function(e) {
-  console.log("🔥 Install disponível");
-
-  e.preventDefault();
-  deferredPrompt = e;
-
-  atualizarBotaoInstalacao();
-});
-
 function atualizarBotaoInstalacao() {
   const btn = document.getElementById("btnInstall");
   if (!btn) return;
