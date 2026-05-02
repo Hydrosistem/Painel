@@ -440,6 +440,8 @@ function atualizarBotaoInstalacao() {
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
+  btn.style.display = "none"; // reset antes de decidir
+
   // 🔥 já instalado → esconde
   if (isStandalone) {
     btn.style.display = "none";
