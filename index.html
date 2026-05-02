@@ -509,15 +509,26 @@ window.addEventListener("appinstalled", function() {
   if (btn) btn.classList.remove("visible");
 });
 
-// ----- Inicialização: aguarda beforeinstallprompt por 4s antes do fallback -----
-// - Chrome/Edge desktop:  evento chega em ~100ms → prompt nativo ✅
-// - Chrome Android:       evento chega em ~1-3s  → prompt nativo ✅
-// - Opera GX / Firefox:   evento nunca chega     → fallback após 4s ✅
-// - iOS Safari:           evento nunca chega     → fallback após 4s ✅
+// ----- Inicialização: aguarda beforeinstallprompt antes do fallback -----
+// O Chrome exige SW ativo para considerar o app instalável e disparar o evento.
+// Por isso aguardamos serviceWorker.ready ANTES de iniciar o timer.
+// Timeout de 8s cobre Chrome Android em dispositivos lentos (~1-5s).
+//
+// - Chrome/Edge desktop:  evento chega ~100ms após SW pronto → prompt nativo ✅
+// - Chrome Android:       evento chega ~1-5s após SW pronto  → prompt nativo ✅
+// - Opera GX / Firefox:   evento nunca chega → fallback após 8s ✅
+// - iOS Safari:           fallback imediato ✅
+
+function iniciarEsperaPrompt() {
+  if (deferredPrompt) return;   // prompt já chegou antes → nada a fazer
+  clearTimeout(_promptWaitTimer);
+  _promptWaitTimer = setTimeout(function() {
+    if (!deferredPrompt) ativarBotaoFallback();
+  }, 8000);
+}
+
 window.addEventListener("load", function() {
   var ua = getUA();
-
-  // Já instalado → não mostra nada
   if (ua.isStandalone) return;
 
   // iOS nunca dispara beforeinstallprompt → fallback imediato
@@ -526,14 +537,20 @@ window.addEventListener("load", function() {
     return;
   }
 
-  // Para todos os outros: aguarda 4s pelo evento nativo antes de cair no fallback
-  _promptWaitTimer = setTimeout(function() {
-    if (!deferredPrompt) {
-      // Evento não chegou dentro do prazo → instrução manual
-      ativarBotaoFallback();
-    }
-    // Se chegou, ativarBotaoNativo() já foi chamado pelo listener acima
-  }, 4000);
+  // Inicia o timer após SW estar pronto (Chrome precisa do SW ativo)
+  // Fallback de segurança: se serviceWorker.ready demorar, inicia em 1s de qualquer forma
+  if ("serviceWorker" in navigator) {
+    var timerIniciado = false;
+    var iniciarUmaVez = function() {
+      if (timerIniciado) return;
+      timerIniciado = true;
+      iniciarEsperaPrompt();
+    };
+    navigator.serviceWorker.ready.then(iniciarUmaVez).catch(iniciarUmaVez);
+    setTimeout(iniciarUmaVez, 1000);
+  } else {
+    iniciarEsperaPrompt();
+  }
 });
 
 // ----- Service Worker -----
