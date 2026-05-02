@@ -465,24 +465,30 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-  // 💻 Desktop (Opera GX, etc)
-  if (!isMobile) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Instalar";
+// 📱 Android SEM suporte ao prompt (Opera, etc)
+if (isAndroid && !deferredPrompt) {
+  btn.style.display = "flex";
+  btn.innerText = "📲 Instalar";
 
-    btn.onclick = function() {
-      alert("Use Chrome ou Edge para instalar o app.");
-    };
-    return;
-  }
-
-  // ❌ fallback final
-  btn.style.display = "none";
+  btn.onclick = function() {
+    alert("Abra o menu do navegador e toque em 'Adicionar à tela inicial'");
+  };
+  return;
 }
 
-window.addEventListener("load", function() {
-  atualizarBotaoInstalacao();
-});
+// 💻 Desktop
+if (!isMobile) {
+  btn.style.display = "flex";
+  btn.innerText = "📲 Instalar";
+
+  btn.onclick = function() {
+    alert("Use Chrome ou Edge para instalar o app.");
+  };
+  return;
+}
+
+// ❌ fallback final (agora quase nunca será usado)
+btn.style.display = "none";
 // ══════════════════════════════════════════════
 //  SESSION ID
 // ══════════════════════════════════════════════
