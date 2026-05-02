@@ -412,11 +412,10 @@ var API       = API_BASE + "?acao=dados";
 
 // ══════════════════════════════════════════════
 //  PWA — Service Worker + Instalação
-//  CORRIGIDO: Opera GX desktop/mobile não dispara
-//  beforeinstallprompt → usamos fallback manual.
 // ══════════════════════════════════════════════
-var deferredPrompt = null;   // prompt nativo (Chrome/Edge)
-var swReg          = null;   // referência ao SW registration
+var deferredPrompt    = null;   // prompt nativo (Chrome/Edge/Chrome Android)
+var swReg             = null;   // referência ao SW registration
+var _promptWaitTimer  = null;   // timer de espera pelo beforeinstallprompt
 
 // ----- Detecta ambiente -----
 function getUA() {
@@ -430,28 +429,30 @@ function getUA() {
   };
 }
 
-// ----- Atualiza visibilidade do botão Instalar -----
-function atualizarBotaoInstalacao() {
+// ----- Ativa botão com prompt nativo -----
+function ativarBotaoNativo() {
+  clearTimeout(_promptWaitTimer);
+  var btn = document.getElementById("btnInstall");
+  if (!btn) return;
+  btn.classList.add("visible");
+  btn.onclick = instalarPWA;
+}
+
+// ----- Fallback manual (só chamado se prompt não chegou após espera) -----
+function ativarBotaoFallback() {
   var btn = document.getElementById("btnInstall");
   if (!btn) return;
 
   var ua = getUA();
 
-  // Já instalado como PWA → oculta
+  // Já instalado → oculta
   if (ua.isStandalone) {
     btn.classList.remove("visible");
     btn.onclick = null;
     return;
   }
 
-  // Chrome/Edge: prompt nativo disponível
-  if (deferredPrompt) {
-    btn.classList.add("visible");
-    btn.onclick = instalarPWA;
-    return;
-  }
-
-  // iOS: instrução manual (não suporta prompt)
+  // iOS: único caso que nunca terá prompt nativo
   if (ua.isIOS) {
     btn.classList.add("visible");
     btn.onclick = function() {
@@ -460,7 +461,7 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-  // Android sem prompt (Opera GX mobile, Firefox, etc.)
+  // Android sem prompt (Opera GX mobile, Firefox, Samsung Internet antigo, etc.)
   if (ua.isAndroid) {
     btn.classList.add("visible");
     btn.onclick = function() {
@@ -469,24 +470,24 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-  // Desktop sem prompt (Opera GX desktop, Firefox, etc.)
-  // Mostramos o botão com instrução de troca de navegador ou menu
+  // Desktop sem prompt (Opera GX, Firefox, etc.)
   btn.classList.add("visible");
   btn.onclick = function() {
-    // Opera GX desktop: tenta via menu (não há API)
     if (ua.isOpera) {
-      alert("No Opera GX:\nClique no ícone ⊕ na barra de endereços (ou menu) → 'Instalar este site como app'.");
+      alert("No Opera GX:\nClique no ícone ⊕ na barra de endereços → 'Instalar este site como app'.");
     } else {
-      alert("Para instalar o app, use Chrome ou Edge e clique no ícone ⊕ na barra de endereços.");
+      alert("Para instalar, use Chrome ou Edge e clique no ícone ⊕ na barra de endereços.");
     }
   };
 }
 
-// ----- Prompt nativo (Chrome/Edge) -----
+// ----- beforeinstallprompt: Chrome desktop + Chrome Android -----
+// No Chrome Android pode demorar até ~3s após o load para disparar.
+// Capturamos o evento e ativamos o botão com prompt nativo imediatamente.
 window.addEventListener("beforeinstallprompt", function(e) {
   e.preventDefault();
   deferredPrompt = e;
-  atualizarBotaoInstalacao();   // atualiza botão quando prompt estiver pronto
+  ativarBotaoNativo();   // prompt nativo disponível → botão funcional
 });
 
 function instalarPWA() {
@@ -495,14 +496,44 @@ function instalarPWA() {
   deferredPrompt.userChoice.then(function(choice) {
     deferredPrompt = null;
     if (choice.outcome === "accepted") toast("✅ App instalado com sucesso!", "");
-    atualizarBotaoInstalacao();
+    // Oculta o botão após aceitar
+    var btn = document.getElementById("btnInstall");
+    if (btn) btn.classList.remove("visible");
   });
 }
 
 window.addEventListener("appinstalled", function() {
   toast("📲 Hydrosistem instalado!", "");
   deferredPrompt = null;
-  atualizarBotaoInstalacao();
+  var btn = document.getElementById("btnInstall");
+  if (btn) btn.classList.remove("visible");
+});
+
+// ----- Inicialização: aguarda beforeinstallprompt por 4s antes do fallback -----
+// - Chrome/Edge desktop:  evento chega em ~100ms → prompt nativo ✅
+// - Chrome Android:       evento chega em ~1-3s  → prompt nativo ✅
+// - Opera GX / Firefox:   evento nunca chega     → fallback após 4s ✅
+// - iOS Safari:           evento nunca chega     → fallback após 4s ✅
+window.addEventListener("load", function() {
+  var ua = getUA();
+
+  // Já instalado → não mostra nada
+  if (ua.isStandalone) return;
+
+  // iOS nunca dispara beforeinstallprompt → fallback imediato
+  if (ua.isIOS) {
+    ativarBotaoFallback();
+    return;
+  }
+
+  // Para todos os outros: aguarda 4s pelo evento nativo antes de cair no fallback
+  _promptWaitTimer = setTimeout(function() {
+    if (!deferredPrompt) {
+      // Evento não chegou dentro do prazo → instrução manual
+      ativarBotaoFallback();
+    }
+    // Se chegou, ativarBotaoNativo() já foi chamado pelo listener acima
+  }, 4000);
 });
 
 // ----- Service Worker -----
@@ -511,12 +542,10 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("./sw.js").then(function(reg) {
       swReg = reg;
 
-      // Detecta update disponível
       reg.addEventListener("updatefound", function() {
         var newWorker = reg.installing;
         newWorker.addEventListener("statechange", function() {
           if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            // Auto-ativa o novo SW imediatamente
             newWorker.postMessage({ type: "SKIP_WAITING" });
             mostrarBotaoAtualizar(reg);
           }
@@ -527,7 +556,6 @@ if ("serviceWorker" in navigator) {
       console.warn("[SW] Registro falhou:", err);
     });
 
-    // Recarrega quando o SW assumir o controle
     navigator.serviceWorker.addEventListener("controllerchange", function() {
       window.location.reload();
     });
@@ -547,13 +575,6 @@ function mostrarBotaoAtualizar(reg) {
   };
   toast("🔄 Nova versão disponível! Toque em Atualizar.", "");
 }
-
-// Chama ao carregar para exibir botão em navegadores sem beforeinstallprompt
-window.addEventListener("load", function() {
-  // Pequeno delay para o SW ter tempo de registrar e o evento beforeinstallprompt
-  // eventualmente disparar (Chrome o faz logo após load)
-  setTimeout(atualizarBotaoInstalacao, 800);
-});
 
 // ══════════════════════════════════════════════
 //  SESSION ID
