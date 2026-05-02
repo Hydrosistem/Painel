@@ -427,13 +427,26 @@ function getAmbiente() {
   };
 }
 
-var deferredPrompt = null;
-
 function atualizarBotaoInstalacao() {
   const btn = document.getElementById("btnInstall");
   if (!btn) return;
 
-  // Chrome / Brave
+  const ua = navigator.userAgent.toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isAndroid = /android/.test(ua);
+  const isMobile = isIOS || isAndroid;
+
+  const isStandalone =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true;
+
+  // 🔥 já instalado → esconde
+  if (isStandalone) {
+    btn.style.display = "none";
+    return;
+  }
+
+  // ✅ Chrome / Android (melhor cenário)
   if (deferredPrompt) {
     btn.style.display = "flex";
     btn.innerText = "📲 Instalar";
@@ -441,14 +454,35 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-  // Fallback (Opera GX / outros)
-  btn.style.display = "flex";
-  btn.innerText = "📲 Instalar";
+  // 🍎 iOS (não tem prompt automático)
+  if (isIOS) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar";
 
-  btn.onclick = function() {
-    alert("Para instalar:\nMenu do navegador → Instalar app");
-  };
+    btn.onclick = function() {
+      alert("Toque em compartilhar e depois 'Adicionar à Tela de Início'");
+    };
+    return;
+  }
+
+  // 💻 Desktop (Opera GX, etc)
+  if (!isMobile) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar";
+
+    btn.onclick = function() {
+      alert("Use Chrome ou Edge para instalar o app.");
+    };
+    return;
+  }
+
+  // ❌ fallback final
+  btn.style.display = "none";
 }
+
+window.addEventListener("load", function() {
+  atualizarBotaoInstalacao();
+});
 // ══════════════════════════════════════════════
 //  SESSION ID
 // ══════════════════════════════════════════════
@@ -785,8 +819,6 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 //  PWA — Service Worker + Prompt de instalação
 // ══════════════════════════════════════════════
-var deferredPrompt = null;
-
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./sw.js").then((reg) => {
@@ -810,11 +842,13 @@ if ("serviceWorker" in navigator) {
     });
   });
 }
+
+var deferredPrompt = null;
+
 window.addEventListener("beforeinstallprompt", function(e) {
   e.preventDefault();
   deferredPrompt = e;
-  var btn = document.getElementById("btnInstall");
-  if (btn) btn.style.display = "flex";
+  atualizarBotaoInstalacao();
 });
 
 function instalarPWA() {
