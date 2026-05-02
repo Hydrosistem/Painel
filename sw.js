@@ -2,7 +2,7 @@
 //  HYDROSISTEM SW — AUTO UPDATE
 // ═══════════════════════════════════════
 
-const CACHE = "hyd-v14"; // 🔥 sempre mude versão quando atualizar
+const CACHE = "hyd-v15"; // 🔥 sempre mude versão quando atualizar
 
 const ASSETS = [
   "./",
