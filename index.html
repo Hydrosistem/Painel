@@ -88,8 +88,8 @@ header {
 .btn-reload.spin svg { animation: rot .9s linear infinite; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
-/* Botão instalar PWA — oculto por padrão, aparece via JS */
 .btn-install {
+  /* oculto por padrão — JS controla via .visible */
   display: none;
   background: rgba(255,255,255,.15);
   border: 1.5px solid rgba(255,255,255,.35);
@@ -99,7 +99,8 @@ header {
   touch-action: manipulation; -webkit-appearance: none;
   transition: background .15s;
 }
-:active, .btn-install:hover { background: rgba(255,255,255,.25); }
+.btn-install.visible { display: flex; }
+.btn-install:active, .btn-install:hover { background: rgba(255,255,255,.25); }
 
 .stats {
   display: grid;
@@ -335,25 +336,27 @@ header {
       <div class="h-sub">Painel de Entulhos</div>
     </div>
   </div>
-<div style="display:flex;gap:8px;align-items:center;">
-  
-  <button class="btn-install" id="btnInstall" onclick="instalarPWA()">
-    📲 Instalar
-  </button>
+  <div style="display:flex;gap:8px;align-items:center;">
 
-  <button class="btn-install" id="btnUpdate" style="display:none;">
-    🔄 Atualizar
-  </button>
+    <!-- Botão instalar: aparece via JS adicionando classe .visible -->
+    <button class="btn-install" id="btnInstall">
+      📲 Instalar
+    </button>
 
-  <button class="btn-reload" id="btnReload" onclick="carregarDados()">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-      <polyline points="23 4 23 10 17 10"/>
-      <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
-    </svg>
-    Atualizar
-  </button>
+    <!-- Botão nova versão: aparece só quando SW detecta update -->
+    <button class="btn-install" id="btnUpdate">
+      🔄 Atualizar
+    </button>
 
-</div>
+    <button class="btn-reload" id="btnReload" onclick="carregarDados()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="23 4 23 10 17 10"/>
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+      Atualizar
+    </button>
+
+  </div>
 </header>
 
 <!-- ══ STATS ════════════════════════════════════════════════ -->
@@ -407,85 +410,150 @@ var PRAZO     = 24;
 var LOCK_TTL  = 600;
 var API       = API_BASE + "?acao=dados";
 
-function getAmbiente() {
-  const ua = navigator.userAgent.toLowerCase();
+// ══════════════════════════════════════════════
+//  PWA — Service Worker + Instalação
+//  CORRIGIDO: Opera GX desktop/mobile não dispara
+//  beforeinstallprompt → usamos fallback manual.
+// ══════════════════════════════════════════════
+var deferredPrompt = null;   // prompt nativo (Chrome/Edge)
+var swReg          = null;   // referência ao SW registration
 
-  const isIOS = /iphone|ipad|ipod/.test(ua);
-  const isAndroid = /android/.test(ua);
-  const isMobile = isIOS || isAndroid;
-
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
-
+// ----- Detecta ambiente -----
+function getUA() {
+  var ua = navigator.userAgent.toLowerCase();
   return {
-    isIOS,
-    isAndroid,
-    isMobile,
-    isDesktop: !isMobile,
-    isStandalone
+    isIOS:        /iphone|ipad|ipod/.test(ua),
+    isAndroid:    /android/.test(ua),
+    isOpera:      /opr\/|opera/.test(ua),
+    isStandalone: window.matchMedia('(display-mode: standalone)').matches
+                  || window.navigator.standalone === true
   };
 }
 
+// ----- Atualiza visibilidade do botão Instalar -----
 function atualizarBotaoInstalacao() {
-  const btn = document.getElementById("btnInstall");
+  var btn = document.getElementById("btnInstall");
   if (!btn) return;
 
-  const ua = navigator.userAgent.toLowerCase();
-  const isIOS = /iphone|ipad|ipod/.test(ua);
-  const isAndroid = /android/.test(ua);
-  const isMobile = isIOS || isAndroid;
+  var ua = getUA();
 
-  const isStandalone =
-    window.matchMedia('(display-mode: standalone)').matches ||
-    window.navigator.standalone === true;
+  // Já instalado como PWA → oculta
+  if (ua.isStandalone) {
+    btn.classList.remove("visible");
+    btn.onclick = null;
+    return;
+  }
 
-  btn.style.display = "none"; // reset
-
-  // 🔥 já instalado
-  if (isStandalone) return;
-
-  // ✅ Melhor cenário (Chrome, Edge, etc)
+  // Chrome/Edge: prompt nativo disponível
   if (deferredPrompt) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Instalar";
+    btn.classList.add("visible");
     btn.onclick = instalarPWA;
     return;
   }
 
-  // 📱 Android (Opera, navegadores sem suporte)
-  if (isAndroid) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Instalar";
-
+  // iOS: instrução manual (não suporta prompt)
+  if (ua.isIOS) {
+    btn.classList.add("visible");
     btn.onclick = function() {
-      alert("Abra o menu do navegador e toque em 'Adicionar à tela inicial'");
+      alert("Para instalar no iPhone/iPad:\nToque em 📤 Compartilhar → 'Adicionar à Tela de Início'");
     };
     return;
   }
 
-  // 🍎 iOS
-  if (isIOS) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Instalar";
-
+  // Android sem prompt (Opera GX mobile, Firefox, etc.)
+  if (ua.isAndroid) {
+    btn.classList.add("visible");
     btn.onclick = function() {
-      alert("Toque em compartilhar e depois 'Adicionar à Tela de Início'");
+      alert("Para instalar:\nAbra o menu ⋮ do navegador e toque em 'Adicionar à tela inicial' ou 'Instalar app'.");
     };
     return;
   }
 
-  // 💻 Desktop
-  if (!isMobile) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Instalar";
-
-    btn.onclick = function() {
-      alert("Use Chrome ou Edge para instalar o app.");
-    };
-    return;
-  }
+  // Desktop sem prompt (Opera GX desktop, Firefox, etc.)
+  // Mostramos o botão com instrução de troca de navegador ou menu
+  btn.classList.add("visible");
+  btn.onclick = function() {
+    // Opera GX desktop: tenta via menu (não há API)
+    if (ua.isOpera) {
+      alert("No Opera GX:\nClique no ícone ⊕ na barra de endereços (ou menu) → 'Instalar este site como app'.");
+    } else {
+      alert("Para instalar o app, use Chrome ou Edge e clique no ícone ⊕ na barra de endereços.");
+    }
+  };
 }
+
+// ----- Prompt nativo (Chrome/Edge) -----
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  atualizarBotaoInstalacao();   // atualiza botão quando prompt estiver pronto
+});
+
+function instalarPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(choice) {
+    deferredPrompt = null;
+    if (choice.outcome === "accepted") toast("✅ App instalado com sucesso!", "");
+    atualizarBotaoInstalacao();
+  });
+}
+
+window.addEventListener("appinstalled", function() {
+  toast("📲 Hydrosistem instalado!", "");
+  deferredPrompt = null;
+  atualizarBotaoInstalacao();
+});
+
+// ----- Service Worker -----
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function() {
+    navigator.serviceWorker.register("./sw.js").then(function(reg) {
+      swReg = reg;
+
+      // Detecta update disponível
+      reg.addEventListener("updatefound", function() {
+        var newWorker = reg.installing;
+        newWorker.addEventListener("statechange", function() {
+          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+            // Auto-ativa o novo SW imediatamente
+            newWorker.postMessage({ type: "SKIP_WAITING" });
+            mostrarBotaoAtualizar(reg);
+          }
+        });
+      });
+
+    }).catch(function(err) {
+      console.warn("[SW] Registro falhou:", err);
+    });
+
+    // Recarrega quando o SW assumir o controle
+    navigator.serviceWorker.addEventListener("controllerchange", function() {
+      window.location.reload();
+    });
+  });
+}
+
+function mostrarBotaoAtualizar(reg) {
+  var btn = document.getElementById("btnUpdate");
+  if (!btn) return;
+  btn.classList.add("visible");
+  btn.onclick = function() {
+    var w = reg && reg.waiting;
+    if (w) w.postMessage({ type: "SKIP_WAITING" });
+    navigator.serviceWorker.addEventListener("controllerchange", function() {
+      window.location.reload();
+    });
+  };
+  toast("🔄 Nova versão disponível! Toque em Atualizar.", "");
+}
+
+// Chama ao carregar para exibir botão em navegadores sem beforeinstallprompt
+window.addEventListener("load", function() {
+  // Pequeno delay para o SW ter tempo de registrar e o evento beforeinstallprompt
+  // eventualmente disparar (Chrome o faz logo após load)
+  setTimeout(atualizarBotaoInstalacao, 800);
+});
 
 // ══════════════════════════════════════════════
 //  SESSION ID
@@ -504,7 +572,7 @@ var SESSION_ID = (function() {
   }
 })();
 
-var meusLocks        = {};
+var meusLocks         = {};
 var protocoloPendente = null;
 var enderecoPendente  = null;
 
@@ -598,7 +666,7 @@ function fecharModal() {
   protocoloPendente = null;
 }
 function confirmarExecucao() {
-  var protocolo    = protocoloPendente;
+  var protocolo     = protocoloPendente;
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
   fecharModal();
@@ -819,83 +887,6 @@ window.addEventListener("beforeunload", function() {
     try { if (navigator.sendBeacon) navigator.sendBeacon(API_BASE + "?" + params); } catch(e) {}
   });
 });
-
-// ══════════════════════════════════════════════
-//  PWA — Service Worker + Prompt de instalação
-// ══════════════════════════════════════════════
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("./sw.js").then((reg) => {
-
-      reg.addEventListener("updatefound", () => {
-        const newWorker = reg.installing;
-
-        newWorker.addEventListener("statechange", () => {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-
-            // 🔥 ISSO AQUI É O CORAÇÃO DO AUTO UPDATE
-            newWorker.postMessage({ type: "SKIP_WAITING" });
-          }
-        });
-      });
-
-    });
-
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      window.location.reload();
-    });
-  });
-}
-
-var deferredPrompt = null;
-
-window.addEventListener("beforeinstallprompt", function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  atualizarBotaoInstalacao();
-});
-
-function instalarPWA() {
-  if (!deferredPrompt) return;
-
-  deferredPrompt.prompt();
-
-  deferredPrompt.userChoice.then(function(choice) {
-    if (choice.outcome === "accepted") {
-      toast("✅ App instalado!", "");
-    }
-
-    // 🔥 atualiza botão automaticamente
-    atualizarBotaoInstalacao();
-  });
-}
-
-window.addEventListener("appinstalled", function() {
-  toast("📲 Hydrosistem instalado!", "");
-  deferredPrompt = null;
-});
-
-  function mostrarBotaoAtualizar(reg) {
-  const btn = document.getElementById("btnUpdate");
-  if (!btn) return;
-
-  btn.style.display = "flex";
-
-  btn.onclick = () => {
-    const newWorker = reg.waiting;
-
-    if (newWorker) {
-      newWorker.postMessage("SKIP_WAITING");
-    }
-
-    // 🔄 recarrega quando atualizar
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      window.location.reload();
-    });
-  };
-
-  toast("🔄 Nova versão disponível!", "");
-}
 
 // ══════════════════════════════════════════════
 //  INICIAR
