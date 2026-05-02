@@ -1,9 +1,7 @@
 // ═══════════════════════════════════════
 //  HYDROSISTEM SW — AUTO UPDATE
 // ═══════════════════════════════════════
-
-const CACHE = "hyd-v20"; // 🔥 sempre mude versão quando atualizar
-
+const CACHE = "hyd-v21";
 const ASSETS = [
   "./",
   "./index.html",
@@ -14,8 +12,7 @@ const ASSETS = [
 
 // ── INSTALL ───────────────────────────
 self.addEventListener("install", (e) => {
-  self.skipWaiting(); // 🔥 ativa imediatamente
-
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE).then(cache => cache.addAll(ASSETS))
   );
@@ -28,7 +25,7 @@ self.addEventListener("activate", (e) => {
       Promise.all(
         keys.map(k => k !== CACHE && caches.delete(k))
       )
-    ).then(() => self.clients.claim()) // 🔥 assume controle
+    ).then(() => self.clients.claim())
   );
 });
 
@@ -40,12 +37,12 @@ self.addEventListener("fetch", (e) => {
     );
     return;
   }
-
   e.respondWith(
     caches.match(e.request).then(res => res || fetch(e.request))
   );
 });
 
+// ── MESSAGE ───────────────────────────
 self.addEventListener("message", (event) => {
   if (event.data && event.data.type === "SKIP_WAITING") {
     self.skipWaiting();
