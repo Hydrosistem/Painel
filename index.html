@@ -442,32 +442,22 @@ function atualizarBotaoInstalacao() {
   const btn = document.getElementById("btnInstall");
   if (!btn) return;
 
-  // ✅ Chrome / Brave
+  // Chrome / Brave
   if (deferredPrompt) {
     btn.style.display = "flex";
     btn.innerText = "📲 Instalar";
     btn.onclick = instalarPWA;
-    btn.classList.add("pulse");
     return;
   }
 
-  // ⚠️ Fallback (Opera GX / navegadores bugados)
+  // Fallback (Opera GX / outros)
   btn.style.display = "flex";
   btn.innerText = "📲 Instalar";
 
   btn.onclick = function() {
-    alert("Para instalar:\nClique no menu do navegador\nE procure por 'Instalar app' ou 'Adicionar à área de trabalho'");
+    alert("Para instalar:\nMenu do navegador → Instalar app");
   };
 }
-
-  // ❌ instalado ou sem suporte
-  btn.style.display = "none";
-}
-
-window.addEventListener("load", function() {
-  atualizarBotaoInstalacao();
-});
-
 // ══════════════════════════════════════════════
 //  SESSION ID
 // ══════════════════════════════════════════════
