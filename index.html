@@ -447,7 +447,7 @@ function atualizarBotaoInstalacao() {
   // 📱 ANDROID / DESKTOP (Chrome, Brave etc)
   if (deferredPrompt) {
     btn.style.display = "flex";
-    btn.innerText = "📲 Instalar app";
+    btn.innerText = "📲 Instalar";
     btn.onclick = instalarPWA;
     return;
   }
@@ -455,7 +455,7 @@ function atualizarBotaoInstalacao() {
   // 🍎 iOS (Safari)
   if (env.isIOS && !env.isStandalone) {
     btn.style.display = "flex";
-    btn.innerText = "📲 Instalar (Safari)";
+    btn.innerText = "📲 Como instalar";
     btn.onclick = function() {
       alert("No iPhone:\nToque em compartilhar ⬆️\nDepois 'Adicionar à Tela de Início'");
     };
