@@ -439,28 +439,26 @@ window.addEventListener("beforeinstallprompt", function(e) {
 });
 
 function atualizarBotaoInstalacao() {
-  const env = getAmbiente();
   const btn = document.getElementById("btnInstall");
-
   if (!btn) return;
 
-  // 📱 ANDROID / DESKTOP (Chrome, Brave etc)
+  // ✅ Chrome / Brave
   if (deferredPrompt) {
     btn.style.display = "flex";
     btn.innerText = "📲 Instalar";
     btn.onclick = instalarPWA;
+    btn.classList.add("pulse");
     return;
   }
 
-  // 🍎 iOS (Safari)
-  if (env.isIOS && !env.isStandalone) {
-    btn.style.display = "flex";
-    btn.innerText = "📲 Como instalar";
-    btn.onclick = function() {
-      alert("No iPhone:\nToque em compartilhar ⬆️\nDepois 'Adicionar à Tela de Início'");
-    };
-    return;
-  }
+  // ⚠️ Fallback (Opera GX / navegadores bugados)
+  btn.style.display = "flex";
+  btn.innerText = "📲 Instalar";
+
+  btn.onclick = function() {
+    alert("Para instalar:\nClique no menu do navegador\nE procure por 'Instalar app' ou 'Adicionar à área de trabalho'");
+  };
+}
 
   // ❌ instalado ou sem suporte
   btn.style.display = "none";
