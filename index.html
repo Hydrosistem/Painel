@@ -440,15 +440,12 @@ function atualizarBotaoInstalacao() {
     window.matchMedia('(display-mode: standalone)').matches ||
     window.navigator.standalone === true;
 
-  btn.style.display = "none"; // reset antes de decidir
+  btn.style.display = "none"; // reset
 
-  // 🔥 já instalado → esconde
-  if (isStandalone) {
-    btn.style.display = "none";
-    return;
-  }
+  // 🔥 já instalado
+  if (isStandalone) return;
 
-  // ✅ Chrome / Android (melhor cenário)
+  // ✅ Melhor cenário (Chrome, Edge, etc)
   if (deferredPrompt) {
     btn.style.display = "flex";
     btn.innerText = "📲 Instalar";
@@ -456,7 +453,18 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-  // 🍎 iOS (não tem prompt automático)
+  // 📱 Android (Opera, navegadores sem suporte)
+  if (isAndroid) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar";
+
+    btn.onclick = function() {
+      alert("Abra o menu do navegador e toque em 'Adicionar à tela inicial'");
+    };
+    return;
+  }
+
+  // 🍎 iOS
   if (isIOS) {
     btn.style.display = "flex";
     btn.innerText = "📲 Instalar";
@@ -467,26 +475,16 @@ function atualizarBotaoInstalacao() {
     return;
   }
 
-// 📱 Android SEM suporte ao prompt (Opera, etc)
-if (isAndroid && !deferredPrompt) {
-  btn.style.display = "flex";
-  btn.innerText = "📲 Instalar";
+  // 💻 Desktop
+  if (!isMobile) {
+    btn.style.display = "flex";
+    btn.innerText = "📲 Instalar";
 
-  btn.onclick = function() {
-    alert("Abra o menu do navegador e toque em 'Adicionar à tela inicial'");
-  };
-  return;
-}
-
-// 💻 Desktop
-if (!isMobile) {
-  btn.style.display = "flex";
-  btn.innerText = "📲 Instalar";
-
-  btn.onclick = function() {
-    alert("Use Chrome ou Edge para instalar o app.");
-  };
-  return;
+    btn.onclick = function() {
+      alert("Use Chrome ou Edge para instalar o app.");
+    };
+    return;
+  }
 }
 
 // ❌ fallback final (agora quase nunca será usado)
