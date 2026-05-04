@@ -1036,6 +1036,12 @@ setInterval(carregarDados, 15000);
   video.addEventListener("ended", function() { clearTimeout(safetyTimer); });
 
   // Tenta dar play (alguns navegadores bloqueiam autoplay com som)
+  // Desktop (largura >= 1024px) → pula a intro
+  if (window.innerWidth >= 1024) {
+    fecharIntro();
+    return;
+  }
+
   var playPromise = video.play();
   if (playPromise !== undefined) {
     playPromise.catch(function() {
