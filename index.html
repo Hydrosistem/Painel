@@ -89,7 +89,6 @@ header {
 @keyframes rot { to { transform: rotate(360deg); } }
 
 .btn-install {
-  /* oculto por padrão — JS controla via .visible */
   display: none;
   background: rgba(255,255,255,.15);
   border: 1.5px solid rgba(255,255,255,.35);
@@ -318,11 +317,9 @@ header {
 .modal-btns button:active { opacity: .8; }
 .btn-cancelar  { background: var(--cinza-bg); color: var(--texto); }
 .btn-confirmar { background: var(--exec); color: #fff; }
-
 </style>
 </head>
 <body>
-
 
 <!-- ══ HEADER ══════════════════════════════════════════════ -->
 <header>
@@ -338,12 +335,10 @@ header {
   </div>
   <div style="display:flex;gap:8px;align-items:center;">
 
-    <!-- Botão instalar: aparece via JS adicionando classe .visible -->
     <button class="btn-install" id="btnInstall">
       📲 Instalar
     </button>
 
-    <!-- Botão nova versão: aparece só quando SW detecta update -->
     <button class="btn-install" id="btnUpdate">
       🔄 Atualizar
     </button>
@@ -425,59 +420,82 @@ var API       = API_BASE + "?acao=dados";
 // ══════════════════════════════════════════════
 //  PWA — Service Worker + Instalação
 // ══════════════════════════════════════════════
-var deferredPrompt    = null;   // prompt nativo (Chrome/Edge/Chrome Android)
-var swReg             = null;   // referência ao SW registration
-var _promptWaitTimer  = null;   // timer de espera pelo beforeinstallprompt
+var deferredPrompt   = null;
+var swReg            = null;
+var _promptWaitTimer = null;
+
+// ----- Helpers -----
+function estaInstalado() {
+  return window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+}
+function marcarInstalado() {
+  try { localStorage.setItem("pwa_instalado", "1"); } catch(e) {}
+}
+function desmarcarInstalado() {
+  try { localStorage.removeItem("pwa_instalado"); } catch(e) {}
+}
+function foiInstalado() {
+  try { return localStorage.getItem("pwa_instalado") === "1"; } catch(e) { return false; }
+}
+
+function ocultarBtnInstall() {
+  var btn = document.getElementById("btnInstall");
+  if (btn) { btn.classList.remove("visible"); btn.onclick = null; }
+}
+function mostrarBtnInstall(fn) {
+  var btn = document.getElementById("btnInstall");
+  if (btn) { btn.classList.add("visible"); btn.onclick = fn; }
+}
 
 // ----- Detecta ambiente -----
 function getUA() {
   var ua = navigator.userAgent.toLowerCase();
   return {
-    isIOS:        /iphone|ipad|ipod/.test(ua),
-    isAndroid:    /android/.test(ua),
-    isOpera:      /opr\/|opera/.test(ua),
-    isStandalone: window.matchMedia('(display-mode: standalone)').matches
-                  || window.navigator.standalone === true
+    isIOS:     /iphone|ipad|ipod/.test(ua),
+    isAndroid: /android/.test(ua),
+    isOpera:   /opr\/|opera/.test(ua)
   };
+}
+
+// ----- Instalar com prompt nativo -----
+function instalarPWA() {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  deferredPrompt.userChoice.then(function(choice) {
+    deferredPrompt = null;
+    if (choice.outcome === "accepted") {
+      marcarInstalado();
+      ocultarBtnInstall();
+      toast("✅ App instalado com sucesso!", "");
+    }
+  });
 }
 
 // ----- Ativa botão com prompt nativo -----
 function ativarBotaoNativo() {
   clearTimeout(_promptWaitTimer);
-  var btn = document.getElementById("btnInstall");
-  if (!btn) return;
-  btn.classList.add("visible");
-  btn.onclick = instalarPWA;
+  mostrarBtnInstall(instalarPWA);
 }
 
-// ----- Fallback manual (só chamado se prompt não chegou após espera) -----
+// ----- Modal instalação manual -----
 function fecharModalInstall() {
   document.getElementById("modalInstall").classList.remove("open");
 }
-
 function abrirModalInstall(titulo, html) {
   document.getElementById("modalInstallTitulo").textContent = titulo;
   document.getElementById("modalInstallSub").innerHTML = html;
   document.getElementById("modalInstall").classList.add("open");
 }
 
+// ----- Fallback manual -----
 function ativarBotaoFallback() {
-  var btn = document.getElementById("btnInstall");
-  if (!btn) return;
+  if (estaInstalado()) { ocultarBtnInstall(); return; }
 
   var ua = getUA();
 
-  // Já instalado → oculta
-  if (ua.isStandalone) {
-    btn.classList.remove("visible");
-    btn.onclick = null;
-    return;
-  }
-
-  // iOS
   if (ua.isIOS) {
-    btn.classList.add("visible");
-    btn.onclick = function() {
+    mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no iPhone / iPad",
         "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
         "1. Toque no ícone <strong>📤 Compartilhar</strong> na barra inferior do Safari<br>" +
@@ -485,14 +503,12 @@ function ativarBotaoFallback() {
         "3. Confirme tocando em <strong>Adicionar</strong>" +
         "</div>"
       );
-    };
+    });
     return;
   }
 
-  // Android (Chrome antigo ou sem suporte ao prompt)
   if (ua.isAndroid) {
-    btn.classList.add("visible");
-    btn.onclick = function() {
+    mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no Android",
         "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
         "1. Toque no menu <strong>⋮</strong> (3 pontinhos) no canto superior direito<br>" +
@@ -500,69 +516,59 @@ function ativarBotaoFallback() {
         "&nbsp;&nbsp;• <strong>Instalar app</strong><br>" +
         "&nbsp;&nbsp;• <strong>Adicionar à tela inicial</strong><br>" +
         "&nbsp;&nbsp;• <strong>Adicionar atalho</strong><br>" +
-        "3. Se não aparecer nenhuma, role o menu até o final<br>" +
-        "4. Confirme tocando em <strong>Adicionar</strong>" +
-        "<br><br>" +
-        "<span style='color:var(--texto2);font-size:12px'>💡 Dica: Se a opção não aparecer, tente fechar e reabrir o Chrome, aguarde 30 segundos na página e tente novamente.</span>" +
+        "3. Confirme tocando em <strong>Adicionar</strong><br><br>" +
+        "<span style='color:var(--texto2);font-size:12px'>💡 Se a opção não aparecer, feche e reabra o Chrome e aguarde 30 segundos.</span>" +
         "</div>"
       );
-    };
+    });
     return;
   }
 
-  // Desktop (Opera GX, Firefox, etc.)
-  btn.classList.add("visible");
-  btn.onclick = function() {
+  // Desktop
+  mostrarBtnInstall(function() {
     var instrucao = ua.isOpera
       ? "Clique no ícone <strong>⊕</strong> na barra de endereços → <strong>'Instalar este site como app'</strong>.<br><br>Se não aparecer, acesse pelo <strong>Chrome</strong> ou <strong>Edge</strong>."
       : "Clique no ícone <strong>⊕</strong> na barra de endereços do <strong>Chrome</strong> ou <strong>Edge</strong> para instalar.";
     abrirModalInstall("Instalar no computador",
       "<div style='text-align:left;line-height:1.8;font-size:13px'>" + instrucao + "</div>"
     );
-  };
-}
-
-// ----- beforeinstallprompt: Chrome desktop + Chrome Android -----
-// No Chrome Android pode demorar até ~3s após o load para disparar.
-// Capturamos o evento e ativamos o botão com prompt nativo imediatamente.
-window.addEventListener("beforeinstallprompt", function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  ativarBotaoNativo();   // prompt nativo disponível → botão funcional
-});
-
-function instalarPWA() {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  deferredPrompt.userChoice.then(function(choice) {
-    deferredPrompt = null;
-    if (choice.outcome === "accepted") toast("✅ App instalado com sucesso!", "");
-    // Oculta o botão após aceitar
-    var btn = document.getElementById("btnInstall");
-    if (btn) btn.classList.remove("visible");
   });
 }
 
-window.addEventListener("appinstalled", function() {
-  toast("📲 Hydrosistem instalado!", "");
-  deferredPrompt = null;
-  try { localStorage.setItem("pwa_instalado", "1"); } catch(e) {}
-  var btn = document.getElementById("btnInstall");
-  if (btn) btn.classList.remove("visible");
+// ----- beforeinstallprompt (Chrome/Edge) -----
+window.addEventListener("beforeinstallprompt", function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  // Só mostra se não estiver instalado
+  if (!estaInstalado()) ativarBotaoNativo();
 });
 
-// ----- Inicialização: aguarda beforeinstallprompt antes do fallback -----
-// O Chrome exige SW ativo para considerar o app instalável e disparar o evento.
-// Por isso aguardamos serviceWorker.ready ANTES de iniciar o timer.
-// Timeout de 8s cobre Chrome Android em dispositivos lentos (~1-5s).
-//
-// - Chrome/Edge desktop:  evento chega ~100ms após SW pronto → prompt nativo ✅
-// - Chrome Android:       evento chega ~1-5s após SW pronto  → prompt nativo ✅
-// - Opera GX / Firefox:   evento nunca chega → fallback após 8s ✅
-// - iOS Safari:           fallback imediato ✅
+// ----- appinstalled: some imediatamente -----
+window.addEventListener("appinstalled", function() {
+  deferredPrompt = null;
+  marcarInstalado();
+  ocultarBtnInstall();
+  toast("📲 Hydrosistem instalado!", "");
+});
 
+// ----- Detecta desinstalação (saiu do modo standalone) -----
+window.matchMedia('(display-mode: standalone)').addEventListener('change', function(e) {
+  if (e.matches) {
+    // Entrou em standalone → está instalado → oculta botão
+    marcarInstalado();
+    ocultarBtnInstall();
+  } else {
+    // Saiu do standalone → foi desinstalado → mostra botão novamente
+    desmarcarInstalado();
+    deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback();
+  }
+});
+
+// ----- Inicialização -----
 function iniciarEsperaPrompt() {
-  if (deferredPrompt) return;   // prompt já chegou antes → nada a fazer
+  // Já instalado → nunca mostra
+  if (estaInstalado()) return;
+  if (deferredPrompt) return;
   clearTimeout(_promptWaitTimer);
   _promptWaitTimer = setTimeout(function() {
     if (!deferredPrompt) ativarBotaoFallback();
@@ -570,19 +576,28 @@ function iniciarEsperaPrompt() {
 }
 
 window.addEventListener("load", function() {
-  var ua = getUA();
-  var jaInstalado = ua.isStandalone ||
-    (function(){ try { return localStorage.getItem("pwa_instalado") === "1"; } catch(e){ return false; } })();
-  if (jaInstalado) return;
+  // Se rodando em modo standalone (app instalado), oculta botão e para por aqui
+  if (estaInstalado()) {
+    ocultarBtnInstall();
+    marcarInstalado();
+    return;
+  }
 
-  // iOS nunca dispara beforeinstallprompt → fallback imediato
+  // Se estava instalado antes mas agora não está mais (desinstalou),
+  // limpa o flag para que o botão apareça normalmente
+  if (foiInstalado() && !estaInstalado()) {
+    desmarcarInstalado();
+  }
+
+  var ua = getUA();
+
+  // iOS: nunca dispara beforeinstallprompt → fallback direto
   if (ua.isIOS) {
     ativarBotaoFallback();
     return;
   }
 
-  // Inicia o timer após SW estar pronto (Chrome precisa do SW ativo)
-  // Fallback de segurança: se serviceWorker.ready demorar, inicia em 1s de qualquer forma
+  // Chrome/Edge: aguarda SW ficar pronto antes de iniciar o timer
   if ("serviceWorker" in navigator) {
     var timerIniciado = false;
     var iniciarUmaVez = function() {
@@ -602,7 +617,6 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
     navigator.serviceWorker.register("./sw.js").then(function(reg) {
       swReg = reg;
-
       reg.addEventListener("updatefound", function() {
         var newWorker = reg.installing;
         newWorker.addEventListener("statechange", function() {
@@ -612,7 +626,6 @@ if ("serviceWorker" in navigator) {
           }
         });
       });
-
     }).catch(function(err) {
       console.warn("[SW] Registro falhou:", err);
     });
@@ -973,8 +986,8 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 //  INICIAR
 // ══════════════════════════════════════════════
+carregarDados();
 setInterval(carregarDados, 15000);
-
 </script>
 </body>
 </html>
