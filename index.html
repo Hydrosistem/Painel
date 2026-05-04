@@ -47,7 +47,7 @@
   /* sidebar */
   --sidebar-w: 260px;
   /* detalhe */
-  --detail-w: 320px;
+  --detail-w: 360px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
@@ -422,7 +422,13 @@ header {
     flex-direction: column;
     gap: 14px;
   }
-  .detail-content.show { display: flex; }
+  .detail-content.show {
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
   .detail-prot    { font-family: "DM Mono",monospace; font-size: 11px; color: var(--texto2); letter-spacing: 1px; }
   .detail-end     { font-size: 17px; font-weight: 700; line-height: 1.3; }
   .detail-badge   { display: inline-block; }
@@ -633,7 +639,7 @@ header {
 @media (min-width: 600px) { .meta-item { font-size: 13px; } }
 
 .foto-wrap {
-  width: 100%; aspect-ratio: 4/3;
+  width: 100%; aspect-ratio: 16/9;
   border-radius: 10px; overflow: hidden;
   border: 1px solid var(--borda);
   background: var(--cinza-bg);
@@ -724,11 +730,11 @@ header {
 }
 .btn-minha-exec:active { opacity: .85; }
 .card.t-urgente, .card.t-atrasado {
-  animation: pulseCard 2.2s ease-in-out infinite;
+  animation: pulseCard 4s ease-in-out infinite;
 }
 @keyframes pulseCard {
-  0%, 100% { box-shadow: var(--shadow); }
-  50%       { box-shadow: 0 0 0 3px rgba(192,57,43,.2); }
+  0%, 70%, 100% { box-shadow: var(--shadow); }
+  85% { box-shadow: 0 0 0 4px rgba(192,57,43,.18); }
 }
 
 /* ══ LIGHTBOX ══ */
@@ -907,7 +913,7 @@ header {
 
     <!-- filtros por status -->
     <div class="sb-filters">
-      <button class="sb-filter-btn active" data-filtro="todos" onclick="setSbFiltro('todos',this)">
+      <button class="sb-filter-btn active" data-filtro="Em andamento" onclick="setSbFiltro('todos',this)">
         <span class="sb-filter-left">
           <span class="sb-filter-dot" style="background:#888"></span>
           Todos
@@ -946,10 +952,12 @@ header {
 
     <!-- lista de atrasados rápida -->
     <div class="sb-atrasados" id="sbLista">
-      <div style="padding:24px;text-align:center;color:var(--texto2);font-size:13px;">
-        Carregando…
-      </div>
-    </div>
+  <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+    <div style="height:14px;border-radius:6px;background:linear-gradient(90deg,#f0f4f8 25%,#e0e8f0 50%,#f0f4f8 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;"></div>
+    <div style="height:14px;border-radius:6px;width:70%;background:linear-gradient(90deg,#f0f4f8 25%,#e0e8f0 50%,#f0f4f8 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;"></div>
+    <div style="height:14px;border-radius:6px;width:85%;background:linear-gradient(90deg,#f0f4f8 25%,#e0e8f0 50%,#f0f4f8 75%);background-size:200% 100%;animation:shimmer 1.4s ease-in-out infinite;"></div>
+  </div>
+</div>
   </aside>
 
   <!-- ══ TABLET/DESKTOP: centro ══ -->
@@ -1388,7 +1396,10 @@ function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
   enderecoPendente  = endereco;
   document.getElementById("modalTitulo").textContent = "Iniciar execução?";
-  document.getElementById("modalSub").textContent = "Protocolo "+protocolo+" • "+endereco+".\nO serviço ficará marcado como Em Execução para os demais usuários.";
+  document.getElementById("modalSub").textContent =
+    "Protocolo " + protocolo + " • " + endereco +
+    ".\nOperador: " + (getOperador() || "não identificado") +
+    "\nO serviço ficará marcado como Em Execução.";
   document.getElementById("modalOverlay").classList.add("open");
 }
 function fecharModal() { document.getElementById("modalOverlay").classList.remove("open"); protocoloPendente = null; }
@@ -1722,6 +1733,19 @@ function renderTablet(lista) {
   }
   setStat("nPen",pen); setStat("nExec",exec); setStat("nUrg",urg); setStat("nOk",ok);
 
+  // Contadores nos filtros tab
+document.querySelectorAll(".filtro-tab").forEach(function(btn) {
+  var ft = btn.getAttribute("data-ft");
+  var count =
+    ft === "todos"    ? ativos.length
+    : ft === "atrasado" ? ativos.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; }).length
+    : ft === "urgente"  ? ativos.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; }).length
+    : ft === "execucao" ? ativos.filter(function(p){ return !!p.lock; }).length
+    : 0;
+  var labels = {todos:"Todos", atrasado:"Atrasados", urgente:"Urgentes", execucao:"Em execução"};
+  btn.textContent = labels[ft] + (count > 0 ? " ("+count+")" : "");
+});
+
   // sidebar lista (atrasados/urgentes/em execução)
   var sbEl = document.getElementById("sbLista");
   var sbAtrasados = ativos.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; });
@@ -1970,7 +1994,13 @@ function carregarDados() {
   }
   fetch(API+"&t="+Date.now())
     .then(function(r){ return r.json(); })
-    .then(function(lista) { salvarCache(lista); mostrarBannerOffline(null); render(lista); })
+    .then(function(lista) {
+  salvarCache(lista);
+  mostrarBannerOffline(null);
+  render(lista);
+  document.getElementById("btnReload").title = "Última atualização: " +
+    new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+})
     .catch(function(err) {
       console.error("[carregarDados]",err);
       var cache = lerCache();
