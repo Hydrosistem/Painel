@@ -334,8 +334,18 @@ header {
   display: none;
 }
 #introVideo {
+  /* Mobile: preenche a tela toda (vídeo é vertical, combina) */
   width: 100%; height: 100%;
   object-fit: cover;
+}
+/* Tablet / Desktop: vídeo vertical centralizado com fundo escuro nas laterais */
+@media (min-width: 600px) {
+  #introVideo {
+    width: auto;
+    height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
 }
 </style>
 </head>
