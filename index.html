@@ -422,13 +422,7 @@ header {
     flex-direction: column;
     gap: 14px;
   }
-  .detail-content.show {
-  animation: fadeIn .2s ease;
-  }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(6px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
+  .detail-content.show { display: flex; }
   .detail-prot    { font-family: "DM Mono",monospace; font-size: 11px; color: var(--texto2); letter-spacing: 1px; }
   .detail-end     { font-size: 17px; font-weight: 700; line-height: 1.3; }
   .detail-badge   { display: inline-block; }
