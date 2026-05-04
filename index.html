@@ -43,6 +43,11 @@
   --radius-sm:   10px;
   --shadow:      0 2px 8px rgba(0,0,0,.08);
   --shadow-md:   0 4px 20px rgba(0,0,0,.12);
+
+  /* sidebar */
+  --sidebar-w: 260px;
+  /* detalhe */
+  --detail-w: 320px;
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
@@ -165,7 +170,14 @@ header {
   font-size: 11px; font-weight: 700; flex-shrink: 0;
 }
 
-/* ══ BARRA DE BUSCA ══ */
+/* ══ LAYOUT PRINCIPAL (mobile-first) ══ */
+.layout-root {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+}
+
+/* ══ MOBILE: barra de busca ══ */
 .search-wrap {
   background: var(--branco);
   border-bottom: 1px solid var(--borda);
@@ -202,7 +214,7 @@ header {
 }
 .search-clear.show { display: block; }
 
-/* ══ STATS ══ */
+/* ══ MOBILE: stats ══ */
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -224,7 +236,7 @@ header {
 .stat.s-urg  .stat-n { color: var(--vermelho); }
 .stat.s-ok   .stat-n { color: var(--verde);    }
 
-/* ══ GRID ══ */
+/* ══ MOBILE: grid ══ */
 .main { padding: 14px; }
 .grid {
   display: grid;
@@ -233,8 +245,316 @@ header {
   max-width: 720px;
   margin: 0 auto;
 }
-@media (min-width: 600px)  { .main { padding: 20px; } .grid { gap: 16px; } }
-@media (min-width: 1024px) { .main { padding: 28px 24px; } }
+@media (min-width: 600px) and (max-width: 767px) { .main { padding: 20px; } .grid { gap: 16px; } }
+
+/* ═══════════════════════════════════════════
+   TABLET/DESKTOP LAYOUT (≥ 768px)
+═══════════════════════════════════════════ */
+@media (min-width: 768px) {
+  .search-wrap { display: none; }
+  .stats       { display: none; }
+  .main        { display: none; }
+
+  .layout-root {
+    flex-direction: row;
+    align-items: stretch;
+    height: calc(100vh - 64px);
+    overflow: hidden;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    flex-shrink: 0;
+    background: var(--branco);
+    border-right: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .sb-search {
+    padding: 12px;
+    border-bottom: 1px solid var(--borda);
+    position: relative;
+  }
+  .sb-search-icon {
+    position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+    color: var(--texto2); pointer-events: none;
+  }
+  .sb-search-input {
+    width: 100%; padding: 9px 32px 9px 34px;
+    border: 1.5px solid var(--borda); border-radius: var(--radius-sm);
+    font-family: "DM Sans",sans-serif; font-size: 13px;
+    background: var(--cinza-bg);
+    outline: none; transition: border-color .2s;
+  }
+  .sb-search-input:focus { border-color: var(--azul); background: var(--branco); }
+  .sb-search-clear {
+    position: absolute; right: 20px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    color: var(--texto2); font-size: 16px; line-height: 1; padding: 4px; display: none;
+  }
+  .sb-search-clear.show { display: block; }
+
+  .sb-filters {
+    padding: 10px 12px 8px;
+    border-bottom: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .sb-filter-btn {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; border-radius: var(--radius-sm);
+    border: none; background: none; cursor: pointer;
+    font-family: "DM Sans",sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--texto2); transition: background .15s;
+    text-align: left;
+  }
+  .sb-filter-btn:hover { background: var(--cinza-bg); }
+  .sb-filter-btn.active { background: var(--azul-bg); color: var(--azul); }
+  .sb-filter-btn.active.s-atrasado { background: var(--atrasado-bg); color: var(--atrasado); }
+  .sb-filter-btn.active.s-urgente  { background: var(--vermelho-bg); color: var(--vermelho); }
+  .sb-filter-btn.active.s-exec     { background: var(--exec-bg);     color: var(--exec);     }
+  .sb-filter-btn.active.s-ok       { background: var(--verde-bg);    color: var(--verde);    }
+  .sb-filter-dot {
+    width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  }
+  .sb-filter-left { display: flex; align-items: center; gap: 8px; }
+  .sb-filter-count {
+    font-size: 12px; font-weight: 700; font-family: "DM Mono",monospace;
+    min-width: 24px; text-align: right;
+  }
+
+  /* Atrasados rápidos */
+  .sb-atrasados {
+    flex: 1; overflow-y: auto; padding: 8px 0;
+  }
+  .sb-sec {
+    font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase;
+    color: var(--texto2); padding: 6px 14px 4px;
+  }
+  .sb-item {
+    display: flex; flex-direction: column; gap: 1px;
+    padding: 7px 14px; cursor: pointer; border-left: 3px solid transparent;
+    transition: background .12s;
+  }
+  .sb-item:hover { background: var(--cinza-bg); }
+  .sb-item.selected { background: var(--azul-bg); border-left-color: var(--azul); }
+  .sb-item.selected.t-atrasado { background: var(--atrasado-bg); border-left-color: var(--atrasado); }
+  .sb-item.selected.t-urgente  { background: var(--vermelho-bg); border-left-color: var(--vermelho); }
+  .sb-item.selected.t-exec     { background: var(--exec-bg);     border-left-color: var(--exec);     }
+  .sb-item-end   { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-item-sub   { font-size: 11px; color: var(--texto2); }
+  .sb-item-sub.t-atrasado { color: var(--atrasado); }
+  .sb-item-sub.t-urgente  { color: var(--vermelho); }
+
+  /* ── CENTRO: filtros + grid 2-colunas ── */
+  .centro {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    min-width: 0;
+  }
+  .centro-top {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 16px;
+    background: var(--branco);
+    border-bottom: 1px solid var(--borda);
+    flex-shrink: 0;
+  }
+  .filtro-tab {
+    padding: 6px 14px; border-radius: 20px;
+    font-size: 12px; font-weight: 700;
+    border: 1.5px solid var(--borda);
+    background: none; cursor: pointer;
+    font-family: "DM Sans",sans-serif;
+    color: var(--texto2); transition: all .15s;
+  }
+  .filtro-tab:hover { background: var(--cinza-bg); }
+  .filtro-tab.active { background: var(--azul); border-color: var(--azul); color: #fff; }
+  .filtro-tab.t-atrasado.active { background: var(--atrasado); border-color: var(--atrasado); }
+  .filtro-tab.t-urgente.active  { background: var(--vermelho); border-color: var(--vermelho); }
+  .filtro-tab.t-exec.active     { background: var(--exec);     border-color: var(--exec);     }
+
+  .centro-scroll {
+    flex: 1; overflow-y: auto; padding: 14px;
+  }
+  .grid-tablet {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (min-width: 1200px) {
+    .grid-tablet { grid-template-columns: repeat(3, 1fr); }
+  }
+  .sec-label-tablet {
+    grid-column: 1/-1;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2);
+    display: flex; align-items: center; gap: 8px; margin-top: 4px;
+  }
+  .sec-label-tablet::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+
+  /* ── PAINEL DE DETALHES ── */
+  .detail-panel {
+    width: var(--detail-w);
+    flex-shrink: 0;
+    background: var(--branco);
+    border-left: 1px solid var(--borda);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .detail-vazio {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: var(--texto2); gap: 10px; padding: 24px;
+    text-align: center;
+  }
+  .detail-vazio-icon { font-size: 36px; }
+  .detail-vazio-txt  { font-size: 14px; font-weight: 600; }
+  .detail-vazio-sub  { font-size: 12px; }
+  .detail-content {
+    flex: 1; overflow-y: auto; padding: 16px;
+    display: none;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .detail-content.show { display: flex; }
+  .detail-prot    { font-family: "DM Mono",monospace; font-size: 11px; color: var(--texto2); letter-spacing: 1px; }
+  .detail-end     { font-size: 17px; font-weight: 700; line-height: 1.3; }
+  .detail-badge   { display: inline-block; }
+  .detail-mini-cards {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+  }
+  .mini-card {
+    background: var(--cinza-bg); border-radius: var(--radius-sm);
+    padding: 10px 8px; text-align: center;
+  }
+  .mini-card-val  { font-family: "DM Mono",monospace; font-size: 18px; font-weight: 700; line-height: 1; }
+  .mini-card-lbl  { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--texto2); margin-top: 3px; }
+  .mini-card-val.t-atrasado { color: var(--atrasado); }
+  .mini-card-val.t-urgente  { color: var(--vermelho); }
+  .mini-card-val.t-pendente { color: var(--amarelo);  }
+  .mini-card-val.t-execucao { color: var(--exec);     }
+  .detail-rows { display: flex; flex-direction: column; gap: 6px; }
+  .detail-row { display: flex; flex-direction: column; gap: 2px; }
+  .detail-row-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto2); }
+  .detail-row-val { font-size: 13px; color: var(--texto); }
+  .detail-foto-wrap {
+    width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-sm);
+    overflow: hidden; border: 1px solid var(--borda); background: var(--cinza-bg);
+    position: relative;
+  }
+  .detail-foto {
+    width: 100%; height: 100%; object-fit: cover; cursor: pointer;
+    display: block; opacity: 0; transition: opacity .3s;
+    position: relative; z-index: 1;
+  }
+  .detail-foto.loaded { opacity: 1; }
+  .detail-foto-skeleton {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  .detail-prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
+  .detail-prazo-fill { height: 100%; border-radius: 10px; }
+  .t-urgente  .detail-prazo-fill { background: var(--vermelho); }
+  .t-pendente .detail-prazo-fill { background: var(--amarelo);  }
+  .t-atrasado .detail-prazo-fill { background: var(--atrasado); }
+  .t-execucao .detail-prazo-fill { background: var(--exec);     }
+  .detail-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--borda);
+    display: none;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .detail-footer.show { display: flex; }
+  .btn-detail-concluir {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    width: 100%; min-height: 48px; padding: 12px;
+    border-radius: var(--radius-sm);
+    background: var(--azul); color: #fff;
+    font-family: "DM Sans",sans-serif; font-size: 14px; font-weight: 700;
+    border: none; cursor: pointer;
+    transition: opacity .15s;
+  }
+  .btn-detail-concluir:active { opacity: .85; }
+  .btn-detail-concluir.t-atrasado { background: var(--atrasado); }
+  .btn-detail-concluir.t-urgente  { background: var(--vermelho); }
+  .btn-detail-concluir.t-execucao { background: var(--exec); }
+  .btn-detail-cancelar {
+    width: 100%; min-height: 40px; border-radius: var(--radius-sm);
+    background: none; border: 1px solid var(--borda);
+    font-family: "DM Sans",sans-serif; font-size: 13px; color: var(--texto2);
+    cursor: pointer; transition: background .15s;
+  }
+  .btn-detail-cancelar:hover { background: var(--cinza-bg); }
+
+  /* ── CARD TABLET (mais compacto) ── */
+  .card-t {
+    background: var(--branco);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--borda);
+    cursor: pointer;
+    transition: box-shadow .2s, transform .15s;
+    display: flex; flex-direction: column;
+  }
+  .card-t:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+  .card-t.selected {
+    border: 2px solid var(--azul);
+    box-shadow: 0 0 0 3px rgba(0,87,168,.15), var(--shadow-md);
+  }
+  .card-t.selected.t-atrasado { border-color: var(--atrasado); box-shadow: 0 0 0 3px rgba(123,0,0,.15), var(--shadow-md); }
+  .card-t.selected.t-urgente  { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(192,57,43,.15), var(--shadow-md); }
+  .card-t.selected.t-execucao { border-color: var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
+  .card-t.t-execucao { border: 2px solid var(--exec-borda); }
+  .card-t-inner { display: flex; flex: 1; }
+  .card-t-stripe { width: 5px; flex-shrink: 0; }
+  .card-t.t-urgente  .card-t-stripe { background: var(--vermelho); }
+  .card-t.t-pendente .card-t-stripe { background: var(--amarelo);  }
+  .card-t.t-atrasado .card-t-stripe { background: var(--atrasado); }
+  .card-t.t-execucao .card-t-stripe { background: var(--exec);     }
+  .card-t-body { flex: 1; padding: 11px 12px; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+  .card-t-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+  .card-t-prot { font-family: "DM Mono",monospace; font-size: 10px; color: var(--texto2); letter-spacing: 1px; }
+  .card-t-end  { font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--texto); }
+  .card-t-meta { font-size: 11px; color: var(--texto2); display: flex; flex-wrap: wrap; gap: 3px 8px; }
+  .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 3px; }
+  .card-t-prazo-bar  { height: 4px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
+  .card-t-prazo-fill { height: 100%; border-radius: 10px; }
+  .card-t.t-urgente  .card-t-prazo-fill { background: var(--vermelho); }
+  .card-t.t-pendente .card-t-prazo-fill { background: var(--amarelo);  }
+  .card-t.t-atrasado .card-t-prazo-fill { background: var(--atrasado); }
+  .card-t.t-execucao .card-t-prazo-fill { background: var(--exec);     }
+
+  .badge-sm {
+    font-size: 9px; font-weight: 700;
+    padding: 2px 7px; border-radius: 20px;
+    letter-spacing: .4px; white-space: nowrap; flex-shrink: 0;
+  }
+  .badge-sm.t-urgente   { background: var(--vermelho-bg); color: var(--vermelho); }
+  .badge-sm.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
+  .badge-sm.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
+  .badge-sm.t-execucao  { background: var(--exec-bg);     color: var(--exec); border: 1px solid var(--exec-borda); }
+
+  .exec-dot {
+    width: 7px; height: 7px; border-radius: 50%; background: var(--exec);
+    display: inline-block; margin-right: 3px;
+    animation: pulseDot 1.4s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   MOBILE: cards originais
+═══════════════════════════════════════════ */
 .sec-label {
   grid-column: 1/-1;
   font-size: 11px; font-weight: 700;
@@ -243,7 +563,6 @@ header {
 }
 .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-/* ══ CARDS ══ */
 .card {
   background: var(--branco);
   border-radius: var(--radius);
@@ -303,20 +622,16 @@ header {
   padding: 6px 10px; border: 1px solid rgba(168,85,247,.25);
 }
 .exec-info svg { flex-shrink: 0; }
-
-/* ═══ EXEC INFO COM OPERADOR ═══ */
 .exec-operador {
   font-size: 11px; font-weight: 700;
   margin-left: 4px; color: var(--exec);
 }
-
 .endereco { font-size: 15px; font-weight: 600; color: var(--texto); line-height: 1.35; }
 @media (min-width: 600px) { .endereco { font-size: 16px; } }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; }
 .meta-item { font-size: 12px; color: var(--texto2); display: flex; align-items: center; gap: 3px; }
 @media (min-width: 600px) { .meta-item { font-size: 13px; } }
 
-/* ══ FOTO COM SKELETON ══ */
 .foto-wrap {
   width: 100%; aspect-ratio: 4/3;
   border-radius: 10px; overflow: hidden;
@@ -342,7 +657,6 @@ header {
 }
 .card-foto.loaded { opacity: 1; }
 
-/* ══ PRAZO ══ */
 .prazo-wrap { padding-bottom: 2px; }
 .prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
 .prazo-hora { font-size: 10px; color: var(--texto2); font-weight: 500; }
@@ -353,10 +667,8 @@ header {
 .t-atrasado .prazo-fill { background: var(--atrasado); }
 .t-execucao .prazo-fill { background: var(--exec);     }
 
-/* ══ FOOTER DO CARD ══ */
 .card-footer { padding: 12px 14px 14px; }
 
-/* ══ BOTÃO CONCLUIR COM CONFIRMAÇÃO DUPLA ══ */
 .btn-concluir-wrap { position: relative; }
 .btn-concluir {
   display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -383,11 +695,7 @@ header {
   background: #9CA3AF !important;
   cursor: not-allowed; opacity: .75; pointer-events: none;
 }
-/* Confirmação dupla */
-.btn-confirm-step {
-  display: none;
-  gap: 8px;
-}
+.btn-confirm-step { display: none; gap: 8px; }
 .btn-confirm-step.show { display: flex; }
 .btn-sim, .btn-nao {
   flex: 1; min-height: 52px; border-radius: var(--radius-sm);
@@ -449,6 +757,7 @@ header {
   text-decoration: none; text-align: center;
 }
 .ts { grid-column: 1/-1; text-align: center; font-size: 11px; color: var(--texto2); padding: 10px; }
+.ts-tablet { text-align: center; font-size: 11px; color: var(--texto2); padding: 10px; }
 
 /* ══ TOAST ══ */
 #toast {
@@ -490,11 +799,23 @@ header {
 .btn-cancelar  { background: var(--cinza-bg); color: var(--texto); }
 .btn-confirmar { background: var(--exec); color: #fff; }
 
-/* ══ RESULTADO DE BUSCA ══ */
 .busca-nada { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--texto2); }
 .busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
 .busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
 .busca-nada-sub  { font-size: 13px; margin-top: 4px; }
+
+/* ══ SIDEBAR OCULTA NO MOBILE ══ */
+.sidebar, .centro, .detail-panel { display: none; }
+@media (min-width: 768px) {
+  .sidebar, .centro, .detail-panel { display: flex; }
+}
+
+/* Empty state no tablet */
+.empty-tablet {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 52px 20px; color: var(--texto2); text-align: center;
+  grid-column: 1/-1;
+}
 </style>
 </head>
 <body>
@@ -515,7 +836,8 @@ header {
   <div class="h-brand">
     <div class="h-logo">
       <img src="./icons/icon-192.png" alt="Hydrosistem"
-           style="width:100%;height:100%;object-fit:contain;border-radius:50%;">
+           style="width:100%;height:100%;object-fit:contain;border-radius:50%;"
+           onerror="this.style.display='none'">
     </div>
     <div>
       <div class="h-nome">HYDROSISTEM</div>
@@ -524,15 +846,8 @@ header {
   </div>
   <div class="header-btns">
     <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
-
-    <button class="btn-header hidden" id="btnInstall">
-      📲 Instalar
-    </button>
-
-    <button class="btn-header hidden" id="btnUpdate">
-      🔄 Atualizar
-    </button>
-
+    <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
+    <button class="btn-header hidden" id="btnUpdate">🔄 Atualizar</button>
     <button class="btn-header" id="btnReload" onclick="carregarDados()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <polyline points="23 4 23 10 17 10"/>
@@ -547,34 +862,127 @@ header {
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
-<!-- ══ BARRA DE BUSCA ═══════════════════════════════════════ -->
-<div class="search-wrap">
-  <div class="search-inner">
-    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-    </svg>
-    <input class="search-input" id="buscaInput" type="search" placeholder="Buscar por endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
-    <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
-  </div>
-</div>
+<!-- ══════════════════════════════════════════════════════════
+     LAYOUT ROOT — contém MOBILE e TABLET lado a lado
+═════════════════════════════════════════════════════════════ -->
+<div class="layout-root">
 
-<!-- ══ STATS ════════════════════════════════════════════════ -->
-<div class="stats">
-  <div class="stat s-pen"><div class="stat-n" id="nPen">—</div><div class="stat-t">Pendente</div></div>
-  <div class="stat s-exec"><div class="stat-n" id="nExec">—</div><div class="stat-t">Em execução</div></div>
-  <div class="stat s-urg"><div class="stat-n" id="nUrg">—</div><div class="stat-t">Atrasado</div></div>
-  <div class="stat s-ok"><div class="stat-n" id="nOk">—</div><div class="stat-t">Concluído</div></div>
-</div>
-
-<!-- ══ GRID ═════════════════════════════════════════════════ -->
-<div class="main">
-  <div class="grid" id="grid">
-    <div class="loading-wrap">
-      <div class="spinner"></div>
-      <div>Carregando protocolos…</div>
+  <!-- ══ MOBILE: busca + stats + grid ══ -->
+  <div class="search-wrap">
+    <div class="search-inner">
+      <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input class="search-input" id="buscaInput" type="search" placeholder="Buscar por endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
+      <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
     </div>
   </div>
-</div>
+
+  <div class="stats">
+    <div class="stat s-pen"><div class="stat-n" id="nPen">—</div><div class="stat-t">Pendente</div></div>
+    <div class="stat s-exec"><div class="stat-n" id="nExec">—</div><div class="stat-t">Em execução</div></div>
+    <div class="stat s-urg"><div class="stat-n" id="nUrg">—</div><div class="stat-t">Atrasado</div></div>
+    <div class="stat s-ok"><div class="stat-n" id="nOk">—</div><div class="stat-t">Concluído</div></div>
+  </div>
+
+  <div class="main">
+    <div class="grid" id="grid">
+      <div class="loading-wrap">
+        <div class="spinner"></div>
+        <div>Carregando protocolos…</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TABLET/DESKTOP: sidebar ══ -->
+  <aside class="sidebar">
+    <!-- busca -->
+    <div class="sb-search">
+      <svg class="sb-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <input class="sb-search-input" id="sbBuscaInput" type="search" placeholder="Buscar…" autocomplete="off" spellcheck="false">
+      <button class="sb-search-clear" id="sbBuscaClear" onclick="limparBuscaSb()">×</button>
+    </div>
+
+    <!-- filtros por status -->
+    <div class="sb-filters">
+      <button class="sb-filter-btn active" data-filtro="todos" onclick="setSbFiltro('todos',this)">
+        <span class="sb-filter-left">
+          <span class="sb-filter-dot" style="background:#888"></span>
+          Todos
+        </span>
+        <span class="sb-filter-count" id="sbN-todos">—</span>
+      </button>
+      <button class="sb-filter-btn s-atrasado" data-filtro="atrasado" onclick="setSbFiltro('atrasado',this)">
+        <span class="sb-filter-left">
+          <span class="sb-filter-dot" style="background:var(--atrasado)"></span>
+          Atrasados
+        </span>
+        <span class="sb-filter-count" id="sbN-atrasado">—</span>
+      </button>
+      <button class="sb-filter-btn s-urgente" data-filtro="urgente" onclick="setSbFiltro('urgente',this)">
+        <span class="sb-filter-left">
+          <span class="sb-filter-dot" style="background:var(--vermelho)"></span>
+          Urgentes
+        </span>
+        <span class="sb-filter-count" id="sbN-urgente">—</span>
+      </button>
+      <button class="sb-filter-btn s-exec" data-filtro="execucao" onclick="setSbFiltro('execucao',this)">
+        <span class="sb-filter-left">
+          <span class="sb-filter-dot" style="background:var(--exec)"></span>
+          Em execução
+        </span>
+        <span class="sb-filter-count" id="sbN-execucao">—</span>
+      </button>
+      <button class="sb-filter-btn s-ok" data-filtro="concluido" onclick="setSbFiltro('concluido',this)">
+        <span class="sb-filter-left">
+          <span class="sb-filter-dot" style="background:var(--verde)"></span>
+          Concluídos hoje
+        </span>
+        <span class="sb-filter-count" id="sbN-concluido">—</span>
+      </button>
+    </div>
+
+    <!-- lista de atrasados rápida -->
+    <div class="sb-atrasados" id="sbLista">
+      <div style="padding:24px;text-align:center;color:var(--texto2);font-size:13px;">
+        Carregando…
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ TABLET/DESKTOP: centro ══ -->
+  <div class="centro">
+    <!-- filtros rápidos por tipo -->
+    <div class="centro-top">
+      <button class="filtro-tab active" data-ft="todos"    onclick="setFiltroTab('todos',this)">Todos</button>
+      <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados</button>
+      <button class="filtro-tab t-urgente"  data-ft="urgente"  onclick="setFiltroTab('urgente',this)">Urgentes</button>
+      <button class="filtro-tab t-exec"     data-ft="execucao" onclick="setFiltroTab('execucao',this)">Em execução</button>
+    </div>
+    <div class="centro-scroll">
+      <div class="grid-tablet" id="gridTablet">
+        <div style="grid-column:1/-1;text-align:center;padding:52px 20px;color:var(--texto2);">
+          <div class="spinner"></div>
+          <div>Carregando protocolos…</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TABLET/DESKTOP: painel de detalhes ══ -->
+  <div class="detail-panel">
+    <div class="detail-vazio" id="detailVazio">
+      <div class="detail-vazio-icon">👆</div>
+      <div class="detail-vazio-txt">Selecione um protocolo</div>
+      <div class="detail-vazio-sub">Clique em qualquer card para ver os detalhes e ações disponíveis.</div>
+    </div>
+    <div class="detail-content" id="detailContent"></div>
+    <div class="detail-footer" id="detailFooter"></div>
+  </div>
+
+</div><!-- /layout-root -->
 
 <!-- ══ LIGHTBOX ═════════════════════════════════════════════ -->
 <div class="lb" id="lb" onclick="fecharFoto()">
@@ -613,7 +1021,7 @@ header {
 <!-- ══ SCRIPTS ═══════════════════════════════════════════════ -->
 <script>
 // ══════════════════════════════════════════════
-//  CONFIG  — altere apenas estas constantes
+//  CONFIG
 // ══════════════════════════════════════════════
 var API_BASE  = "https://script.google.com/macros/s/AKfycbwo7OLjz7_2WVhW9dgsOnUOeOkXYkbS4GFujFyp88BfojGd3QoJ2oF1FNrVknoExAr4/exec";
 var FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuk2or5P9XK8yCytnVdByHNINk0uGHLDpLbEdgiS2IYu1leQ/viewform";
@@ -624,18 +1032,11 @@ var CACHE_KEY = "hyd_cache_dados";
 var CACHE_TS  = "hyd_cache_ts";
 
 // ══════════════════════════════════════════════
-//  OPERADOR (identificação do usuário)
+//  OPERADOR
 // ══════════════════════════════════════════════
 var OPERADOR_KEY = "hyd_operador";
-
-function getOperador() {
-  try { return localStorage.getItem(OPERADOR_KEY) || ""; } catch(e) { return ""; }
-}
-function setOperador(nome) {
-  try { localStorage.setItem(OPERADOR_KEY, nome.trim()); } catch(e) {}
-  atualizarChipOperador();
-}
-
+function getOperador() { try { return localStorage.getItem(OPERADOR_KEY) || ""; } catch(e) { return ""; } }
+function setOperador(nome) { try { localStorage.setItem(OPERADOR_KEY, nome.trim()); } catch(e) {} atualizarChipOperador(); }
 function atualizarChipOperador() {
   var nome = getOperador();
   var btn  = document.getElementById("btnOperador");
@@ -645,11 +1046,8 @@ function atualizarChipOperador() {
     btn.innerHTML = "<span class='chip-avatar'>" + iniciais + "</span>" + nome.split(" ")[0];
     btn.className = "chip-operador";
     btn.style.display = "";
-  } else {
-    btn.style.display = "none";
-  }
+  } else { btn.style.display = "none"; }
 }
-
 function abrirModalOperador() {
   document.getElementById("modalOperador").classList.add("open");
   var inp = document.getElementById("inputOperador");
@@ -657,9 +1055,7 @@ function abrirModalOperador() {
   validarInputOperador();
   setTimeout(function(){ inp.focus(); }, 100);
 }
-function fecharModalOperador() {
-  document.getElementById("modalOperador").classList.remove("open");
-}
+function fecharModalOperador() { document.getElementById("modalOperador").classList.remove("open"); }
 function validarInputOperador() {
   var v = document.getElementById("inputOperador").value.trim();
   document.getElementById("btnConfirmarOperador").disabled = v.length < 2;
@@ -671,65 +1067,40 @@ function confirmarOperador() {
   fecharModalOperador();
   toast("✅ Olá, " + v.split(" ")[0] + "! Operador registrado.", "");
 }
-
-// Eventos do modal operador
 document.getElementById("inputOperador").addEventListener("input", validarInputOperador);
-document.getElementById("inputOperador").addEventListener("keydown", function(e){
-  if (e.key === "Enter") confirmarOperador();
-});
+document.getElementById("inputOperador").addEventListener("keydown", function(e){ if (e.key === "Enter") confirmarOperador(); });
 document.getElementById("btnConfirmarOperador").onclick = confirmarOperador;
 document.getElementById("btnOperador").onclick = abrirModalOperador;
-
-// Na carga: exige operador se não tiver
 window.addEventListener("DOMContentLoaded", function() {
-  if (!getOperador()) {
-    abrirModalOperador();
-  } else {
-    atualizarChipOperador();
-  }
+  if (!getOperador()) abrirModalOperador();
+  else atualizarChipOperador();
 });
 
 // ══════════════════════════════════════════════
-//  OFFLINE — detecção e cache
+//  OFFLINE / CACHE
 // ══════════════════════════════════════════════
 function estaOnline() { return navigator.onLine; }
-
 function salvarCache(lista) {
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(lista));
-    localStorage.setItem(CACHE_TS,  Date.now().toString());
-  } catch(e) {}
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(lista)); localStorage.setItem(CACHE_TS, Date.now().toString()); } catch(e) {}
 }
-function lerCache() {
-  try {
-    var raw = localStorage.getItem(CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
-  } catch(e) { return null; }
-}
-function lerCacheTs() {
-  try { return parseInt(localStorage.getItem(CACHE_TS) || "0", 10); } catch(e) { return 0; }
-}
+function lerCache() { try { var r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+function lerCacheTs() { try { return parseInt(localStorage.getItem(CACHE_TS)||"0",10); } catch(e) { return 0; } }
 function mostrarBannerOffline(modo) {
-  // modo: "offline" | "cache" | null
-  document.getElementById("bannerOffline").classList.toggle("show", modo === "offline");
-  document.getElementById("bannerCache").classList.toggle("show", modo === "cache");
-  if (modo === "cache") {
+  document.getElementById("bannerOffline").classList.toggle("show", modo==="offline");
+  document.getElementById("bannerCache").classList.toggle("show", modo==="cache");
+  if (modo==="cache") {
     var ts = lerCacheTs();
-    document.getElementById("cacheHora").textContent = ts
-      ? new Date(ts).toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"})
-      : "—";
+    document.getElementById("cacheHora").textContent = ts ? new Date(ts).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
   }
 }
-
 window.addEventListener("online",  function(){ mostrarBannerOffline(null); carregarDados(); });
 window.addEventListener("offline", function(){ mostrarBannerOffline("offline"); });
 
 // ══════════════════════════════════════════════
-//  BUSCA
+//  BUSCA MOBILE
 // ══════════════════════════════════════════════
 var termoBusca = "";
 var _ultimaLista = [];
-
 document.getElementById("buscaInput").addEventListener("input", function() {
   termoBusca = this.value.trim().toLowerCase();
   document.getElementById("buscaClear").classList.toggle("show", termoBusca.length > 0);
@@ -741,13 +1112,40 @@ function limparBusca() {
   document.getElementById("buscaClear").classList.remove("show");
   renderFiltrado(_ultimaLista);
 }
-function filtrarLista(lista) {
-  if (!termoBusca) return lista;
-  return lista.filter(function(p) {
-    return (p.endereco  || "").toLowerCase().indexOf(termoBusca) >= 0
-        || (p.protocolo || "").toLowerCase().indexOf(termoBusca) >= 0
-        || (p.obs       || "").toLowerCase().indexOf(termoBusca) >= 0;
-  });
+
+// ══════════════════════════════════════════════
+//  BUSCA SIDEBAR
+// ══════════════════════════════════════════════
+var termoBuscaSb = "";
+document.getElementById("sbBuscaInput").addEventListener("input", function() {
+  termoBuscaSb = this.value.trim().toLowerCase();
+  document.getElementById("sbBuscaClear").classList.toggle("show", termoBuscaSb.length > 0);
+  renderTablet(_ultimaLista);
+});
+function limparBuscaSb() {
+  document.getElementById("sbBuscaInput").value = "";
+  termoBuscaSb = "";
+  document.getElementById("sbBuscaClear").classList.remove("show");
+  renderTablet(_ultimaLista);
+}
+
+// ══════════════════════════════════════════════
+//  FILTROS TABLET
+// ══════════════════════════════════════════════
+var sbFiltro  = "todos";
+var ftFiltro  = "todos";
+
+function setSbFiltro(filtro, btn) {
+  sbFiltro = filtro;
+  document.querySelectorAll(".sb-filter-btn").forEach(function(b){ b.classList.remove("active"); });
+  btn.classList.add("active");
+  renderTablet(_ultimaLista);
+}
+function setFiltroTab(filtro, btn) {
+  ftFiltro = filtro;
+  document.querySelectorAll(".filtro-tab").forEach(function(b){ b.classList.remove("active"); });
+  btn.classList.add("active");
+  renderTablet(_ultimaLista);
 }
 
 // ══════════════════════════════════════════════
@@ -756,15 +1154,10 @@ function filtrarLista(lista) {
 var deferredPrompt   = null;
 var swReg            = null;
 var _promptWaitTimer = null;
-
-function estaInstalado() {
-  return window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
-}
-function marcarInstalado()   { try { localStorage.setItem("pwa_instalado","1"); }   catch(e) {} }
-function desmarcarInstalado(){ try { localStorage.removeItem("pwa_instalado"); }     catch(e) {} }
+function estaInstalado() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
+function marcarInstalado()   { try { localStorage.setItem("pwa_instalado","1"); } catch(e) {} }
+function desmarcarInstalado(){ try { localStorage.removeItem("pwa_instalado"); }  catch(e) {} }
 function foiInstalado()      { try { return localStorage.getItem("pwa_instalado")==="1"; } catch(e){ return false; } }
-
 function ocultarBtnInstall() {
   var btn = document.getElementById("btnInstall");
   if (btn) { btn.classList.remove("visible"); btn.classList.add("hidden"); btn.onclick = null; }
@@ -798,37 +1191,24 @@ function ativarBotaoFallback() {
   if (ua.isIOS) {
     mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no iPhone / iPad",
-        "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
-        "1. Toque no ícone <strong>📤 Compartilhar</strong> na barra inferior do Safari<br>" +
-        "2. Role e toque em <strong>'Adicionar à Tela de Início'</strong><br>" +
-        "3. Confirme tocando em <strong>Adicionar</strong></div>");
+        "<div style='text-align:left;line-height:1.8;font-size:13px'>1. Toque no ícone <strong>📤 Compartilhar</strong> na barra inferior do Safari<br>2. Role e toque em <strong>'Adicionar à Tela de Início'</strong><br>3. Confirme tocando em <strong>Adicionar</strong></div>");
     });
     return;
   }
   if (ua.isAndroid) {
     mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no Android",
-        "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
-        "1. Toque no menu <strong>⋮</strong> no canto superior direito<br>" +
-        "2. Procure: <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong><br>" +
-        "3. Confirme tocando em <strong>Adicionar</strong></div>");
+        "<div style='text-align:left;line-height:1.8;font-size:13px'>1. Toque no menu <strong>⋮</strong> no canto superior direito<br>2. Procure: <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong><br>3. Confirme tocando em <strong>Adicionar</strong></div>");
     });
     return;
   }
   mostrarBtnInstall(function() {
     abrirModalInstall("Instalar no computador",
-      "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
-      "Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>");
+      "<div style='text-align:left;line-height:1.8;font-size:13px'>Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>");
   });
 }
-
-window.addEventListener("beforeinstallprompt", function(e) {
-  e.preventDefault(); deferredPrompt = e;
-  if (!estaInstalado()) ativarBotaoNativo();
-});
-window.addEventListener("appinstalled", function() {
-  deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!","");
-});
+window.addEventListener("beforeinstallprompt", function(e) { e.preventDefault(); deferredPrompt = e; if (!estaInstalado()) ativarBotaoNativo(); });
+window.addEventListener("appinstalled", function() { deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!",""); });
 window.matchMedia('(display-mode: standalone)').addEventListener('change', function(e) {
   if (e.matches) { marcarInstalado(); ocultarBtnInstall(); }
   else { desmarcarInstalado(); deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); }
@@ -894,19 +1274,14 @@ var SESSION_ID = (function() {
 var meusLocks         = {};
 var protocoloPendente = null;
 var enderecoPendente  = null;
+var _protocoloSelecionado = null;
 
 // ══════════════════════════════════════════════
 //  UTILITÁRIOS
 // ══════════════════════════════════════════════
-function fotoSrc(id) {
-  return id ? "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1600" : null;
-}
+function fotoSrc(id) { return id ? "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1600" : null; }
 function onFotoErro(img, u, id) {
-  if (!img.dataset.r1 && id) {
-    img.dataset.r1 = "1";
-    img.src = "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1200";
-    return;
-  }
+  if (!img.dataset.r1 && id) { img.dataset.r1 = "1"; img.src = "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1200"; return; }
   var w = img.closest(".foto-wrap");
   if (w) w.outerHTML = "<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
 }
@@ -915,18 +1290,27 @@ function onFotoLoad(img) {
   var sk = img.previousElementSibling;
   if (sk && sk.classList.contains("foto-skeleton")) sk.style.display = "none";
 }
+function onDetailFotoLoad(img) {
+  img.classList.add("loaded");
+  var sk = img.previousElementSibling;
+  if (sk) sk.style.display = "none";
+}
 function tempo(iso) {
   var h = (new Date() - new Date(iso)) / 36e5;
   var r = PRAZO - h;
   var pct = Math.min(h / PRAZO * 100, 100);
   var vence = new Date(new Date(iso).getTime() + PRAZO * 36e5);
-  var horaVence = vence.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"});
-  if (r <= 0) return { txt:"VENCIDO",             r:0,  pct:100, tipo:"atrasado", horaVence:horaVence };
-  if (r <= 4) return { txt:ar(r)+" restantes",    r:r,  pct:pct, tipo:"urgente",  horaVence:horaVence };
-  return           { txt:ar(r)+" restantes",      r:r,  pct:pct, tipo:"pendente", horaVence:horaVence };
+  var horaVence = vence.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  if (r <= 0) return { txt:"VENCIDO",          r:0,  pct:100, tipo:"atrasado", horaVence:horaVence, delta:Math.abs(r) };
+  if (r <= 4) return { txt:ar(r)+" restantes", r:r,  pct:pct, tipo:"urgente",  horaVence:horaVence, delta:r };
+  return           { txt:ar(r)+" restantes",   r:r,  pct:pct, tipo:"pendente", horaVence:horaVence, delta:r };
 }
 function ar(n) { return n < 1 ? Math.round(n*60)+"min" : Math.round(n)+"h"; }
 function fdt(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+}
+function fdtCurto(iso) {
   if (!iso) return "—";
   return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 }
@@ -945,38 +1329,22 @@ function bump(id) {
   el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
   setTimeout(function(){ el.classList.remove("bump"); }, 400);
 }
-function esc(s) {
-  return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-}
-function safeText(s) {
-  var d = document.createElement("div");
-  d.textContent = String(s || "");
-  return d.innerHTML;
-}
+function esc(s) { return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
+function safeText(s) { var d = document.createElement("div"); d.textContent = String(s||""); return d.innerHTML; }
 
 // ══════════════════════════════════════════════
 //  LOCK API
 // ══════════════════════════════════════════════
 function postLock(payload) {
-  var params = Object.keys(payload).map(function(k){
-    return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]);
-  }).join("&");
-  return fetch(API_BASE+"?"+params)
-    .then(function(r){ return r.json(); })
-    .catch(function(err){ console.error("[postLock]",err); return {ok:false}; });
+  var params = Object.keys(payload).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]); }).join("&");
+  return fetch(API_BASE+"?"+params).then(function(r){ return r.json(); }).catch(function(err){ console.error("[postLock]",err); return {ok:false}; });
 }
-function liberarLockApi(protocolo) {
-  return postLock({acao:"liberar",protocolo:protocolo,sessionId:SESSION_ID});
-}
+function liberarLockApi(protocolo) { return postLock({acao:"liberar",protocolo:protocolo,sessionId:SESSION_ID}); }
 function iniciarHeartbeat(protocolo) {
   if (meusLocks[protocolo]) return;
-  meusLocks[protocolo] = setInterval(function(){
-    postLock({acao:"heartbeat",protocolo:protocolo,sessionId:SESSION_ID});
-  }, 60000);
+  meusLocks[protocolo] = setInterval(function(){ postLock({acao:"heartbeat",protocolo:protocolo,sessionId:SESSION_ID}); }, 60000);
 }
-function pararHeartbeat(protocolo) {
-  if (meusLocks[protocolo]){ clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; }
-}
+function pararHeartbeat(protocolo) { if (meusLocks[protocolo]){ clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; } }
 
 // ══════════════════════════════════════════════
 //  MODAL EXECUÇÃO
@@ -985,49 +1353,32 @@ function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
   enderecoPendente  = endereco;
   document.getElementById("modalTitulo").textContent = "Iniciar execução?";
-  document.getElementById("modalSub").textContent =
-    "Protocolo "+protocolo+" • "+endereco+".\n"+
-    "O serviço ficará marcado como Em Execução para os demais usuários enquanto "+
-    "você estiver com o formulário aberto.";
+  document.getElementById("modalSub").textContent = "Protocolo "+protocolo+" • "+endereco+".\nO serviço ficará marcado como Em Execução para os demais usuários.";
   document.getElementById("modalOverlay").classList.add("open");
 }
-function fecharModal() {
-  document.getElementById("modalOverlay").classList.remove("open");
-  protocoloPendente = null;
-}
+function fecharModal() { document.getElementById("modalOverlay").classList.remove("open"); protocoloPendente = null; }
 function confirmarExecucao() {
   var protocolo     = protocoloPendente;
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
   fecharModal();
   toast("⏳ Registrando execução...","exec");
-
   var operador = getOperador() || "Operador";
-
   postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador})
     .then(function(res) {
-      if (!res.ok) {
-        toast("⚠️ Este serviço já está sendo executado por outro usuário!","erro");
-        carregarDados(); return;
-      }
+      if (!res.ok) { toast("⚠️ Este serviço já está sendo executado por outro usuário!","erro"); carregarDados(); return; }
       iniciarHeartbeat(protocolo);
       toast("▶ Execução iniciada — abrindo formulário...","exec");
       carregarDados();
-
       var url = FORMS_URL+"?usp=pp_url&entry.1020787335="+encodeURIComponent(enderecoAtual);
       var win = window.open(url,"_blank");
       if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.","erro"); return; }
-
       var watcher = setInterval(function(){
         try {
           if (win.closed) {
             clearInterval(watcher);
             setTimeout(function(){
-              liberarLockApi(protocolo).then(function(){
-                pararHeartbeat(protocolo);
-                toast("🔓 Formulário fechado — serviço liberado.","");
-                carregarDados();
-              });
+              liberarLockApi(protocolo).then(function(){ pararHeartbeat(protocolo); toast("🔓 Formulário fechado — serviço liberado.",""); carregarDados(); });
             }, 2000);
           }
         } catch(e){ clearInterval(watcher); }
@@ -1037,25 +1388,19 @@ function confirmarExecucao() {
 }
 
 // ══════════════════════════════════════════════
-//  CONFIRMAÇÃO DUPLA NO CARD (evita toque acidental)
+//  CONFIRMAÇÃO DUPLA NO CARD MOBILE
 // ══════════════════════════════════════════════
 var _confirmTimers = {};
-
 function clicarConcluir(protocolo, endereco) {
   var wrap = document.getElementById("confirm-wrap-"+protocolo);
   if (!wrap) { abrirModal(protocolo, endereco); return; }
   var btn1 = document.getElementById("btn-concluir-"+protocolo);
   var step = document.getElementById("confirm-step-"+protocolo);
   if (!btn1 || !step) { abrirModal(protocolo, endereco); return; }
-
   btn1.style.display = "none";
   step.classList.add("show");
-
-  // Auto-cancelar após 4 segundos
   clearTimeout(_confirmTimers[protocolo]);
-  _confirmTimers[protocolo] = setTimeout(function(){
-    cancelarConfirmacao(protocolo);
-  }, 4000);
+  _confirmTimers[protocolo] = setTimeout(function(){ cancelarConfirmacao(protocolo); }, 4000);
 }
 function cancelarConfirmacao(protocolo) {
   clearTimeout(_confirmTimers[protocolo]);
@@ -1069,22 +1414,127 @@ function confirmarDireto(protocolo, endereco) {
   cancelarConfirmacao(protocolo);
   abrirModal(protocolo, endereco);
 }
-
 function cancelarMinhaExecucao(protocolo) {
-  liberarLockApi(protocolo).then(function(){
-    pararHeartbeat(protocolo);
-    toast("🔓 Execução cancelada — serviço liberado.","");
-    carregarDados();
-  });
+  liberarLockApi(protocolo).then(function(){ pararHeartbeat(protocolo); toast("🔓 Execução cancelada — serviço liberado.",""); carregarDados(); });
 }
 
 // ══════════════════════════════════════════════
-//  RENDER CARDS
+//  PAINEL DE DETALHES (TABLET)
+// ══════════════════════════════════════════════
+function selecionarProtocolo(p) {
+  _protocoloSelecionado = p.protocolo;
+
+  // destaca card selecionado
+  document.querySelectorAll(".card-t").forEach(function(c){ c.classList.remove("selected"); });
+  var cardEl = document.getElementById("card-t-"+p.protocolo.replace(/[^a-z0-9]/gi,"_"));
+  if (cardEl) cardEl.classList.add("selected");
+
+  var vazio   = document.getElementById("detailVazio");
+  var content = document.getElementById("detailContent");
+  var footer  = document.getElementById("detailFooter");
+
+  vazio.style.display = "none";
+  content.classList.add("show");
+
+  var t    = p._t;
+  var lock = p.lock;
+  var minhaExecucao  = lock && lock.sessionId === SESSION_ID;
+  var outraExecucao  = lock && lock.sessionId !== SESSION_ID;
+  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
+  // mini-cards: tempo vencido/restante, abertura, prazo
+  var deltaVal, deltaLbl;
+  if (t.r <= 0) {
+    deltaVal = "−"+ar(t.delta); deltaLbl = "VENCIDO";
+  } else {
+    deltaVal = ar(t.delta); deltaLbl = "RESTANTE";
+  }
+  var abertura = p.dataHora ? new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
+  var prazoHora = t.horaVence || "—";
+
+  // execução info
+  var execInfoHtml = "";
+  if (outraExecucao) {
+    var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    var quem = lock.usuario ? " por <strong>"+safeText(lock.usuario)+"</strong>" : "";
+    execInfoHtml = "<div style='background:var(--exec-bg);border:1px solid rgba(168,85,247,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--exec);'>⏱ Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
+  } else if (minhaExecucao) {
+    execInfoHtml = "<div style='background:#dcfce7;border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;'>✔ Você está executando este serviço</div>";
+  }
+
+  // foto
+  var fotoHtml = "";
+  var src = fotoSrc(p.fotoId);
+  if (src) {
+    fotoHtml = "<div class='detail-foto-wrap'>" +
+      "<div class='detail-foto-skeleton'></div>" +
+      "<img class='detail-foto' src='"+src+"' loading='lazy'" +
+      " onload='onDetailFotoLoad(this)'" +
+      " onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")'" +
+      " onerror='this.style.display=\"none\"'" +
+      " alt='Foto do local'></div>";
+  }
+
+  var obsHtml = (p.obs && p.obs !== "—")
+    ? "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(p.obs)+"</div></div>"
+    : "";
+
+  var badgeHtml = {
+    urgente:  "<span class='badge t-urgente'>⚠️ Urgente</span>",
+    pendente: "<span class='badge t-pendente'>🟡 Pendente</span>",
+    atrasado: "<span class='badge t-atrasado'>🔴 Atrasado</span>",
+    execucao: "<span class='badge-exec'><span class='dot'></span>Em execução</span>"
+  }[tipoCard] || "";
+
+  content.innerHTML =
+    "<div>" +
+      "<div class='detail-prot'>"+safeText(p.protocolo)+"</div>" +
+      "<div class='detail-end'>📍 "+safeText(p.endereco)+"</div>" +
+      "<div style='margin-top:6px'>"+badgeHtml+"</div>" +
+    "</div>" +
+
+    "<div class='detail-mini-cards "+tipoCard+"'>" +
+      "<div class='mini-card'><div class='mini-card-val t-"+tipoCard+"'>"+deltaVal+"</div><div class='mini-card-lbl'>"+deltaLbl+"</div></div>" +
+      "<div class='mini-card'><div class='mini-card-val'>"+abertura+"</div><div class='mini-card-lbl'>Abertura</div></div>" +
+      "<div class='mini-card'><div class='mini-card-val"+(t.r<=0?" t-atrasado":"")+"'>"+prazoHora+"</div><div class='mini-card-lbl'>Prazo</div></div>" +
+    "</div>" +
+
+    "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:"+t.pct.toFixed(0)+"%'></div></div>" +
+
+    execInfoHtml +
+
+    "<div class='detail-rows'>" +
+      "<div class='detail-row'><div class='detail-row-lbl'>Registrado por</div><div class='detail-row-val'>"+safeText(p.registradoPor||"—")+"</div></div>" +
+      "<div class='detail-row'><div class='detail-row-lbl'>Data/hora abertura</div><div class='detail-row-val'>"+fdt(p.dataHora)+"</div></div>" +
+      obsHtml +
+    "</div>" +
+
+    fotoHtml;
+
+  // footer
+  footer.classList.add("show");
+  if (outraExecucao) {
+    footer.innerHTML = "<div class='btn-detail-concluir t-execucao' style='opacity:.6;cursor:not-allowed'>🔒 Em execução por outro usuário</div>";
+  } else if (minhaExecucao) {
+    footer.innerHTML =
+      "<a class='btn-detail-concluir t-execucao' href='"+FORMS_URL+"' target='_blank'>📋 Abrir formulário novamente</a>" +
+      "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
+  } else {
+    footer.innerHTML =
+      "<button class='btn-detail-concluir t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>✅ Concluir este serviço</button>";
+  }
+}
+
+function cancelarMinhaExecucaoPainel(protocolo) {
+  liberarLockApi(protocolo).then(function(){ pararHeartbeat(protocolo); toast("🔓 Execução cancelada.",""); carregarDados(); });
+}
+
+// ══════════════════════════════════════════════
+//  RENDER MOBILE (cards originais)
 // ══════════════════════════════════════════════
 function badgeTxt(t) {
   return {urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado",execucao:"🟣 Em execução"}[t]||t;
 }
-
 function renderCard(p) {
   var t   = p._t;
   var pct = t.pct.toFixed(0);
@@ -1092,7 +1542,6 @@ function renderCard(p) {
   var minhaExecucao = lock && lock.sessionId === SESSION_ID;
   var outraExecucao = lock && lock.sessionId !== SESSION_ID;
   var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
-
   var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
@@ -1103,68 +1552,43 @@ function renderCard(p) {
            " onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")'" +
            " alt='Foto do local'></div>";
   }
-
-  var execBadge = (outraExecucao || minhaExecucao)
-    ? "<span class='badge-exec'><span class='dot'></span>Em execução</span>" : "";
-
+  var execBadge = (outraExecucao || minhaExecucao) ? "<span class='badge-exec'><span class='dot'></span>Em execução</span>" : "";
   var execInfoHtml = "";
   if (outraExecucao) {
     var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
     var quem = lock.usuario ? " por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>" : "";
-    execInfoHtml = "<div class='exec-info'>" +
-      "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
-      "<circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>" +
-      "Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
+    execInfoHtml = "<div class='exec-info'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
   } else if (minhaExecucao) {
-    execInfoHtml = "<div class='exec-info' style='background:#dcfce7;color:#166534;border-color:rgba(74,222,128,.3)'>" +
-      "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
-      "<polyline points='20 6 9 17 4 12'/></svg>Você está executando este serviço</div>";
+    execInfoHtml = "<div class='exec-info' style='background:#dcfce7;color:#166534;border-color:rgba(74,222,128,.3)'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>Você está executando este serviço</div>";
   }
-
   var protEsc = esc(p.protocolo);
   var endEsc  = esc(p.endereco);
-
   var btnHtml;
   if (outraExecucao) {
     btnHtml = "<div class='btn-concluir bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
     btnHtml = "<a class='btn-minha-exec' href='"+FORMS_URL+"' target='_blank'>📋 Abrir formulário novamente</a>" +
-      "<div style='margin-top:8px'><button onclick='cancelarMinhaExecucao(\""+protEsc+"\")' " +
-      "style='background:none;border:1px solid #d1d5db;border-radius:8px;width:100%;padding:10px;" +
-      "font-family:\"DM Sans\",sans-serif;font-size:13px;color:var(--texto2);cursor:pointer;'>" +
-      "✕ Cancelar execução</button></div>";
+      "<div style='margin-top:8px'><button onclick='cancelarMinhaExecucao(\""+protEsc+"\")' style='background:none;border:1px solid #d1d5db;border-radius:8px;width:100%;padding:10px;font-family:\"DM Sans\",sans-serif;font-size:13px;color:var(--texto2);cursor:pointer;'>✕ Cancelar execução</button></div>";
   } else {
-    // Botão com confirmação dupla (evita toque acidental)
     btnHtml = "<div class='btn-concluir-wrap' id='confirm-wrap-"+protEsc+"'>" +
-      "<button class='btn-concluir' id='btn-concluir-"+protEsc+"' " +
-      "onclick='clicarConcluir(\""+protEsc+"\",\""+endEsc+"\")'>✅ Concluir este serviço</button>" +
+      "<button class='btn-concluir' id='btn-concluir-"+protEsc+"' onclick='clicarConcluir(\""+protEsc+"\",\""+endEsc+"\")'>✅ Concluir este serviço</button>" +
       "<div class='btn-confirm-step' id='confirm-step-"+protEsc+"'>" +
         "<button class='btn-nao' onclick='cancelarConfirmacao(\""+protEsc+"\")'>✕ Cancelar</button>" +
         "<button class='btn-sim' onclick='confirmarDireto(\""+protEsc+"\",\""+endEsc+"\")'>▶ Confirmar</button>" +
       "</div>" +
       "</div>";
   }
-
-  // Linha de prazo com hora de vencimento
-  var prazoExtra = t.horaVence
-    ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>"
-    : "";
-
+  var prazoExtra = t.horaVence ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>" : "";
   return "<div class='card t-"+tipoCard+"'>" +
     "<div class='card-inner'><div class='card-stripe'></div>" +
     "<div class='card-body'>" +
       "<div class='card-top'>" +
-        "<div class='card-top-left'>" +
-          "<span class='prot-num'>"+safeText(p.protocolo)+"</span>" +
-          (tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt(tipoCard)+"</span>":"") +
-        "</div>" +
+        "<div class='card-top-left'><span class='prot-num'>"+safeText(p.protocolo)+"</span>" +
+        (tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt(tipoCard)+"</span>":"")+"</div>" +
         "<div class='card-top-right'>"+execBadge+"</div>" +
       "</div>" +
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>" +
-      "<div class='meta'>" +
-        "<span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span>" +
-        "<span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+
-      "</div>" +
+      "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+"</div>" +
       execInfoHtml + foto +
       "<div class='prazo-wrap'>" +
         "<div class='prazo-row'><span>"+t.txt+prazoExtra+"</span><span style='color:var(--texto2)'>"+pct+"% do prazo</span></div>" +
@@ -1175,32 +1599,251 @@ function renderCard(p) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER GRID (incremental — só altera se mudou)
+//  RENDER TABLET
+// ══════════════════════════════════════════════
+function renderCardTablet(p) {
+  var t    = p._t;
+  var pct  = t.pct.toFixed(0);
+  var lock = p.lock;
+  var minhaExecucao = lock && lock.sessionId === SESSION_ID;
+  var outraExecucao = lock && lock.sessionId !== SESSION_ID;
+  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+  var idSafe = p.protocolo.replace(/[^a-z0-9]/gi,"_");
+  var selecionado = _protocoloSelecionado === p.protocolo ? " selected" : "";
+
+  var badgeHtml;
+  if (outraExecucao || minhaExecucao) {
+    badgeHtml = "<span class='badge-sm t-execucao'><span class='exec-dot'></span>Execução</span>";
+  } else {
+    var labels = {urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};
+    badgeHtml = "<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";
+  }
+
+  var execSub = "";
+  if (outraExecucao) {
+    var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    var quem = lock.usuario ? " · "+safeText(lock.usuario) : "";
+    execSub = "<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";
+  } else if (minhaExecucao) {
+    execSub = "<span style='color:#166534'>Você executando</span>";
+  }
+
+  return "<div class='card-t t-"+tipoCard+selecionado+"' id='card-t-"+idSafe+"' onclick='selecionarProtocolo(_listaAtiva.find(function(x){return x.protocolo===\""+esc(p.protocolo)+"\"}))'>" +
+    "<div class='card-t-inner'><div class='card-t-stripe'></div>" +
+    "<div class='card-t-body'>" +
+      "<div class='card-t-top'>" +
+        "<div>" +
+          "<div class='card-t-prot'>"+safeText(p.protocolo)+"</div>" +
+          "<div class='card-t-end'>"+safeText(p.endereco)+"</div>" +
+        "</div>" +
+        badgeHtml +
+      "</div>" +
+      "<div class='card-t-meta'>" +
+        "<span>🕐 "+fdtCurto(p.dataHora)+"</span>" +
+        "<span>👷 "+safeText(p.registradoPor||"—")+"</span>" +
+        (execSub ? execSub : "") +
+      "</div>" +
+      "<div class='card-t-prazo-row'><span>"+t.txt+"</span><span style='color:var(--texto2)'>"+pct+"%</span></div>" +
+      "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>" +
+    "</div></div></div>";
+}
+
+var _listaAtiva = [];
+
+function renderTablet(lista) {
+  _listaAtiva = lista;
+
+  var hoje = new Date().toDateString();
+  var pen = 0, exec = 0, urg = 0, ok = 0;
+  var ativos = [];
+
+  lista.forEach(function(p) {
+    var st = (p.status||"").toUpperCase().trim();
+    if (st === "CONCLUÍDO" || st === "CONCLUIDO") {
+      if (p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje) ok++;
+      return;
+    }
+    p._t = tempo(p.dataHora);
+    if (p.lock) exec++;
+    else if (p._t.tipo==="atrasado") urg++;
+    else pen++;
+    ativos.push(p);
+  });
+
+  // atualiza contadores na sidebar
+  function setN(id, val) { var el = document.getElementById(id); if (el) el.textContent = val; }
+  setN("sbN-todos",    ativos.length);
+  setN("sbN-atrasado", urg);
+  setN("sbN-urgente",  ativos.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; }).length);
+  setN("sbN-execucao", exec);
+  setN("sbN-concluido",ok);
+
+  // contadores stats mobile
+  function setStat(id, val) {
+    var el = document.getElementById(id); if (!el) return;
+    var prev = _prevStats[id]; el.textContent = val;
+    if (prev !== undefined && prev !== val) bump(id);
+    _prevStats[id] = val;
+  }
+  setStat("nPen",pen); setStat("nExec",exec); setStat("nUrg",urg); setStat("nOk",ok);
+
+  // sidebar lista (atrasados/urgentes/em execução)
+  var sbEl = document.getElementById("sbLista");
+  var sbAtrasados = ativos.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; });
+  var sbUrgentes  = ativos.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; });
+  var sbExec      = ativos.filter(function(p){ return !!p.lock; });
+  var sbHtml = "";
+  if (sbAtrasados.length) {
+    sbHtml += "<div class='sb-sec'>🔴 Atrasados</div>";
+    sbAtrasados.forEach(function(p){
+      sbHtml += "<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"' onclick='selecionarProtocolo(p)'>" +
+        "<div class='sb-item-end'>"+safeText(p.endereco.split(",").slice(0,1).join(",")||p.endereco)+"</div>" +
+        "<div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div>" +
+        "</div>";
+    });
+  }
+  if (sbUrgentes.length) {
+    sbHtml += "<div class='sb-sec'>⚠️ Urgentes</div>";
+    sbUrgentes.forEach(function(p){
+      sbHtml += "<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"' onclick='selecionarProtocolo(p)'>" +
+        "<div class='sb-item-end'>"+safeText(p.endereco.split(",").slice(0,1).join(",")||p.endereco)+"</div>" +
+        "<div class='sb-item-sub t-urgente'>"+p._t.txt+"</div>" +
+        "</div>";
+    });
+  }
+  if (sbExec.length) {
+    sbHtml += "<div class='sb-sec'>🟣 Execução</div>";
+    sbExec.forEach(function(p){
+      sbHtml += "<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"' onclick='selecionarProtocolo(p)'>" +
+        "<div class='sb-item-end'>"+safeText(p.endereco.split(",").slice(0,1).join(",")||p.endereco)+"</div>" +
+        "<div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div>" +
+        "</div>";
+    });
+  }
+  if (!sbHtml) sbHtml = "<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
+
+  // corrige onclick da sidebar pra buscar o protocolo certo
+  // (remontado via innerHTML, então precisamos de referência via _listaAtiva)
+  sbEl.innerHTML = sbHtml;
+  // Re-bind cliques da sidebar (já que innerHTML apaga)
+  sbEl.querySelectorAll(".sb-item").forEach(function(el, idx) {
+    var allAtrasUrgExec = sbAtrasados.concat(sbUrgentes).concat(sbExec);
+    var p = allAtrasUrgExec[idx];
+    if (p) el.onclick = function(){ selecionarProtocolo(p); };
+  });
+
+  // Aplica filtros do sidebar + tab
+  var filtrados = ativos.slice();
+
+  // busca
+  var busca = termoBuscaSb.trim().toLowerCase();
+  if (busca) {
+    filtrados = filtrados.filter(function(p){
+      return (p.endereco||"").toLowerCase().indexOf(busca) >= 0
+          || (p.protocolo||"").toLowerCase().indexOf(busca) >= 0;
+    });
+  }
+
+  // filtro sidebar
+  if (sbFiltro === "atrasado") filtrados = filtrados.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; });
+  else if (sbFiltro === "urgente") filtrados = filtrados.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; });
+  else if (sbFiltro === "execucao") filtrados = filtrados.filter(function(p){ return !!p.lock; });
+  else if (sbFiltro === "concluido") filtrados = lista.filter(function(p){
+    var st = (p.status||"").toUpperCase().trim();
+    return (st==="CONCLUÍDO"||st==="CONCLUIDO") && p.dataConclusao && new Date(p.dataConclusao).toDateString()===hoje;
+  }).map(function(p){ p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"pendente",horaVence:""}; return p; });
+
+  // filtro tab
+  if (ftFiltro === "atrasado") filtrados = filtrados.filter(function(p){ return !p.lock && p._t && p._t.tipo==="atrasado"; });
+  else if (ftFiltro === "urgente") filtrados = filtrados.filter(function(p){ return !p.lock && p._t && p._t.tipo==="urgente"; });
+  else if (ftFiltro === "execucao") filtrados = filtrados.filter(function(p){ return !!p.lock; });
+
+  filtrados.sort(function(a,b) {
+    var rank = function(p) {
+      if (p.lock && p.lock.sessionId === SESSION_ID) return 0;
+      if (p.lock) return 1;
+      if (p._t && (p._t.r<=0||p._t.tipo==="atrasado")) return 2;
+      if (p._t && p._t.r<=4) return 3;
+      return 4;
+    };
+    var d = rank(a)-rank(b);
+    return d!==0 ? d : (a._t&&b._t ? a._t.r-b._t.r : 0);
+  });
+
+  var gt = document.getElementById("gridTablet");
+  if (!filtrados.length) {
+    gt.innerHTML = "<div class='empty-tablet'><div style='font-size:36px'>✅</div><div style='font-size:15px;font-weight:700;color:var(--verde);margin-top:8px'>Tudo limpo!</div><div style='font-size:13px;color:var(--texto2);'>Nenhum protocolo para este filtro.</div></div>";
+    return;
+  }
+
+  var execL = filtrados.filter(function(p){ return !!p.lock; });
+  var urgL  = filtrados.filter(function(p){ return !p.lock && p._t && (p._t.tipo==="atrasado"||p._t.r<=4); });
+  var norL  = filtrados.filter(function(p){ return !p.lock && p._t && p._t.tipo==="pendente" && p._t.r>4; });
+
+  var h = "";
+  if (execL.length) h += "<div class='sec-label-tablet'>🟣 Em execução agora</div>"+execL.map(renderCardTablet).join("");
+  if (urgL.length)  h += "<div class='sec-label-tablet'>🔴 Atenção imediata</div>" +urgL.map(renderCardTablet).join("");
+  if (norL.length)  h += "<div class='sec-label-tablet'>📋 Fila de serviços</div>" +norL.map(renderCardTablet).join("");
+  h += "<div class='ts-tablet'>Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
+  gt.innerHTML = h;
+
+  // Rebind cliques dos cards tablet
+  gt.querySelectorAll(".card-t").forEach(function(el) {
+    var idAttr = el.id; // "card-t-HYD_2024_0831"
+    var protocolo = el.id.replace("card-t-","").replace(/_/g,function(m,i,str){
+      // Não é possível reverter _ → caracteres originais sem mapa
+      // Usamos dataset
+      return "_";
+    });
+    // Buscamos pelo endereço via dataset — melhor abordagem: guardar protocolo no dataset
+    var prot = el.getAttribute("data-prot");
+    if (!prot) {
+      // fallback: busca por posição
+      var idx = Array.from(gt.querySelectorAll(".card-t")).indexOf(el);
+      var allCards = execL.concat(urgL).concat(norL);
+      if (allCards[idx]) {
+        el.setAttribute("data-prot", allCards[idx].protocolo);
+        el.onclick = (function(p){ return function(){ selecionarProtocolo(p); }; })(allCards[idx]);
+      }
+    }
+  });
+
+  // Método mais simples e confiável: remontar cliques por índice
+  var allCards = execL.concat(urgL).concat(norL);
+  gt.querySelectorAll(".card-t").forEach(function(el, idx) {
+    if (allCards[idx]) {
+      el.onclick = (function(p){ return function(){ selecionarProtocolo(p); }; })(allCards[idx]);
+    }
+  });
+
+  // Atualiza painel se o protocolo selecionado ainda está na lista
+  if (_protocoloSelecionado) {
+    var pSel = ativos.find(function(p){ return p.protocolo === _protocoloSelecionado; });
+    if (pSel) {
+      selecionarProtocolo(pSel);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RENDER MOBILE
 // ══════════════════════════════════════════════
 var _prevStats  = {};
 var _prevHashes = {};
 
 function hashProtocolo(p) {
-  return JSON.stringify({
-    protocolo: p.protocolo,
-    status:    p.status,
-    lock:      p.lock ? p.lock.sessionId : null,
-    lockUser:  p.lock ? p.lock.usuario   : null,
-    lockTs:    p.lock ? p.lock.timestamp : null,
-    obs:       p.obs,
-    fotoId:    p.fotoId
-  });
+  return JSON.stringify({ protocolo:p.protocolo, status:p.status, lock:p.lock?p.lock.sessionId:null, lockUser:p.lock?p.lock.usuario:null, lockTs:p.lock?p.lock.timestamp:null, obs:p.obs, fotoId:p.fotoId });
 }
 
 function render(lista) {
   _ultimaLista = lista;
   renderFiltrado(lista);
+  renderTablet(lista);
 }
 
 function renderFiltrado(lista) {
   var pen = 0, exec = 0, urg = 0, ok = 0, ativos = [];
   var hoje = new Date().toDateString();
-
   lista.forEach(function(p) {
     var st = (p.status||"").toUpperCase().trim();
     if (st === "CONCLUÍDO" || st === "CONCLUIDO") {
@@ -1219,64 +1862,43 @@ function renderFiltrado(lista) {
     if (prev !== undefined && prev !== val) bump(id);
     _prevStats[id] = val;
   }
-  setCounter("nPen",pen); setCounter("nExec",exec);
-  setCounter("nUrg",urg); setCounter("nOk",ok);
+  setCounter("nPen",pen); setCounter("nExec",exec); setCounter("nUrg",urg); setCounter("nOk",ok);
 
   var g = document.getElementById("grid");
-
-  // Filtro de busca
-  var filtrados = filtrarLista(ativos);
+  var filtrados = !termoBusca ? ativos : ativos.filter(function(p){
+    return (p.endereco||"").toLowerCase().indexOf(termoBusca) >= 0
+        || (p.protocolo||"").toLowerCase().indexOf(termoBusca) >= 0
+        || (p.obs||"").toLowerCase().indexOf(termoBusca) >= 0;
+  });
 
   if (!ativos.length) {
-    g.innerHTML = "<div class='empty'><div class='empty-icon'>✅</div>" +
-                  "<div class='empty-title'>Tudo limpo!</div>" +
-                  "<div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";
+    g.innerHTML = "<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";
     _prevHashes = {}; return;
   }
-
   if (termoBusca && !filtrados.length) {
-    g.innerHTML = "<div class='busca-nada'><div class='busca-nada-icon'>🔍</div>" +
-                  "<div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div>" +
-                  "<div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>";
+    g.innerHTML = "<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>";
     return;
   }
 
   filtrados.sort(function(a,b) {
-    var rank = function(p) {
-      if (p.lock && p.lock.sessionId === SESSION_ID) return 0;
-      if (p.lock) return 1;
-      if (p._t.r <= 0 || p._t.tipo==="atrasado") return 2;
-      if (p._t.r <= 4) return 3;
-      return 4;
-    };
-    var d = rank(a)-rank(b);
-    return d!==0 ? d : a._t.r-b._t.r;
+    var rank = function(p) { if (p.lock && p.lock.sessionId===SESSION_ID) return 0; if (p.lock) return 1; if (p._t.r<=0||p._t.tipo==="atrasado") return 2; if (p._t.r<=4) return 3; return 4; };
+    var d = rank(a)-rank(b); return d!==0 ? d : a._t.r-b._t.r;
   });
 
   var execL = filtrados.filter(function(p){ return !!p.lock; });
   var urgL  = filtrados.filter(function(p){ return !p.lock && (p._t.tipo==="atrasado"||p._t.r<=4); });
   var norL  = filtrados.filter(function(p){ return !p.lock && p._t.tipo==="pendente" && p._t.r>4; });
 
-  // ── Atualização incremental: só re-renderiza cards que mudaram ──
   var novoHashes = {};
   filtrados.forEach(function(p){ novoHashes[p.protocolo] = hashProtocolo(p); });
-
-  // Verifica se a estrutura de seções mudou
   var secaoAnterior = _prevHashes.__secoes__ || "";
   var secaoAtual = [execL.length,urgL.length,norL.length].join("|");
-
   var precisaReconstruir = (secaoAtual !== secaoAnterior);
   if (!precisaReconstruir) {
-    // Verifica se algum protocolo mudou de conteúdo
     var todos = filtrados.map(function(p){ return p.protocolo; });
-    var prevTodos = (_prevHashes.__ordem__||"").split(",");
-    if (todos.join(",") !== prevTodos.join(",")) precisaReconstruir = true;
+    if (todos.join(",") !== (_prevHashes.__ordem__||"")) precisaReconstruir = true;
   }
-  if (!precisaReconstruir) {
-    filtrados.forEach(function(p) {
-      if (_prevHashes[p.protocolo] !== novoHashes[p.protocolo]) precisaReconstruir = true;
-    });
-  }
+  if (!precisaReconstruir) filtrados.forEach(function(p){ if (_prevHashes[p.protocolo] !== novoHashes[p.protocolo]) precisaReconstruir = true; });
 
   if (precisaReconstruir) {
     var h = "";
@@ -1286,7 +1908,6 @@ function renderFiltrado(lista) {
     h += "<div class='ts'>Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
     g.innerHTML = h;
   } else {
-    // Só atualiza o timestamp
     var tsEl = g.querySelector(".ts");
     if (tsEl) tsEl.textContent = "Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
   }
@@ -1302,41 +1923,26 @@ function renderFiltrado(lista) {
 function carregarDados() {
   var btn = document.getElementById("btnReload");
   btn.classList.add("spin"); btn.disabled = true;
-
   if (!estaOnline()) {
-    // Offline: usa cache
     var cache = lerCache();
-    if (cache) {
-      render(cache);
-      mostrarBannerOffline("offline");
-    } else {
-      document.getElementById("grid").innerHTML =
-        "<div class='empty'><div class='empty-icon'>📵</div>" +
-        "<div class='empty-title'>Sem conexão</div>" +
-        "<div class='empty-sub'>Conecte-se à internet para carregar os protocolos.</div></div>";
+    if (cache) { render(cache); mostrarBannerOffline("offline"); }
+    else {
+      document.getElementById("grid").innerHTML = "<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se à internet para carregar os protocolos.</div></div>";
+      document.getElementById("gridTablet").innerHTML = "<div class='empty-tablet'><div style='font-size:36px'>📵</div><div style='font-size:15px;font-weight:700;margin-top:8px'>Sem conexão</div></div>";
     }
     btn.classList.remove("spin"); btn.disabled = false;
     return;
   }
-
   fetch(API+"&t="+Date.now())
     .then(function(r){ return r.json(); })
-    .then(function(lista) {
-      salvarCache(lista);
-      mostrarBannerOffline(null);
-      render(lista);
-    })
+    .then(function(lista) { salvarCache(lista); mostrarBannerOffline(null); render(lista); })
     .catch(function(err) {
       console.error("[carregarDados]",err);
       var cache = lerCache();
-      if (cache) {
-        render(cache);
-        mostrarBannerOffline("cache");
-      } else {
-        document.getElementById("grid").innerHTML =
-          "<div class='empty'><div class='empty-icon'>⚠️</div>" +
-          "<div class='empty-title'>Erro ao carregar</div>" +
-          "<div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";
+      if (cache) { render(cache); mostrarBannerOffline("cache"); }
+      else {
+        document.getElementById("grid").innerHTML = "<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";
+        document.getElementById("gridTablet").innerHTML = "<div class='empty-tablet'><div style='font-size:36px'>⚠️</div><div style='font-size:15px;font-weight:700;margin-top:8px'>Erro ao carregar</div></div>";
       }
     })
     .finally(function(){ btn.classList.remove("spin"); btn.disabled = false; });
