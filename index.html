@@ -1388,7 +1388,10 @@ function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
   enderecoPendente  = endereco;
   document.getElementById("modalTitulo").textContent = "Iniciar execução?";
-  document.getElementById("modalSub").textContent = "Protocolo "+protocolo+" • "+endereco+".\nO serviço ficará marcado como Em Execução para os demais usuários.";
+  document.getElementById("modalSub").textContent =
+    "Protocolo " + protocolo + " • " + endereco +
+    ".\nOperador: " + (getOperador() || "não identificado") +
+    "\nO serviço ficará marcado como Em Execução.";
   document.getElementById("modalOverlay").classList.add("open");
 }
 function fecharModal() { document.getElementById("modalOverlay").classList.remove("open"); protocoloPendente = null; }
