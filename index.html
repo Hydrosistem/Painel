@@ -1279,13 +1279,27 @@ var _protocoloSelecionado = null;
 // ══════════════════════════════════════════════
 //  UTILITÁRIOS
 // ══════════════════════════════════════════════
-function fotoSrc(id) {
-  return id ? "https://drive.google.com/uc?export=view&id=" + encodeURIComponent(id) : null;
+function isDesktop() {
+  return window.innerWidth >= 768 && !('ontouchstart' in window);
 }
+
+function fotoSrc(id) {
+  if (!id) return null;
+  if (isDesktop()) {
+    return "https://lh3.googleusercontent.com/d/" + encodeURIComponent(id);
+  }
+  return "https://drive.google.com/uc?export=view&id=" + encodeURIComponent(id);
+}
+
 function onFotoErro(img, u, id) {
   if (!img.dataset.r1 && id) {
     img.dataset.r1 = "1";
     img.src = "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w800";
+    return;
+  }
+  if (!img.dataset.r2 && id && isDesktop()) {
+    img.dataset.r2 = "1";
+    img.src = "https://drive.google.com/uc?export=view&id=" + encodeURIComponent(id);
     return;
   }
   var w = img.closest(".foto-wrap");
