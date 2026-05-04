@@ -54,6 +54,8 @@ body {
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
 }
+
+/* ══ HEADER ══ */
 header {
   background: linear-gradient(135deg, var(--azul-esc) 0%, var(--azul) 100%);
   padding: 0 16px;
@@ -75,7 +77,8 @@ header {
 .h-logo svg { width: 100%; height: 100%; }
 .h-nome { font-size: 17px; font-weight: 700; color: #fff; letter-spacing: .3px; line-height: 1.1; }
 .h-sub  { font-size: 10px; color: rgba(255,255,255,.65); font-weight: 500; letter-spacing: 1.2px; text-transform: uppercase; }
-.btn-reload {
+.header-btns { display: flex; gap: 8px; align-items: center; }
+.btn-header {
   background: rgba(255,255,255,.15);
   border: 1.5px solid rgba(255,255,255,.35);
   color: #fff; border-radius: 10px; padding: 0 14px; height: 38px;
@@ -84,23 +87,122 @@ header {
   touch-action: manipulation; -webkit-appearance: none;
   transition: background .15s;
 }
-.btn-reload:active, .btn-reload:hover { background: rgba(255,255,255,.25); }
-.btn-reload.spin svg { animation: rot .9s linear infinite; }
+.btn-header:active, .btn-header:hover { background: rgba(255,255,255,.25); }
+.btn-header.spin svg { animation: rot .9s linear infinite; }
+.btn-header.hidden { display: none; }
+.btn-header.visible { display: flex; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
-.btn-install {
+/* ══ BANNER OFFLINE ══ */
+#bannerOffline {
   display: none;
+  background: #7B0000;
+  color: #fff;
+  font-size: 12px; font-weight: 600;
+  text-align: center;
+  padding: 7px 16px;
+  letter-spacing: .3px;
+}
+#bannerOffline.show { display: block; }
+
+/* ══ BANNER DADOS VELHOS ══ */
+#bannerCache {
+  display: none;
+  background: var(--amarelo-bg);
+  color: var(--amarelo);
+  border-bottom: 1px solid #f0d080;
+  font-size: 12px; font-weight: 600;
+  text-align: center;
+  padding: 7px 16px;
+}
+#bannerCache.show { display: block; }
+
+/* ══ MODAL OPERADOR ══ */
+#modalOperador {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.6); z-index: 600;
+  align-items: center; justify-content: center; padding: 20px;
+}
+#modalOperador.open { display: flex; }
+.modal-op {
+  background: var(--branco); border-radius: var(--radius);
+  padding: 32px 24px; max-width: 360px; width: 100%;
+  box-shadow: var(--shadow-md); text-align: center;
+}
+.modal-op-icon  { font-size: 44px; margin-bottom: 12px; }
+.modal-op-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.modal-op-sub   { font-size: 13px; color: var(--texto2); margin-bottom: 24px; line-height: 1.5; }
+.modal-op-input {
+  width: 100%; padding: 14px 16px;
+  border: 2px solid var(--borda); border-radius: var(--radius-sm);
+  font-family: "DM Sans",sans-serif; font-size: 16px;
+  outline: none; transition: border-color .2s;
+  margin-bottom: 16px;
+}
+.modal-op-input:focus { border-color: var(--azul); }
+.btn-op-confirmar {
+  width: 100%; min-height: 52px; border-radius: var(--radius-sm);
+  background: var(--azul); color: #fff;
+  font-family: "DM Sans",sans-serif; font-size: 16px; font-weight: 700;
+  border: none; cursor: pointer;
+  transition: opacity .15s;
+}
+.btn-op-confirmar:disabled { opacity: .4; cursor: not-allowed; }
+.btn-op-confirmar:not(:disabled):active { opacity: .85; }
+.chip-operador {
+  display: flex; align-items: center; gap: 8px;
   background: rgba(255,255,255,.15);
   border: 1.5px solid rgba(255,255,255,.35);
-  color: #fff; border-radius: 10px; padding: 0 14px; height: 38px;
-  font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
-  cursor: pointer; align-items: center; gap: 6px;
-  touch-action: manipulation; -webkit-appearance: none;
+  color: #fff; border-radius: 10px; padding: 0 12px; height: 38px;
+  font-size: 13px; font-weight: 600; cursor: pointer;
   transition: background .15s;
 }
-.btn-install.visible { display: flex; }
-.btn-install:active, .btn-install:hover { background: rgba(255,255,255,.25); }
+.chip-operador:hover { background: rgba(255,255,255,.25); }
+.chip-avatar {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255,255,255,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; flex-shrink: 0;
+}
 
+/* ══ BARRA DE BUSCA ══ */
+.search-wrap {
+  background: var(--branco);
+  border-bottom: 1px solid var(--borda);
+  padding: 10px 16px;
+  position: sticky;
+  top: 64px;
+  z-index: 99;
+}
+.search-inner {
+  max-width: 720px;
+  margin: 0 auto;
+  position: relative;
+}
+.search-icon {
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  color: var(--texto2); pointer-events: none;
+}
+.search-input {
+  width: 100%; padding: 10px 40px 10px 38px;
+  border: 1.5px solid var(--borda); border-radius: var(--radius-sm);
+  font-family: "DM Sans",sans-serif; font-size: 14px;
+  background: var(--cinza-bg);
+  outline: none; transition: border-color .2s, background .2s;
+}
+.search-input:focus {
+  border-color: var(--azul);
+  background: var(--branco);
+}
+.search-clear {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--texto2); font-size: 18px; line-height: 1;
+  padding: 4px; display: none;
+}
+.search-clear.show { display: block; }
+
+/* ══ STATS ══ */
 .stats {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -121,6 +223,8 @@ header {
 .stat.s-exec .stat-n { color: var(--exec);     }
 .stat.s-urg  .stat-n { color: var(--vermelho); }
 .stat.s-ok   .stat-n { color: var(--verde);    }
+
+/* ══ GRID ══ */
 .main { padding: 14px; }
 .grid {
   display: grid;
@@ -138,6 +242,8 @@ header {
   display: flex; align-items: center; gap: 8px; margin-top: 4px;
 }
 .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+
+/* ══ CARDS ══ */
 .card {
   background: var(--branco);
   border-radius: var(--radius);
@@ -197,24 +303,61 @@ header {
   padding: 6px 10px; border: 1px solid rgba(168,85,247,.25);
 }
 .exec-info svg { flex-shrink: 0; }
+
+/* ═══ EXEC INFO COM OPERADOR ═══ */
+.exec-operador {
+  font-size: 11px; font-weight: 700;
+  margin-left: 4px; color: var(--exec);
+}
+
 .endereco { font-size: 15px; font-weight: 600; color: var(--texto); line-height: 1.35; }
 @media (min-width: 600px) { .endereco { font-size: 16px; } }
 .meta { display: flex; flex-wrap: wrap; gap: 6px 12px; }
 .meta-item { font-size: 12px; color: var(--texto2); display: flex; align-items: center; gap: 3px; }
 @media (min-width: 600px) { .meta-item { font-size: 13px; } }
-.card-foto {
-  width: 100%; aspect-ratio: 4/3; object-fit: cover;
-  border-radius: 10px; display: block; cursor: pointer;
-  border: 1px solid var(--borda); background: #f0f4f8;
+
+/* ══ FOTO COM SKELETON ══ */
+.foto-wrap {
+  width: 100%; aspect-ratio: 4/3;
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--borda);
+  background: var(--cinza-bg);
+  position: relative;
 }
+.foto-skeleton {
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.card-foto {
+  width: 100%; height: 100%; object-fit: cover;
+  display: block; cursor: pointer;
+  position: relative; z-index: 1;
+  opacity: 0; transition: opacity .3s;
+}
+.card-foto.loaded { opacity: 1; }
+
+/* ══ PRAZO ══ */
+.prazo-wrap { padding-bottom: 2px; }
 .prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.prazo-hora { font-size: 10px; color: var(--texto2); font-weight: 500; }
 .prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
 .prazo-fill { height: 100%; border-radius: 10px; transition: width .4s; }
 .t-urgente  .prazo-fill { background: var(--vermelho); }
 .t-pendente .prazo-fill { background: var(--amarelo);  }
 .t-atrasado .prazo-fill { background: var(--atrasado); }
 .t-execucao .prazo-fill { background: var(--exec);     }
+
+/* ══ FOOTER DO CARD ══ */
 .card-footer { padding: 12px 14px 14px; }
+
+/* ══ BOTÃO CONCLUIR COM CONFIRMAÇÃO DUPLA ══ */
+.btn-concluir-wrap { position: relative; }
 .btn-concluir {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; min-height: 52px; padding: 14px;
@@ -240,6 +383,26 @@ header {
   background: #9CA3AF !important;
   cursor: not-allowed; opacity: .75; pointer-events: none;
 }
+/* Confirmação dupla */
+.btn-confirm-step {
+  display: none;
+  gap: 8px;
+}
+.btn-confirm-step.show { display: flex; }
+.btn-sim, .btn-nao {
+  flex: 1; min-height: 52px; border-radius: var(--radius-sm);
+  font-family: "DM Sans",sans-serif; font-size: 14px; font-weight: 700;
+  border: none; cursor: pointer;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: opacity .15s, transform .1s;
+}
+.btn-sim:active, .btn-nao:active { transform: scale(.98); }
+.btn-nao { background: var(--cinza-bg); color: var(--texto); }
+.btn-sim { background: var(--azul); color: #fff; }
+.card.t-urgente  .btn-sim { background: var(--vermelho); }
+.card.t-atrasado .btn-sim { background: var(--atrasado); }
+.card.t-execucao .btn-sim { background: var(--exec);     }
+
 .btn-minha-exec {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; min-height: 52px; padding: 14px;
@@ -259,6 +422,8 @@ header {
   0%, 100% { box-shadow: var(--shadow); }
   50%       { box-shadow: 0 0 0 3px rgba(192,57,43,.2); }
 }
+
+/* ══ LIGHTBOX ══ */
 .lb { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.92); z-index: 999; align-items: center; justify-content: center; padding: 16px; touch-action: none; }
 .lb.open { display: flex; }
 .lb img { max-width: 100%; max-height: 88vh; border-radius: 12px; object-fit: contain; }
@@ -268,11 +433,14 @@ header {
   width: 44px; height: 44px; border-radius: 50%; font-size: 20px;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
+
+/* ══ EMPTY / LOADING ══ */
 .empty, .loading-wrap { grid-column: 1/-1; text-align: center; padding: 52px 20px; color: var(--texto2); }
 .empty-icon  { font-size: 52px; margin-bottom: 12px; }
 .empty-title { font-size: 18px; font-weight: 700; color: var(--verde); margin-bottom: 4px; }
 .empty-sub   { font-size: 13px; }
 .spinner { width: 36px; height: 36px; border: 3px solid var(--borda); border-top-color: var(--azul); border-radius: 50%; animation: rot .8s linear infinite; margin: 0 auto 14px; }
+
 .btn-foto-fallback {
   display: flex; align-items: center; justify-content: center; gap: 8px;
   width: 100%; padding: 14px;
@@ -281,6 +449,8 @@ header {
   text-decoration: none; text-align: center;
 }
 .ts { grid-column: 1/-1; text-align: center; font-size: 11px; color: var(--texto2); padding: 10px; }
+
+/* ══ TOAST ══ */
 #toast {
   position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
   background: #1F2937; color: #fff;
@@ -294,6 +464,8 @@ header {
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
 #toast.erro { background: var(--vermelho); }
 #toast.exec { background: var(--exec); }
+
+/* ══ MODAL INSTALAÇÃO ══ */
 .modal-overlay {
   display: none; position: fixed; inset: 0;
   background: rgba(0,0,0,.55); z-index: 500;
@@ -317,9 +489,26 @@ header {
 .modal-btns button:active { opacity: .8; }
 .btn-cancelar  { background: var(--cinza-bg); color: var(--texto); }
 .btn-confirmar { background: var(--exec); color: #fff; }
+
+/* ══ RESULTADO DE BUSCA ══ */
+.busca-nada { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--texto2); }
+.busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
+.busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
+.busca-nada-sub  { font-size: 13px; margin-top: 4px; }
 </style>
 </head>
 <body>
+
+<!-- ══ MODAL OPERADOR ═══════════════════════════════════════ -->
+<div id="modalOperador">
+  <div class="modal-op">
+    <div class="modal-op-icon">👷</div>
+    <div class="modal-op-title">Quem é você?</div>
+    <div class="modal-op-sub">Digite seu nome ou matrícula. Isso identifica quem está executando cada serviço para os demais operadores.</div>
+    <input class="modal-op-input" id="inputOperador" type="text" placeholder="Ex: Carlos Silva ou 4821" maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="btn-op-confirmar" id="btnConfirmarOperador" disabled>Entrar</button>
+  </div>
+</div>
 
 <!-- ══ HEADER ══════════════════════════════════════════════ -->
 <header>
@@ -333,26 +522,41 @@ header {
       <div class="h-sub">Painel de Entulhos</div>
     </div>
   </div>
-  <div style="display:flex;gap:8px;align-items:center;">
+  <div class="header-btns">
+    <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
 
-    <button class="btn-install" id="btnInstall">
+    <button class="btn-header hidden" id="btnInstall">
       📲 Instalar
     </button>
 
-    <button class="btn-install" id="btnUpdate">
+    <button class="btn-header hidden" id="btnUpdate">
       🔄 Atualizar
     </button>
 
-    <button class="btn-reload" id="btnReload" onclick="carregarDados()">
+    <button class="btn-header" id="btnReload" onclick="carregarDados()">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
         <polyline points="23 4 23 10 17 10"/>
         <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
       </svg>
       Atualizar
     </button>
-
   </div>
 </header>
+
+<!-- ══ BANNERS ══════════════════════════════════════════════ -->
+<div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
+<div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
+
+<!-- ══ BARRA DE BUSCA ═══════════════════════════════════════ -->
+<div class="search-wrap">
+  <div class="search-inner">
+    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    </svg>
+    <input class="search-input" id="buscaInput" type="search" placeholder="Buscar por endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
+  </div>
+</div>
 
 <!-- ══ STATS ════════════════════════════════════════════════ -->
 <div class="stats">
@@ -393,7 +597,7 @@ header {
 <!-- ══ TOAST ═════════════════════════════════════════════════ -->
 <div id="toast"></div>
 
-<!-- ══ MODAL CONFIRMAÇÃO ════════════════════════════════════ -->
+<!-- ══ MODAL CONFIRMAÇÃO EXECUÇÃO ═══════════════════════════ -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-icon">🚧</div>
@@ -409,13 +613,142 @@ header {
 <!-- ══ SCRIPTS ═══════════════════════════════════════════════ -->
 <script>
 // ══════════════════════════════════════════════
-//  CONFIG
+//  CONFIG  — altere apenas estas constantes
 // ══════════════════════════════════════════════
 var API_BASE  = "https://script.google.com/macros/s/AKfycbwo7OLjz7_2WVhW9dgsOnUOeOkXYkbS4GFujFyp88BfojGd3QoJ2oF1FNrVknoExAr4/exec";
 var FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuk2or5P9XK8yCytnVdByHNINk0uGHLDpLbEdgiS2IYu1leQ/viewform";
 var PRAZO     = 24;
 var LOCK_TTL  = 600;
 var API       = API_BASE + "?acao=dados";
+var CACHE_KEY = "hyd_cache_dados";
+var CACHE_TS  = "hyd_cache_ts";
+
+// ══════════════════════════════════════════════
+//  OPERADOR (identificação do usuário)
+// ══════════════════════════════════════════════
+var OPERADOR_KEY = "hyd_operador";
+
+function getOperador() {
+  try { return localStorage.getItem(OPERADOR_KEY) || ""; } catch(e) { return ""; }
+}
+function setOperador(nome) {
+  try { localStorage.setItem(OPERADOR_KEY, nome.trim()); } catch(e) {}
+  atualizarChipOperador();
+}
+
+function atualizarChipOperador() {
+  var nome = getOperador();
+  var btn  = document.getElementById("btnOperador");
+  if (!btn) return;
+  if (nome) {
+    var iniciais = nome.trim().split(/\s+/).map(function(p){ return p[0]; }).slice(0,2).join("").toUpperCase();
+    btn.innerHTML = "<span class='chip-avatar'>" + iniciais + "</span>" + nome.split(" ")[0];
+    btn.className = "chip-operador";
+    btn.style.display = "";
+  } else {
+    btn.style.display = "none";
+  }
+}
+
+function abrirModalOperador() {
+  document.getElementById("modalOperador").classList.add("open");
+  var inp = document.getElementById("inputOperador");
+  inp.value = getOperador();
+  validarInputOperador();
+  setTimeout(function(){ inp.focus(); }, 100);
+}
+function fecharModalOperador() {
+  document.getElementById("modalOperador").classList.remove("open");
+}
+function validarInputOperador() {
+  var v = document.getElementById("inputOperador").value.trim();
+  document.getElementById("btnConfirmarOperador").disabled = v.length < 2;
+}
+function confirmarOperador() {
+  var v = document.getElementById("inputOperador").value.trim();
+  if (v.length < 2) return;
+  setOperador(v);
+  fecharModalOperador();
+  toast("✅ Olá, " + v.split(" ")[0] + "! Operador registrado.", "");
+}
+
+// Eventos do modal operador
+document.getElementById("inputOperador").addEventListener("input", validarInputOperador);
+document.getElementById("inputOperador").addEventListener("keydown", function(e){
+  if (e.key === "Enter") confirmarOperador();
+});
+document.getElementById("btnConfirmarOperador").onclick = confirmarOperador;
+document.getElementById("btnOperador").onclick = abrirModalOperador;
+
+// Na carga: exige operador se não tiver
+window.addEventListener("DOMContentLoaded", function() {
+  if (!getOperador()) {
+    abrirModalOperador();
+  } else {
+    atualizarChipOperador();
+  }
+});
+
+// ══════════════════════════════════════════════
+//  OFFLINE — detecção e cache
+// ══════════════════════════════════════════════
+function estaOnline() { return navigator.onLine; }
+
+function salvarCache(lista) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(lista));
+    localStorage.setItem(CACHE_TS,  Date.now().toString());
+  } catch(e) {}
+}
+function lerCache() {
+  try {
+    var raw = localStorage.getItem(CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch(e) { return null; }
+}
+function lerCacheTs() {
+  try { return parseInt(localStorage.getItem(CACHE_TS) || "0", 10); } catch(e) { return 0; }
+}
+function mostrarBannerOffline(modo) {
+  // modo: "offline" | "cache" | null
+  document.getElementById("bannerOffline").classList.toggle("show", modo === "offline");
+  document.getElementById("bannerCache").classList.toggle("show", modo === "cache");
+  if (modo === "cache") {
+    var ts = lerCacheTs();
+    document.getElementById("cacheHora").textContent = ts
+      ? new Date(ts).toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"})
+      : "—";
+  }
+}
+
+window.addEventListener("online",  function(){ mostrarBannerOffline(null); carregarDados(); });
+window.addEventListener("offline", function(){ mostrarBannerOffline("offline"); });
+
+// ══════════════════════════════════════════════
+//  BUSCA
+// ══════════════════════════════════════════════
+var termoBusca = "";
+var _ultimaLista = [];
+
+document.getElementById("buscaInput").addEventListener("input", function() {
+  termoBusca = this.value.trim().toLowerCase();
+  document.getElementById("buscaClear").classList.toggle("show", termoBusca.length > 0);
+  renderFiltrado(_ultimaLista);
+});
+function limparBusca() {
+  document.getElementById("buscaInput").value = "";
+  termoBusca = "";
+  document.getElementById("buscaClear").classList.remove("show");
+  renderFiltrado(_ultimaLista);
+}
+function filtrarLista(lista) {
+  if (!termoBusca) return lista;
+  return lista.filter(function(p) {
+    return (p.endereco  || "").toLowerCase().indexOf(termoBusca) >= 0
+        || (p.protocolo || "").toLowerCase().indexOf(termoBusca) >= 0
+        || (p.obs       || "").toLowerCase().indexOf(termoBusca) >= 0;
+  });
+}
 
 // ══════════════════════════════════════════════
 //  PWA — Service Worker + Instalação
@@ -424,230 +757,126 @@ var deferredPrompt   = null;
 var swReg            = null;
 var _promptWaitTimer = null;
 
-// ----- Helpers -----
 function estaInstalado() {
   return window.matchMedia('(display-mode: standalone)').matches
       || window.navigator.standalone === true;
 }
-function marcarInstalado() {
-  try { localStorage.setItem("pwa_instalado", "1"); } catch(e) {}
-}
-function desmarcarInstalado() {
-  try { localStorage.removeItem("pwa_instalado"); } catch(e) {}
-}
-function foiInstalado() {
-  try { return localStorage.getItem("pwa_instalado") === "1"; } catch(e) { return false; }
-}
+function marcarInstalado()   { try { localStorage.setItem("pwa_instalado","1"); }   catch(e) {} }
+function desmarcarInstalado(){ try { localStorage.removeItem("pwa_instalado"); }     catch(e) {} }
+function foiInstalado()      { try { return localStorage.getItem("pwa_instalado")==="1"; } catch(e){ return false; } }
 
 function ocultarBtnInstall() {
   var btn = document.getElementById("btnInstall");
-  if (btn) { btn.classList.remove("visible"); btn.onclick = null; }
+  if (btn) { btn.classList.remove("visible"); btn.classList.add("hidden"); btn.onclick = null; }
 }
 function mostrarBtnInstall(fn) {
   var btn = document.getElementById("btnInstall");
-  if (btn) { btn.classList.add("visible"); btn.onclick = fn; }
+  if (btn) { btn.classList.remove("hidden"); btn.classList.add("visible"); btn.onclick = fn; }
 }
-
-// ----- Detecta ambiente -----
 function getUA() {
   var ua = navigator.userAgent.toLowerCase();
-  return {
-    isIOS:     /iphone|ipad|ipod/.test(ua),
-    isAndroid: /android/.test(ua),
-    isOpera:   /opr\/|opera/.test(ua)
-  };
+  return { isIOS:/iphone|ipad|ipod/.test(ua), isAndroid:/android/.test(ua), isOpera:/opr\/|opera/.test(ua) };
 }
-
-// ----- Instalar com prompt nativo -----
 function instalarPWA() {
   if (!deferredPrompt) return;
   deferredPrompt.prompt();
   deferredPrompt.userChoice.then(function(choice) {
     deferredPrompt = null;
-    if (choice.outcome === "accepted") {
-      marcarInstalado();
-      ocultarBtnInstall();
-      toast("✅ App instalado com sucesso!", "");
-    }
+    if (choice.outcome === "accepted") { marcarInstalado(); ocultarBtnInstall(); toast("✅ App instalado!",""); }
   });
 }
-
-// ----- Ativa botão com prompt nativo -----
-function ativarBotaoNativo() {
-  clearTimeout(_promptWaitTimer);
-  mostrarBtnInstall(instalarPWA);
-}
-
-// ----- Modal instalação manual -----
-function fecharModalInstall() {
-  document.getElementById("modalInstall").classList.remove("open");
-}
+function ativarBotaoNativo() { clearTimeout(_promptWaitTimer); mostrarBtnInstall(instalarPWA); }
+function fecharModalInstall() { document.getElementById("modalInstall").classList.remove("open"); }
 function abrirModalInstall(titulo, html) {
   document.getElementById("modalInstallTitulo").textContent = titulo;
   document.getElementById("modalInstallSub").innerHTML = html;
   document.getElementById("modalInstall").classList.add("open");
 }
-
-// ----- Fallback manual -----
 function ativarBotaoFallback() {
   if (estaInstalado()) { ocultarBtnInstall(); return; }
-
   var ua = getUA();
-
   if (ua.isIOS) {
     mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no iPhone / iPad",
         "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
         "1. Toque no ícone <strong>📤 Compartilhar</strong> na barra inferior do Safari<br>" +
-        "2. Role a lista e toque em <strong>'Adicionar à Tela de Início'</strong><br>" +
-        "3. Confirme tocando em <strong>Adicionar</strong>" +
-        "</div>"
-      );
+        "2. Role e toque em <strong>'Adicionar à Tela de Início'</strong><br>" +
+        "3. Confirme tocando em <strong>Adicionar</strong></div>");
     });
     return;
   }
-
   if (ua.isAndroid) {
     mostrarBtnInstall(function() {
       abrirModalInstall("Instalar no Android",
         "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
-        "1. Toque no menu <strong>⋮</strong> (3 pontinhos) no canto superior direito<br>" +
-        "2. Procure uma dessas opções:<br>" +
-        "&nbsp;&nbsp;• <strong>Instalar app</strong><br>" +
-        "&nbsp;&nbsp;• <strong>Adicionar à tela inicial</strong><br>" +
-        "&nbsp;&nbsp;• <strong>Adicionar atalho</strong><br>" +
-        "3. Confirme tocando em <strong>Adicionar</strong><br><br>" +
-        "<span style='color:var(--texto2);font-size:12px'>💡 Se a opção não aparecer, feche e reabra o Chrome e aguarde 30 segundos.</span>" +
-        "</div>"
-      );
+        "1. Toque no menu <strong>⋮</strong> no canto superior direito<br>" +
+        "2. Procure: <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong><br>" +
+        "3. Confirme tocando em <strong>Adicionar</strong></div>");
     });
     return;
   }
-
-  // Desktop
   mostrarBtnInstall(function() {
-    var instrucao = ua.isOpera
-      ? "Clique no ícone <strong>⊕</strong> na barra de endereços → <strong>'Instalar este site como app'</strong>.<br><br>Se não aparecer, acesse pelo <strong>Chrome</strong> ou <strong>Edge</strong>."
-      : "Clique no ícone <strong>⊕</strong> na barra de endereços do <strong>Chrome</strong> ou <strong>Edge</strong> para instalar.";
     abrirModalInstall("Instalar no computador",
-      "<div style='text-align:left;line-height:1.8;font-size:13px'>" + instrucao + "</div>"
-    );
+      "<div style='text-align:left;line-height:1.8;font-size:13px'>" +
+      "Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>");
   });
 }
 
-// ----- beforeinstallprompt (Chrome/Edge) -----
 window.addEventListener("beforeinstallprompt", function(e) {
-  e.preventDefault();
-  deferredPrompt = e;
-  // Só mostra se não estiver instalado
+  e.preventDefault(); deferredPrompt = e;
   if (!estaInstalado()) ativarBotaoNativo();
 });
-
-// ----- appinstalled: some imediatamente -----
 window.addEventListener("appinstalled", function() {
-  deferredPrompt = null;
-  marcarInstalado();
-  ocultarBtnInstall();
-  toast("📲 Hydrosistem instalado!", "");
+  deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!","");
 });
-
-// ----- Detecta desinstalação (saiu do modo standalone) -----
 window.matchMedia('(display-mode: standalone)').addEventListener('change', function(e) {
-  if (e.matches) {
-    // Entrou em standalone → está instalado → oculta botão
-    marcarInstalado();
-    ocultarBtnInstall();
-  } else {
-    // Saiu do standalone → foi desinstalado → mostra botão novamente
-    desmarcarInstalado();
-    deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback();
-  }
+  if (e.matches) { marcarInstalado(); ocultarBtnInstall(); }
+  else { desmarcarInstalado(); deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); }
 });
-
-// ----- Inicialização -----
 function iniciarEsperaPrompt() {
-  // Já instalado → nunca mostra
-  if (estaInstalado()) return;
-  if (deferredPrompt) return;
+  if (estaInstalado() || deferredPrompt) return;
   clearTimeout(_promptWaitTimer);
-  _promptWaitTimer = setTimeout(function() {
-    if (!deferredPrompt) ativarBotaoFallback();
-  }, 8000);
+  _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 8000);
 }
-
 window.addEventListener("load", function() {
-  // Se rodando em modo standalone (app instalado), oculta botão e para por aqui
-  if (estaInstalado()) {
-    ocultarBtnInstall();
-    marcarInstalado();
-    return;
-  }
-
-  // Se estava instalado antes mas agora não está mais (desinstalou),
-  // limpa o flag para que o botão apareça normalmente
-  if (foiInstalado() && !estaInstalado()) {
-    desmarcarInstalado();
-  }
-
+  if (estaInstalado()) { ocultarBtnInstall(); marcarInstalado(); return; }
+  if (foiInstalado() && !estaInstalado()) desmarcarInstalado();
   var ua = getUA();
-
-  // iOS: nunca dispara beforeinstallprompt → fallback direto
-  if (ua.isIOS) {
-    ativarBotaoFallback();
-    return;
-  }
-
-  // Chrome/Edge: aguarda SW ficar pronto antes de iniciar o timer
+  if (ua.isIOS) { ativarBotaoFallback(); return; }
   if ("serviceWorker" in navigator) {
-    var timerIniciado = false;
-    var iniciarUmaVez = function() {
-      if (timerIniciado) return;
-      timerIniciado = true;
-      iniciarEsperaPrompt();
-    };
-    navigator.serviceWorker.ready.then(iniciarUmaVez).catch(iniciarUmaVez);
-    setTimeout(iniciarUmaVez, 1000);
-  } else {
-    iniciarEsperaPrompt();
-  }
+    var ok = false;
+    var ini = function(){ if (!ok){ ok=true; iniciarEsperaPrompt(); } };
+    navigator.serviceWorker.ready.then(ini).catch(ini);
+    setTimeout(ini, 1000);
+  } else { iniciarEsperaPrompt(); }
 });
-
-// ----- Service Worker -----
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
     navigator.serviceWorker.register("./sw.js").then(function(reg) {
       swReg = reg;
       reg.addEventListener("updatefound", function() {
-        var newWorker = reg.installing;
-        newWorker.addEventListener("statechange", function() {
-          if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-            newWorker.postMessage({ type: "SKIP_WAITING" });
+        var nw = reg.installing;
+        nw.addEventListener("statechange", function() {
+          if (nw.state === "installed" && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: "SKIP_WAITING" });
             mostrarBotaoAtualizar(reg);
           }
         });
       });
-    }).catch(function(err) {
-      console.warn("[SW] Registro falhou:", err);
-    });
-
-    navigator.serviceWorker.addEventListener("controllerchange", function() {
-      window.location.reload();
-    });
+    }).catch(function(err){ console.warn("[SW]",err); });
+    navigator.serviceWorker.addEventListener("controllerchange", function(){ window.location.reload(); });
   });
 }
-
 function mostrarBotaoAtualizar(reg) {
   var btn = document.getElementById("btnUpdate");
   if (!btn) return;
-  btn.classList.add("visible");
+  btn.classList.remove("hidden"); btn.classList.add("visible");
   btn.onclick = function() {
     var w = reg && reg.waiting;
     if (w) w.postMessage({ type: "SKIP_WAITING" });
-    navigator.serviceWorker.addEventListener("controllerchange", function() {
-      window.location.reload();
-    });
+    navigator.serviceWorker.addEventListener("controllerchange", function(){ window.location.reload(); });
   };
-  toast("🔄 Nova versão disponível! Toque em Atualizar.", "");
+  toast("🔄 Nova versão disponível! Toque em Atualizar.","");
 }
 
 // ══════════════════════════════════════════════
@@ -657,14 +886,9 @@ var SESSION_ID = (function() {
   var k = "hyd_session_id";
   try {
     var s = localStorage.getItem(k);
-    if (!s) {
-      s = "s_" + Math.random().toString(36).slice(2) + "_" + Date.now();
-      localStorage.setItem(k, s);
-    }
+    if (!s) { s = "s_"+Math.random().toString(36).slice(2)+"_"+Date.now(); localStorage.setItem(k,s); }
     return s;
-  } catch(e) {
-    return "s_" + Math.random().toString(36).slice(2) + "_" + Date.now();
-  }
+  } catch(e) { return "s_"+Math.random().toString(36).slice(2)+"_"+Date.now(); }
 })();
 
 var meusLocks         = {};
@@ -675,84 +899,95 @@ var enderecoPendente  = null;
 //  UTILITÁRIOS
 // ══════════════════════════════════════════════
 function fotoSrc(id) {
-  return id ? "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w1600" : null;
+  return id ? "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1600" : null;
 }
 function onFotoErro(img, u, id) {
   if (!img.dataset.r1 && id) {
     img.dataset.r1 = "1";
-    img.src = "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w1200";
+    img.src = "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1200";
     return;
   }
-  var w = img.parentNode;
-  if (w) w.outerHTML = "<a class='btn-foto-fallback' href='" + (u||"#") + "' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
+  var w = img.closest(".foto-wrap");
+  if (w) w.outerHTML = "<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
+}
+function onFotoLoad(img) {
+  img.classList.add("loaded");
+  var sk = img.previousElementSibling;
+  if (sk && sk.classList.contains("foto-skeleton")) sk.style.display = "none";
 }
 function tempo(iso) {
   var h = (new Date() - new Date(iso)) / 36e5;
   var r = PRAZO - h;
   var pct = Math.min(h / PRAZO * 100, 100);
-  if (r <= 0) return { txt: "VENCIDO",             r: 0, pct: 100, tipo: "atrasado" };
-  if (r <= 4) return { txt: ar(r) + "h restantes", r: r, pct: pct, tipo: "urgente"  };
-  return           { txt: ar(r) + "h restantes",   r: r, pct: pct, tipo: "pendente" };
+  var vence = new Date(new Date(iso).getTime() + PRAZO * 36e5);
+  var horaVence = vence.toLocaleTimeString("pt-BR", {hour:"2-digit",minute:"2-digit"});
+  if (r <= 0) return { txt:"VENCIDO",             r:0,  pct:100, tipo:"atrasado", horaVence:horaVence };
+  if (r <= 4) return { txt:ar(r)+" restantes",    r:r,  pct:pct, tipo:"urgente",  horaVence:horaVence };
+  return           { txt:ar(r)+" restantes",      r:r,  pct:pct, tipo:"pendente", horaVence:horaVence };
 }
-function ar(n) { return n < 1 ? Math.round(n * 60) + "min" : Math.round(n) + "h"; }
+function ar(n) { return n < 1 ? Math.round(n*60)+"min" : Math.round(n)+"h"; }
 function fdt(iso) {
   if (!iso) return "—";
-  return new Date(iso).toLocaleString("pt-BR", { day:"2-digit", month:"2-digit", hour:"2-digit", minute:"2-digit" });
+  return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 }
-function abrirFoto(u) { document.getElementById("lbImg").src = u; document.getElementById("lb").classList.add("open"); }
-function fecharFoto() { document.getElementById("lb").classList.remove("open"); document.getElementById("lbImg").src = ""; }
+function abrirFoto(u) { document.getElementById("lbImg").src=u; document.getElementById("lb").classList.add("open"); }
+function fecharFoto() { document.getElementById("lb").classList.remove("open"); document.getElementById("lbImg").src=""; }
 
 var _toastTimer = null;
 function toast(msg, tipo) {
   var el = document.getElementById("toast");
-  el.textContent = msg;
-  el.className = "show " + (tipo || "");
+  el.textContent = msg; el.className = "show "+(tipo||"");
   clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(function() { el.className = ""; }, 3500);
+  _toastTimer = setTimeout(function(){ el.className=""; }, 3500);
 }
 function bump(id) {
-  var el = document.getElementById(id);
-  if (!el) return;
-  el.classList.remove("bump");
-  void el.offsetWidth;
-  el.classList.add("bump");
-  setTimeout(function() { el.classList.remove("bump"); }, 400);
+  var el = document.getElementById(id); if (!el) return;
+  el.classList.remove("bump"); void el.offsetWidth; el.classList.add("bump");
+  setTimeout(function(){ el.classList.remove("bump"); }, 400);
+}
+function esc(s) {
+  return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function safeText(s) {
+  var d = document.createElement("div");
+  d.textContent = String(s || "");
+  return d.innerHTML;
 }
 
 // ══════════════════════════════════════════════
 //  LOCK API
 // ══════════════════════════════════════════════
 function postLock(payload) {
-  var params = Object.keys(payload).map(function(k) {
-    return encodeURIComponent(k) + "=" + encodeURIComponent(payload[k]);
+  var params = Object.keys(payload).map(function(k){
+    return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]);
   }).join("&");
-  return fetch(API_BASE + "?" + params)
-    .then(function(r) { return r.json(); })
-    .catch(function(err) { console.error("[postLock]", err); return { ok: false }; });
+  return fetch(API_BASE+"?"+params)
+    .then(function(r){ return r.json(); })
+    .catch(function(err){ console.error("[postLock]",err); return {ok:false}; });
 }
 function liberarLockApi(protocolo) {
-  return postLock({ acao: "liberar", protocolo: protocolo, sessionId: SESSION_ID });
+  return postLock({acao:"liberar",protocolo:protocolo,sessionId:SESSION_ID});
 }
 function iniciarHeartbeat(protocolo) {
   if (meusLocks[protocolo]) return;
-  meusLocks[protocolo] = setInterval(function() {
-    postLock({ acao: "heartbeat", protocolo: protocolo, sessionId: SESSION_ID });
+  meusLocks[protocolo] = setInterval(function(){
+    postLock({acao:"heartbeat",protocolo:protocolo,sessionId:SESSION_ID});
   }, 60000);
 }
 function pararHeartbeat(protocolo) {
-  if (meusLocks[protocolo]) { clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; }
+  if (meusLocks[protocolo]){ clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; }
 }
 
 // ══════════════════════════════════════════════
-//  MODAL
+//  MODAL EXECUÇÃO
 // ══════════════════════════════════════════════
 function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
   enderecoPendente  = endereco;
   document.getElementById("modalTitulo").textContent = "Iniciar execução?";
   document.getElementById("modalSub").textContent =
-    "Protocolo " + protocolo + " • " + endereco + ".\n" +
-    "O serviço ficará marcado como Em Execução para os demais usuários enquanto " +
+    "Protocolo "+protocolo+" • "+endereco+".\n"+
+    "O serviço ficará marcado como Em Execução para os demais usuários enquanto "+
     "você estiver com o formulário aberto.";
   document.getElementById("modalOverlay").classList.add("open");
 }
@@ -765,50 +1000,91 @@ function confirmarExecucao() {
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
   fecharModal();
-  toast("⏳ Registrando execução...", "exec");
+  toast("⏳ Registrando execução...","exec");
 
-  postLock({ acao: "adquirir", protocolo: protocolo, sessionId: SESSION_ID, usuario: "Usuário" })
+  var operador = getOperador() || "Operador";
+
+  postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador})
     .then(function(res) {
       if (!res.ok) {
-        toast("⚠️ Este serviço já está sendo executado por outro usuário!", "erro");
-        carregarDados();
-        return;
+        toast("⚠️ Este serviço já está sendo executado por outro usuário!","erro");
+        carregarDados(); return;
       }
       iniciarHeartbeat(protocolo);
-      toast("▶ Execução iniciada — abrindo formulário...", "exec");
+      toast("▶ Execução iniciada — abrindo formulário...","exec");
       carregarDados();
 
-      var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + encodeURIComponent(enderecoAtual);
-      var win = window.open(url, "_blank");
-      if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.", "erro"); return; }
+      var url = FORMS_URL+"?usp=pp_url&entry.1020787335="+encodeURIComponent(enderecoAtual);
+      var win = window.open(url,"_blank");
+      if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.","erro"); return; }
 
-      var watcher = setInterval(function() {
+      var watcher = setInterval(function(){
         try {
           if (win.closed) {
             clearInterval(watcher);
-            setTimeout(function() {
-              liberarLockApi(protocolo).then(function() {
+            setTimeout(function(){
+              liberarLockApi(protocolo).then(function(){
                 pararHeartbeat(protocolo);
-                toast("🔓 Formulário fechado — serviço liberado.", "");
+                toast("🔓 Formulário fechado — serviço liberado.","");
                 carregarDados();
               });
             }, 2000);
           }
-        } catch(e) { clearInterval(watcher); }
+        } catch(e){ clearInterval(watcher); }
       }, 1000);
     })
-    .catch(function(err) { console.error("[confirmarExecucao]", err); toast("❌ Erro ao iniciar execução", "erro"); });
+    .catch(function(err){ console.error("[confirmarExecucao]",err); toast("❌ Erro ao iniciar execução","erro"); });
+}
+
+// ══════════════════════════════════════════════
+//  CONFIRMAÇÃO DUPLA NO CARD (evita toque acidental)
+// ══════════════════════════════════════════════
+var _confirmTimers = {};
+
+function clicarConcluir(protocolo, endereco) {
+  var wrap = document.getElementById("confirm-wrap-"+protocolo);
+  if (!wrap) { abrirModal(protocolo, endereco); return; }
+  var btn1 = document.getElementById("btn-concluir-"+protocolo);
+  var step = document.getElementById("confirm-step-"+protocolo);
+  if (!btn1 || !step) { abrirModal(protocolo, endereco); return; }
+
+  btn1.style.display = "none";
+  step.classList.add("show");
+
+  // Auto-cancelar após 4 segundos
+  clearTimeout(_confirmTimers[protocolo]);
+  _confirmTimers[protocolo] = setTimeout(function(){
+    cancelarConfirmacao(protocolo);
+  }, 4000);
+}
+function cancelarConfirmacao(protocolo) {
+  clearTimeout(_confirmTimers[protocolo]);
+  var btn1 = document.getElementById("btn-concluir-"+protocolo);
+  var step = document.getElementById("confirm-step-"+protocolo);
+  if (btn1) btn1.style.display = "";
+  if (step) step.classList.remove("show");
+}
+function confirmarDireto(protocolo, endereco) {
+  clearTimeout(_confirmTimers[protocolo]);
+  cancelarConfirmacao(protocolo);
+  abrirModal(protocolo, endereco);
+}
+
+function cancelarMinhaExecucao(protocolo) {
+  liberarLockApi(protocolo).then(function(){
+    pararHeartbeat(protocolo);
+    toast("🔓 Execução cancelada — serviço liberado.","");
+    carregarDados();
+  });
 }
 
 // ══════════════════════════════════════════════
 //  RENDER CARDS
 // ══════════════════════════════════════════════
 function badgeTxt(t) {
-  return { urgente:"⚠️ Urgente", pendente:"🟡 Pendente", atrasado:"🔴 Atrasado", execucao:"🟣 Em execução" }[t] || t;
+  return {urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado",execucao:"🟣 Em execução"}[t]||t;
 }
-function esc(s) {
-  return String(s || "").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");
-}
+
 function renderCard(p) {
   var t   = p._t;
   var pct = t.pct.toFixed(0);
@@ -817,12 +1093,15 @@ function renderCard(p) {
   var outraExecucao = lock && lock.sessionId !== SESSION_ID;
   var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
-  var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 " + esc(p.obs) + "</span>" : "";
+  var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
-    foto = "<div><img class='card-foto' src='" + src + "' loading='lazy'" +
-           " onclick='abrirFoto(\"" + esc(p.fotoUrl || src) + "\")'" +
-           " onerror='onFotoErro(this,\"" + esc(p.fotoUrl || "") + "\",\"" + esc(p.fotoId || "") + "\")'></div>";
+    foto = "<div class='foto-wrap'><div class='foto-skeleton'></div>" +
+           "<img class='card-foto' src='"+src+"' loading='lazy'" +
+           " onload='onFotoLoad(this)'" +
+           " onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")'" +
+           " onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")'" +
+           " alt='Foto do local'></div>";
   }
 
   var execBadge = (outraExecucao || minhaExecucao)
@@ -831,83 +1110,106 @@ function renderCard(p) {
   var execInfoHtml = "";
   if (outraExecucao) {
     var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    var quem = lock.usuario ? " por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>" : "";
     execInfoHtml = "<div class='exec-info'>" +
       "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
       "<circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>" +
-      "Iniciado há " + (min < 1 ? "menos de 1 min" : min + " min") + "</div>";
+      "Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
   } else if (minhaExecucao) {
     execInfoHtml = "<div class='exec-info' style='background:#dcfce7;color:#166534;border-color:rgba(74,222,128,.3)'>" +
       "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'>" +
       "<polyline points='20 6 9 17 4 12'/></svg>Você está executando este serviço</div>";
   }
 
+  var protEsc = esc(p.protocolo);
+  var endEsc  = esc(p.endereco);
+
   var btnHtml;
   if (outraExecucao) {
     btnHtml = "<div class='btn-concluir bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
-    btnHtml = "<a class='btn-minha-exec' href='" + FORMS_URL + "' target='_blank'>📋 Abrir formulário novamente</a>" +
-      "<div style='margin-top:8px'><button onclick='cancelarMinhaExecucao(\"" + esc(p.protocolo) + "\")' " +
+    btnHtml = "<a class='btn-minha-exec' href='"+FORMS_URL+"' target='_blank'>📋 Abrir formulário novamente</a>" +
+      "<div style='margin-top:8px'><button onclick='cancelarMinhaExecucao(\""+protEsc+"\")' " +
       "style='background:none;border:1px solid #d1d5db;border-radius:8px;width:100%;padding:10px;" +
       "font-family:\"DM Sans\",sans-serif;font-size:13px;color:var(--texto2);cursor:pointer;'>" +
       "✕ Cancelar execução</button></div>";
   } else {
-    btnHtml = "<button class='btn-concluir' onclick='clicarConcluir(\"" + esc(p.protocolo) + "\",\"" +
-              esc(p.endereco) + "\")'>✅ Concluir este serviço</button>";
+    // Botão com confirmação dupla (evita toque acidental)
+    btnHtml = "<div class='btn-concluir-wrap' id='confirm-wrap-"+protEsc+"'>" +
+      "<button class='btn-concluir' id='btn-concluir-"+protEsc+"' " +
+      "onclick='clicarConcluir(\""+protEsc+"\",\""+endEsc+"\")'>✅ Concluir este serviço</button>" +
+      "<div class='btn-confirm-step' id='confirm-step-"+protEsc+"'>" +
+        "<button class='btn-nao' onclick='cancelarConfirmacao(\""+protEsc+"\")'>✕ Cancelar</button>" +
+        "<button class='btn-sim' onclick='confirmarDireto(\""+protEsc+"\",\""+endEsc+"\")'>▶ Confirmar</button>" +
+      "</div>" +
+      "</div>";
   }
 
-  return "<div class='card t-" + tipoCard + "'>" +
+  // Linha de prazo com hora de vencimento
+  var prazoExtra = t.horaVence
+    ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>"
+    : "";
+
+  return "<div class='card t-"+tipoCard+"'>" +
     "<div class='card-inner'><div class='card-stripe'></div>" +
     "<div class='card-body'>" +
       "<div class='card-top'>" +
         "<div class='card-top-left'>" +
-          "<span class='prot-num'>" + esc(p.protocolo) + "</span>" +
-          (tipoCard !== "execucao" ? "<span class='badge t-" + tipoCard + "'>" + badgeTxt(tipoCard) + "</span>" : "") +
+          "<span class='prot-num'>"+safeText(p.protocolo)+"</span>" +
+          (tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt(tipoCard)+"</span>":"") +
         "</div>" +
-        "<div class='card-top-right'>" + execBadge + "</div>" +
+        "<div class='card-top-right'>"+execBadge+"</div>" +
       "</div>" +
-      "<div class='endereco'>📍 " + esc(p.endereco) + "</div>" +
+      "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>" +
       "<div class='meta'>" +
-        "<span class='meta-item'>🕐 " + fdt(p.dataHora) + "</span>" +
-        "<span class='meta-item'>👷 " + esc(p.registradoPor || "—") + "</span>" + obs +
+        "<span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span>" +
+        "<span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+
       "</div>" +
       execInfoHtml + foto +
       "<div class='prazo-wrap'>" +
-        "<div class='prazo-row'><span>" + t.txt + "</span><span style='color:var(--texto2)'>" + pct + "% do prazo</span></div>" +
-        "<div class='prazo-bar'><div class='prazo-fill' style='width:" + pct + "%'></div></div>" +
+        "<div class='prazo-row'><span>"+t.txt+prazoExtra+"</span><span style='color:var(--texto2)'>"+pct+"% do prazo</span></div>" +
+        "<div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div>" +
       "</div>" +
     "</div></div>" +
-    "<div class='card-footer'>" + btnHtml + "</div></div>";
+    "<div class='card-footer'>"+btnHtml+"</div></div>";
 }
 
 // ══════════════════════════════════════════════
-//  AÇÕES
+//  RENDER GRID (incremental — só altera se mudou)
 // ══════════════════════════════════════════════
-function clicarConcluir(protocolo, endereco) { abrirModal(protocolo, endereco); }
-function cancelarMinhaExecucao(protocolo) {
-  liberarLockApi(protocolo).then(function() {
-    pararHeartbeat(protocolo);
-    toast("🔓 Execução cancelada — serviço liberado.", "");
-    carregarDados();
+var _prevStats  = {};
+var _prevHashes = {};
+
+function hashProtocolo(p) {
+  return JSON.stringify({
+    protocolo: p.protocolo,
+    status:    p.status,
+    lock:      p.lock ? p.lock.sessionId : null,
+    lockUser:  p.lock ? p.lock.usuario   : null,
+    lockTs:    p.lock ? p.lock.timestamp : null,
+    obs:       p.obs,
+    fotoId:    p.fotoId
   });
 }
 
-// ══════════════════════════════════════════════
-//  RENDER GRID
-// ══════════════════════════════════════════════
-var _prevStats = {};
 function render(lista) {
+  _ultimaLista = lista;
+  renderFiltrado(lista);
+}
+
+function renderFiltrado(lista) {
   var pen = 0, exec = 0, urg = 0, ok = 0, ativos = [];
   var hoje = new Date().toDateString();
 
   lista.forEach(function(p) {
-    var st = (p.status || "").toUpperCase().trim();
+    var st = (p.status||"").toUpperCase().trim();
     if (st === "CONCLUÍDO" || st === "CONCLUIDO") {
       if (p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje) ok++;
-      if (meusLocks[p.protocolo]) { pararHeartbeat(p.protocolo); toast("✅ Protocolo " + p.protocolo + " concluído!", ""); }
+      if (meusLocks[p.protocolo]) { pararHeartbeat(p.protocolo); toast("✅ Protocolo "+p.protocolo+" concluído!",""); }
       return;
     }
     p._t = tempo(p.dataHora);
-    if (p.lock) exec++; else if (p._t.tipo === "atrasado") urg++; else pen++;
+    if (p.lock) exec++; else if (p._t.tipo==="atrasado") urg++; else pen++;
     ativos.push(p);
   });
 
@@ -917,40 +1219,81 @@ function render(lista) {
     if (prev !== undefined && prev !== val) bump(id);
     _prevStats[id] = val;
   }
-  setCounter("nPen", pen); setCounter("nExec", exec);
-  setCounter("nUrg", urg); setCounter("nOk",   ok);
+  setCounter("nPen",pen); setCounter("nExec",exec);
+  setCounter("nUrg",urg); setCounter("nOk",ok);
 
   var g = document.getElementById("grid");
+
+  // Filtro de busca
+  var filtrados = filtrarLista(ativos);
+
   if (!ativos.length) {
     g.innerHTML = "<div class='empty'><div class='empty-icon'>✅</div>" +
                   "<div class='empty-title'>Tudo limpo!</div>" +
                   "<div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";
+    _prevHashes = {}; return;
+  }
+
+  if (termoBusca && !filtrados.length) {
+    g.innerHTML = "<div class='busca-nada'><div class='busca-nada-icon'>🔍</div>" +
+                  "<div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div>" +
+                  "<div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>";
     return;
   }
 
-  ativos.sort(function(a, b) {
+  filtrados.sort(function(a,b) {
     var rank = function(p) {
       if (p.lock && p.lock.sessionId === SESSION_ID) return 0;
       if (p.lock) return 1;
-      if (p._t.r <= 0 || p._t.tipo === "atrasado") return 2;
+      if (p._t.r <= 0 || p._t.tipo==="atrasado") return 2;
       if (p._t.r <= 4) return 3;
       return 4;
     };
-    var d = rank(a) - rank(b);
-    return d !== 0 ? d : a._t.r - b._t.r;
+    var d = rank(a)-rank(b);
+    return d!==0 ? d : a._t.r-b._t.r;
   });
 
-  var execL = ativos.filter(function(p) { return !!p.lock; });
-  var urgL  = ativos.filter(function(p) { return !p.lock && (p._t.tipo === "atrasado" || p._t.r <= 4); });
-  var norL  = ativos.filter(function(p) { return !p.lock && p._t.tipo === "pendente" && p._t.r > 4; });
+  var execL = filtrados.filter(function(p){ return !!p.lock; });
+  var urgL  = filtrados.filter(function(p){ return !p.lock && (p._t.tipo==="atrasado"||p._t.r<=4); });
+  var norL  = filtrados.filter(function(p){ return !p.lock && p._t.tipo==="pendente" && p._t.r>4; });
 
-  var h = "";
-  if (execL.length) h += "<div class='sec-label'>🟣 Em execução agora</div>" + execL.map(renderCard).join("");
-  if (urgL.length)  h += "<div class='sec-label'>🔴 Atenção imediata</div>"  + urgL.map(renderCard).join("");
-  if (norL.length)  h += "<div class='sec-label'>📋 Fila de serviços</div>"  + norL.map(renderCard).join("");
-  h += "<div class='ts'>Atualizado em " +
-       new Date().toLocaleTimeString("pt-BR", { hour:"2-digit", minute:"2-digit" }) + "</div>";
-  g.innerHTML = h;
+  // ── Atualização incremental: só re-renderiza cards que mudaram ──
+  var novoHashes = {};
+  filtrados.forEach(function(p){ novoHashes[p.protocolo] = hashProtocolo(p); });
+
+  // Verifica se a estrutura de seções mudou
+  var secaoAnterior = _prevHashes.__secoes__ || "";
+  var secaoAtual = [execL.length,urgL.length,norL.length].join("|");
+
+  var precisaReconstruir = (secaoAtual !== secaoAnterior);
+  if (!precisaReconstruir) {
+    // Verifica se algum protocolo mudou de conteúdo
+    var todos = filtrados.map(function(p){ return p.protocolo; });
+    var prevTodos = (_prevHashes.__ordem__||"").split(",");
+    if (todos.join(",") !== prevTodos.join(",")) precisaReconstruir = true;
+  }
+  if (!precisaReconstruir) {
+    filtrados.forEach(function(p) {
+      if (_prevHashes[p.protocolo] !== novoHashes[p.protocolo]) precisaReconstruir = true;
+    });
+  }
+
+  if (precisaReconstruir) {
+    var h = "";
+    if (execL.length) h += "<div class='sec-label'>🟣 Em execução agora</div>"+execL.map(renderCard).join("");
+    if (urgL.length)  h += "<div class='sec-label'>🔴 Atenção imediata</div>" +urgL.map(renderCard).join("");
+    if (norL.length)  h += "<div class='sec-label'>📋 Fila de serviços</div>" +norL.map(renderCard).join("");
+    h += "<div class='ts'>Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
+    g.innerHTML = h;
+  } else {
+    // Só atualiza o timestamp
+    var tsEl = g.querySelector(".ts");
+    if (tsEl) tsEl.textContent = "Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  }
+
+  _prevHashes = novoHashes;
+  _prevHashes.__secoes__ = secaoAtual;
+  _prevHashes.__ordem__  = filtrados.map(function(p){ return p.protocolo; }).join(",");
 }
 
 // ══════════════════════════════════════════════
@@ -959,17 +1302,44 @@ function render(lista) {
 function carregarDados() {
   var btn = document.getElementById("btnReload");
   btn.classList.add("spin"); btn.disabled = true;
-  fetch(API + "&t=" + Date.now())
-    .then(function(r) { return r.json(); })
-    .then(render)
-    .catch(function(err) {
-      console.error("[carregarDados]", err);
+
+  if (!estaOnline()) {
+    // Offline: usa cache
+    var cache = lerCache();
+    if (cache) {
+      render(cache);
+      mostrarBannerOffline("offline");
+    } else {
       document.getElementById("grid").innerHTML =
-        "<div class='empty'><div class='empty-icon'>⚠️</div>" +
-        "<div class='empty-title'>Erro ao carregar</div>" +
-        "<div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";
+        "<div class='empty'><div class='empty-icon'>📵</div>" +
+        "<div class='empty-title'>Sem conexão</div>" +
+        "<div class='empty-sub'>Conecte-se à internet para carregar os protocolos.</div></div>";
+    }
+    btn.classList.remove("spin"); btn.disabled = false;
+    return;
+  }
+
+  fetch(API+"&t="+Date.now())
+    .then(function(r){ return r.json(); })
+    .then(function(lista) {
+      salvarCache(lista);
+      mostrarBannerOffline(null);
+      render(lista);
     })
-    .finally(function() { btn.classList.remove("spin"); btn.disabled = false; });
+    .catch(function(err) {
+      console.error("[carregarDados]",err);
+      var cache = lerCache();
+      if (cache) {
+        render(cache);
+        mostrarBannerOffline("cache");
+      } else {
+        document.getElementById("grid").innerHTML =
+          "<div class='empty'><div class='empty-icon'>⚠️</div>" +
+          "<div class='empty-title'>Erro ao carregar</div>" +
+          "<div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";
+      }
+    })
+    .finally(function(){ btn.classList.remove("spin"); btn.disabled = false; });
 }
 
 // ══════════════════════════════════════════════
@@ -978,8 +1348,8 @@ function carregarDados() {
 window.addEventListener("beforeunload", function() {
   Object.keys(meusLocks).forEach(function(prot) {
     pararHeartbeat(prot);
-    var params = "acao=liberar&protocolo=" + encodeURIComponent(prot) + "&sessionId=" + encodeURIComponent(SESSION_ID);
-    try { if (navigator.sendBeacon) navigator.sendBeacon(API_BASE + "?" + params); } catch(e) {}
+    var params = "acao=liberar&protocolo="+encodeURIComponent(prot)+"&sessionId="+encodeURIComponent(SESSION_ID);
+    try { if (navigator.sendBeacon) navigator.sendBeacon(API_BASE+"?"+params); } catch(e) {}
   });
 });
 
