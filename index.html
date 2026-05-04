@@ -1725,6 +1725,19 @@ function renderTablet(lista) {
   }
   setStat("nPen",pen); setStat("nExec",exec); setStat("nUrg",urg); setStat("nOk",ok);
 
+  // Contadores nos filtros tab
+document.querySelectorAll(".filtro-tab").forEach(function(btn) {
+  var ft = btn.getAttribute("data-ft");
+  var count =
+    ft === "todos"    ? ativos.length
+    : ft === "atrasado" ? ativos.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; }).length
+    : ft === "urgente"  ? ativos.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; }).length
+    : ft === "execucao" ? ativos.filter(function(p){ return !!p.lock; }).length
+    : 0;
+  var labels = {todos:"Todos", atrasado:"Atrasados", urgente:"Urgentes", execucao:"Em execução"};
+  btn.textContent = labels[ft] + (count > 0 ? " ("+count+")" : "");
+});
+
   // sidebar lista (atrasados/urgentes/em execução)
   var sbEl = document.getElementById("sbLista");
   var sbAtrasados = ativos.filter(function(p){ return !p.lock && p._t.tipo==="atrasado"; });
