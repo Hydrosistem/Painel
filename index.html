@@ -1279,11 +1279,17 @@ var _protocoloSelecionado = null;
 // ══════════════════════════════════════════════
 //  UTILITÁRIOS
 // ══════════════════════════════════════════════
-function fotoSrc(id) { return id ? "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1600" : null; }
+function fotoSrc(id) {
+  return id ? "https://drive.google.com/uc?export=view&id=" + encodeURIComponent(id) : null;
+}
 function onFotoErro(img, u, id) {
-  if (!img.dataset.r1 && id) { img.dataset.r1 = "1"; img.src = "https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w1200"; return; }
+  if (!img.dataset.r1 && id) {
+    img.dataset.r1 = "1";
+    img.src = "https://drive.google.com/thumbnail?id=" + encodeURIComponent(id) + "&sz=w800";
+    return;
+  }
   var w = img.closest(".foto-wrap");
-  if (w) w.outerHTML = "<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
+  if (w) w.outerHTML = "<a class='btn-foto-fallback' href='" + (u||"#") + "' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
 }
 function onFotoLoad(img) {
   img.classList.add("loaded");
@@ -1314,7 +1320,9 @@ function fdtCurto(iso) {
   if (!iso) return "—";
   return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 }
-function abrirFoto(u) { document.getElementById("lbImg").src=u; document.getElementById("lb").classList.add("open"); }
+function abrirFoto(u) {
+  window.open(u, '_blank', 'noopener');
+}
 function fecharFoto() { document.getElementById("lb").classList.remove("open"); document.getElementById("lbImg").src=""; }
 
 var _toastTimer = null;
