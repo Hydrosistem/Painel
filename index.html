@@ -546,6 +546,7 @@ function instalarPWA() {
 window.addEventListener("appinstalled", function() {
   toast("📲 Hydrosistem instalado!", "");
   deferredPrompt = null;
+  try { localStorage.setItem("pwa_instalado", "1"); } catch(e) {}
   var btn = document.getElementById("btnInstall");
   if (btn) btn.classList.remove("visible");
 });
@@ -570,7 +571,9 @@ function iniciarEsperaPrompt() {
 
 window.addEventListener("load", function() {
   var ua = getUA();
-  if (ua.isStandalone) return;
+  var jaInstalado = ua.isStandalone ||
+    (function(){ try { return localStorage.getItem("pwa_instalado") === "1"; } catch(e){ return false; } })();
+  if (jaInstalado) return;
 
   // iOS nunca dispara beforeinstallprompt → fallback imediato
   if (ua.isIOS) {
