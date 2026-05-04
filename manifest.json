@@ -6,7 +6,7 @@
   "scope": "./",
   "display": "standalone",
   "capture_links": "existing-client-navigate",
-  "orientation": "any",
+  "orientation": "natural",
   "background_color": "#003D7A",
   "theme_color": "#0057A8",
   "lang": "pt-BR",
