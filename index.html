@@ -1046,8 +1046,9 @@ function atualizarChipOperador() {
   var btn  = document.getElementById("btnOperador");
   if (!btn) return;
   if (nome) {
-    var iniciais = nome.trim().split(/\s+/).map(function(p){ return p[0]; }).slice(0,2).join("").toUpperCase();
-    btn.innerHTML = "<span class='chip-avatar'>" + iniciais + "</span>" + nome.split(" ")[0];
+    var nLocks = Object.keys(meusLocks).length;
+    btn.innerHTML = "<span class='chip-avatar' style='background:rgba(255,255,255,.3);font-size:14px;'>👷🏻</span>" + 
+      nome.split(" ")[0] + (nLocks > 0 ? " ("+nLocks+")" : "");
     btn.className = "chip-operador";
     btn.style.display = "";
   } else { btn.style.display = "none"; }
