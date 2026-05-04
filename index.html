@@ -1493,7 +1493,7 @@ function selecionarProtocolo(p) {
       "<img class='detail-foto' src='"+src+"' loading='lazy'" +
       " onload='onDetailFotoLoad(this)'" +
       " onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")'" +
-      " onerror='this.style.display=\"none\"'" +
+      " onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")'" +
       " alt='Foto do local'></div>";
   }
 
