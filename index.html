@@ -1029,6 +1029,10 @@ var PRAZO     = 24;
 var LOCK_TTL  = 600;
 var API       = API_BASE + "?acao=dados";
 var CACHE_KEY = "hyd_cache_dados";
+// ── ATALHO PWA
+if (new URLSearchParams(location.search).get('action') === 'refresh') {
+  window.addEventListener('load', function(){ carregarDados(); });
+}
 var CACHE_TS  = "hyd_cache_ts";
 
 // ══════════════════════════════════════════════
@@ -1083,7 +1087,16 @@ function estaOnline() { return navigator.onLine; }
 function salvarCache(lista) {
   try { localStorage.setItem(CACHE_KEY, JSON.stringify(lista)); localStorage.setItem(CACHE_TS, Date.now().toString()); } catch(e) {}
 }
-function lerCache() { try { var r = localStorage.getItem(CACHE_KEY); return r ? JSON.parse(r) : null; } catch(e) { return null; } }
+function lerCache() {
+  try {
+    var r = localStorage.getItem(CACHE_KEY);
+    if (!r) return null;
+    var ts = lerCacheTs();
+    var horas = (Date.now() - ts) / 36e5;
+    if (horas > 2) mostrarBannerOffline("cache");
+    return JSON.parse(r);
+  } catch(e) { return null; }
+}
 function lerCacheTs() { try { return parseInt(localStorage.getItem(CACHE_TS)||"0",10); } catch(e) { return 0; } }
 function mostrarBannerOffline(modo) {
   document.getElementById("bannerOffline").classList.toggle("show", modo==="offline");
@@ -1280,7 +1293,7 @@ var _protocoloSelecionado = null;
 //  UTILITÁRIOS
 // ══════════════════════════════════════════════
 function isDesktop() {
-  return window.innerWidth >= 768 && !('ontouchstart' in window);
+  return !('ontouchstart' in window) && !navigator.maxTouchPoints;
 }
 
 function fotoSrc(id) {
@@ -1986,6 +1999,14 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 carregarDados();
 setInterval(carregarDados, 15000);
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible') {
+    carregarDados();
+    Object.keys(meusLocks).forEach(function(prot) {
+      postLock({acao:'heartbeat', protocolo:prot, sessionId:SESSION_ID});
+    });
+  }
+});
 </script>
 </body>
 </html>
