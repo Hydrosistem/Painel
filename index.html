@@ -319,49 +319,10 @@ header {
 .btn-cancelar  { background: var(--cinza-bg); color: var(--texto); }
 .btn-confirmar { background: var(--exec); color: #fff; }
 
-/* ══ INTRO ════════════════════════════════════════════════ */
-#introScreen {
-  position: fixed; inset: 0; z-index: 9999;
-  background: #001f3f;
-  display: flex; align-items: center; justify-content: center;
-  transition: opacity .6s ease;
-}
-#introScreen.fade-out {
-  opacity: 0;
-  pointer-events: none;
-}
-#introScreen.hidden {
-  display: none;
-}
-#introVideo {
-  /* Mobile: preenche a tela toda (vídeo é vertical, combina) */
-  width: 100%; height: 100%;
-  object-fit: cover;
-}
-/* Tablet / Desktop: vídeo vertical centralizado com fundo escuro nas laterais */
-@media (min-width: 600px) {
-  #introVideo {
-    width: auto;
-    height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-  }
-}
 </style>
 </head>
 <body>
 
-<!-- ══ INTRO ═══════════════════════════════════════════════ -->
-<div id="introScreen">
-  <video id="introVideo"
-    src="./video/intro.mp4"
-    autoplay
-    muted
-    playsinline
-    webkit-playsinline
-    preload="auto">
-  </video>
-</div>
 
 <!-- ══ HEADER ══════════════════════════════════════════════ -->
 <header>
@@ -1013,45 +974,6 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 setInterval(carregarDados, 15000);
 
-// ══════════════════════════════════════════════
-//  INTRO — toca o vídeo e some ao terminar
-// ══════════════════════════════════════════════
-(function() {
-  var intro  = document.getElementById("introScreen");
-  var video  = document.getElementById("introVideo");
-  if (!intro || !video) { carregarDados(); return; }
-
-  function fecharIntro() {
-    intro.classList.add("fade-out");
-    setTimeout(function() {
-      intro.classList.add("hidden");
-    }, 650);
-  }
-
-  // Passa automaticamente ao terminar
-  video.addEventListener("ended", fecharIntro);
-
-  // Segurança: se o vídeo não carregar ou travar, fecha após 6s
-  var safetyTimer = setTimeout(fecharIntro, 6000);
-  video.addEventListener("ended", function() { clearTimeout(safetyTimer); });
-
-  // Tenta dar play (alguns navegadores bloqueiam autoplay com som)
-  // Desktop (largura >= 1024px) → pula a intro
-  if (window.innerWidth >= 1024) {
-    fecharIntro();
-    return;
-  }
-
-  var playPromise = video.play();
-  if (playPromise !== undefined) {
-    playPromise.catch(function() {
-      // Autoplay bloqueado → fecha intro imediatamente
-      fecharIntro();
-    });
-  }
-
-  carregarDados();
-})();
 </script>
 </body>
 </html>
