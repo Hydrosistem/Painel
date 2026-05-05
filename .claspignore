@@ -1,1 +1,7 @@
-
+icons/**
+manifest.json
+sw.js
+README.md
+node_modules/**
+.github/**
+.git/**
