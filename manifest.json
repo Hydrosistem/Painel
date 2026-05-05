@@ -91,3 +91,9 @@
   ],
   "prefer_related_applications": false
 }
+"related_applications": [
+  {
+    "platform": "webapp",
+    "url": "https://necroblut.github.io/Hydrosistem/manifest.json"
+  }
+]
