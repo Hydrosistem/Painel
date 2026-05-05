@@ -1241,30 +1241,39 @@ window.matchMedia('(display-mode: standalone)').addEventListener('change', funct
 });
 function iniciarEsperaPrompt() {
   if (foiInstalado()) return;
-  if (deferredPrompt) return;
+  if (deferredPrompt) { ativarBotaoNativo(); return; }
   clearTimeout(_promptWaitTimer);
   _promptWaitTimer = setTimeout(function(){
-    if (!deferredPrompt && !foiInstalado()) {
+    if (deferredPrompt) {
+      ativarBotaoNativo();
+    } else if (!foiInstalado()) {
       if (navigator.getInstalledRelatedApps) {
         navigator.getInstalledRelatedApps().then(function(apps) {
           if (!apps || apps.length === 0) ativarBotaoFallback();
-        }).catch(function(){});
+        }).catch(function(){ ativarBotaoFallback(); });
+      } else {
+        // Chrome desktop sem getInstalledRelatedApps — não mostra botão,
+        // o ícone ⊕ na barra de endereços já oferece a instalação
+        ocultarBtnInstall();
       }
     }
-  }, 8000);
+  }, 3000);
 }
 window.addEventListener("load", function() {
   verificarInstalado();
-  if (estaInstalado()) { ocultarBtnInstall(); marcarInstalado(); return; }
   if (foiInstalado()) { ocultarBtnInstall(); return; }
-  var ua = getUA();
-  if (ua.isIOS) { ativarBotaoFallback(); return; }
-  if ("serviceWorker" in navigator) {
-    var ok = false;
-    var ini = function(){ if (!ok){ ok=true; iniciarEsperaPrompt(); } };
-    navigator.serviceWorker.ready.then(ini).catch(ini);
-    setTimeout(ini, 1000);
-  } else { iniciarEsperaPrompt(); }
+  // Espera o beforeinstallprompt disparar antes de qualquer fallback
+  setTimeout(function() {
+    if (deferredPrompt) { ativarBotaoNativo(); return; }
+    var ua = getUA();
+    if (ua.isIOS) { ativarBotaoFallback(); return; }
+    if ("serviceWorker" in navigator) {
+      var ok = false;
+      var ini = function(){ if (!ok){ ok=true; iniciarEsperaPrompt(); } };
+      navigator.serviceWorker.ready.then(ini).catch(ini);
+      setTimeout(ini, 1000);
+    } else { iniciarEsperaPrompt(); }
+  }, 500);
 });
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
