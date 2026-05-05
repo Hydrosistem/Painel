@@ -1236,44 +1236,25 @@ function ativarBotaoFallback() {
 window.addEventListener("beforeinstallprompt", function(e) { e.preventDefault(); deferredPrompt = e; if (!estaInstalado()) ativarBotaoNativo(); });
 window.addEventListener("appinstalled", function() { deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!",""); });
 window.matchMedia('(display-mode: standalone)').addEventListener('change', function(e) {
-  if (e.matches) { ocultarBtnInstall(); }
-  else { if (!foiInstalado()) { deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); } }
+  if (e.matches) { marcarInstalado(); ocultarBtnInstall(); }
+  else { desmarcarInstalado(); deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); }
 });
 function iniciarEsperaPrompt() {
-  if (foiInstalado()) return;
-  if (deferredPrompt) { ativarBotaoNativo(); return; }
+  if (estaInstalado() || deferredPrompt) return;
   clearTimeout(_promptWaitTimer);
-  _promptWaitTimer = setTimeout(function(){
-    if (deferredPrompt) {
-      ativarBotaoNativo();
-    } else if (!foiInstalado()) {
-      if (navigator.getInstalledRelatedApps) {
-        navigator.getInstalledRelatedApps().then(function(apps) {
-          if (!apps || apps.length === 0) ativarBotaoFallback();
-        }).catch(function(){ ativarBotaoFallback(); });
-      } else {
-        // Chrome desktop sem getInstalledRelatedApps — não mostra botão,
-        // o ícone ⊕ na barra de endereços já oferece a instalação
-        ocultarBtnInstall();
-      }
-    }
-  }, 3000);
+  _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 8000);
 }
 window.addEventListener("load", function() {
-  verificarInstalado();
-  if (foiInstalado()) { ocultarBtnInstall(); return; }
-  // Espera o beforeinstallprompt disparar antes de qualquer fallback
-  setTimeout(function() {
-    if (deferredPrompt) { ativarBotaoNativo(); return; }
-    var ua = getUA();
-    if (ua.isIOS) { ativarBotaoFallback(); return; }
-    if ("serviceWorker" in navigator) {
-      var ok = false;
-      var ini = function(){ if (!ok){ ok=true; iniciarEsperaPrompt(); } };
-      navigator.serviceWorker.ready.then(ini).catch(ini);
-      setTimeout(ini, 1000);
-    } else { iniciarEsperaPrompt(); }
-  }, 500);
+  if (estaInstalado()) { ocultarBtnInstall(); marcarInstalado(); return; }
+  if (foiInstalado() && !estaInstalado()) desmarcarInstalado();
+  var ua = getUA();
+  if (ua.isIOS) { ativarBotaoFallback(); return; }
+  if ("serviceWorker" in navigator) {
+    var ok = false;
+    var ini = function(){ if (!ok){ ok=true; iniciarEsperaPrompt(); } };
+    navigator.serviceWorker.ready.then(ini).catch(ini);
+    setTimeout(ini, 1000);
+  } else { iniciarEsperaPrompt(); }
 });
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", function() {
