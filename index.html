@@ -1169,8 +1169,6 @@ var deferredPrompt   = null;
 var swReg            = null;
 var _promptWaitTimer = null;
 function estaInstalado() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
-function marcarInstalado()   { try { localStorage.setItem("pwa_instalado","1"); } catch(e) {} }
-function desmarcarInstalado(){ try { localStorage.removeItem("pwa_instalado"); }  catch(e) {} }
 function foiInstalado() {
   if (window.matchMedia('(display-mode: standalone)').matches) return true;
   if (window.navigator.standalone === true) return true;
@@ -1238,17 +1236,27 @@ function ativarBotaoFallback() {
 window.addEventListener("beforeinstallprompt", function(e) { e.preventDefault(); deferredPrompt = e; if (!estaInstalado()) ativarBotaoNativo(); });
 window.addEventListener("appinstalled", function() { deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!",""); });
 window.matchMedia('(display-mode: standalone)').addEventListener('change', function(e) {
-  if (e.matches) { marcarInstalado(); ocultarBtnInstall(); }
-  else { desmarcarInstalado(); deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); }
+  if (e.matches) { ocultarBtnInstall(); }
+  else { if (!foiInstalado()) { deferredPrompt ? ativarBotaoNativo() : ativarBotaoFallback(); } }
 });
 function iniciarEsperaPrompt() {
-  if (estaInstalado() || deferredPrompt) return;
+  if (foiInstalado()) return;
+  if (deferredPrompt) return;
   clearTimeout(_promptWaitTimer);
-  _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 8000);
+  _promptWaitTimer = setTimeout(function(){
+    if (!deferredPrompt && !foiInstalado()) {
+      if (navigator.getInstalledRelatedApps) {
+        navigator.getInstalledRelatedApps().then(function(apps) {
+          if (!apps || apps.length === 0) ativarBotaoFallback();
+        }).catch(function(){});
+      }
+    }
+  }, 8000);
 }
 window.addEventListener("load", function() {
+  verificarInstalado();
   if (estaInstalado()) { ocultarBtnInstall(); marcarInstalado(); return; }
-  if (foiInstalado() && !estaInstalado()) desmarcarInstalado();
+  if (foiInstalado()) { ocultarBtnInstall(); return; }
   var ua = getUA();
   if (ua.isIOS) { ativarBotaoFallback(); return; }
   if ("serviceWorker" in navigator) {
