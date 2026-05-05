@@ -1171,12 +1171,26 @@ var _promptWaitTimer = null;
 function estaInstalado() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
 function marcarInstalado()   { try { localStorage.setItem("pwa_instalado","1"); } catch(e) {} }
 function desmarcarInstalado(){ try { localStorage.removeItem("pwa_instalado"); }  catch(e) {} }
-function foiInstalado()      { try { return localStorage.getItem("pwa_instalado")==="1"; } catch(e){ return false; } }
+function foiInstalado() {
+  if (window.matchMedia('(display-mode: standalone)').matches) return true;
+  if (window.navigator.standalone === true) return true;
+  return false;
+}
+function marcarInstalado()    {}
+function desmarcarInstalado() {}
+function verificarInstalado() {
+  if (navigator.getInstalledRelatedApps) {
+    navigator.getInstalledRelatedApps().then(function(apps) {
+      if (apps && apps.length > 0) ocultarBtnInstall();
+    }).catch(function(){});
+  }
+}
 function ocultarBtnInstall() {
   var btn = document.getElementById("btnInstall");
   if (btn) { btn.classList.remove("visible"); btn.classList.add("hidden"); btn.onclick = null; }
 }
 function mostrarBtnInstall(fn) {
+  if (foiInstalado()) { ocultarBtnInstall(); return; }
   var btn = document.getElementById("btnInstall");
   if (btn) { btn.classList.remove("hidden"); btn.classList.add("visible"); btn.onclick = fn; }
 }
