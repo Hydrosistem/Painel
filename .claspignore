@@ -1,7 +1,9 @@
 icons/**
 manifest.json
 sw.js
+404.html        ← adicione essa linha
 README.md
 node_modules/**
 .github/**
 .git/**
+Hydrosistem/**
