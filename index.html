@@ -1497,20 +1497,32 @@ if (sbEl) {
   sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
 }
 
-  var filtrados=ativos.slice();
-  if (termoBuscaSb) filtrados=filtrados.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0; });
-  if (sbFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
-  else if (sbFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
-  else if (sbFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
-  else if (sbFiltro==="concluido") {
-    filtrados = concluidosHoje.map(function(p){
-      p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
-      return p;
-    });
-  }
-  if (ftFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
-  else if (ftFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
-  else if (ftFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
+  // Base: ativos normalmente, mas se há busca inclui concluídos também
+var todosParaBuscaSb = ativos.concat(concluidosHoje.map(function(p){
+  p._t = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:""};
+  return p;
+}));
+
+var filtrados = termoBuscaSb
+  ? todosParaBuscaSb.filter(function(p){
+      return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||
+             (p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0;
+    })
+  : ativos.slice();
+
+// Filtros de aba só se aplicam quando não há busca ativa
+if (!termoBuscaSb) {
+  if (sbFiltro==="atrasado")       filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
+  else if (sbFiltro==="urgente")   filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
+  else if (sbFiltro==="execucao")  filtrados=filtrados.filter(function(p){return !!p.lock;});
+  else if (sbFiltro==="concluido") filtrados=concluidosHoje.map(function(p){
+    p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
+    return p;
+  });
+  if (ftFiltro==="atrasado")       filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
+  else if (ftFiltro==="urgente")   filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
+  else if (ftFiltro==="execucao")  filtrados=filtrados.filter(function(p){return !!p.lock;});
+}
 
   filtrados.sort(function(a,b){
     var rank=function(p){
