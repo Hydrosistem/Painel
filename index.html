@@ -1209,7 +1209,7 @@ function selecionarProtocolo(p) {
       "<div class='mini-card'><div class='mini-card-val'>"+abertura+"</div><div class='mini-card-lbl'>Abertura</div></div>" +
       "<div class='mini-card'><div class='mini-card-val"+(concluido?" t-concluido":t.r<=0?" t-atrasado":"")+"'>"+prazoHora+"</div><div class='mini-card-lbl'>"+prazoLbl+"</div></div>" +
     "</div>" +
-    "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:100%'></div></div>" +
+    "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:"+t.pct.toFixed(0)+"%'></div></div>" +
     execInfoHtml +
     "<div class='detail-rows'>" +
       "<div class='detail-row'><div class='detail-row-lbl'>Registrado por</div><div class='detail-row-val'>"+safeText(p.registradoPor||"—")+"</div></div>" +
@@ -1374,7 +1374,7 @@ function renderCardTablet(p) {
           (execSub?execSub:"") +
         "</div>" +
         "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
-        "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:100%'></div></div>" +
+        "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>" +
       "</div></div>" +
     "</div>"
   );
