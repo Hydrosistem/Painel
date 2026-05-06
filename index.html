@@ -34,7 +34,6 @@
   --exec:        #6B21A8;
   --exec-bg:     #F3E8FF;
   --exec-borda:  #A855F7;
-  /* ── NOVO: concluído ── */
   --concluido:      #1A7A3C;
   --concluido-bg:   #E6F4EC;
   --concluido-borda:#4ADE80;
@@ -94,6 +93,52 @@ header {
 .btn-header.visible { display: flex; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
+/* ══ MELHORIA 6: Avatar colorido com iniciais ══ */
+.chip-avatar-color {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: .3px;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.35);
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ══ MELHORIA 4: Progress bar de atualização ══ */
+#refreshBar {
+  height: 3px;
+  background: rgba(0,87,168,.12);
+  width: 100%;
+  overflow: hidden;
+  position: sticky;
+  top: 64px;
+  z-index: 101;
+}
+#refreshBarFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--azul) 0%, #38bdf8 50%, var(--azul) 100%);
+  background-size: 200% 100%;
+  border-radius: 0 2px 2px 0;
+  transition: width .5s linear;
+  animation: barShimmer 1.8s linear infinite;
+}
+@keyframes barShimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+#refreshBar.paused #refreshBarFill {
+  background: var(--verde);
+  animation: none;
+  transition: width .2s ease;
+}
+
 /* ══ BANNERS ══ */
 #bannerOffline { display: none; background: #7B0000; color: #fff; font-size: 12px; font-weight: 600; text-align: center; padding: 7px 16px; letter-spacing: .3px; }
 #bannerOffline.show { display: block; }
@@ -120,7 +165,7 @@ header {
 .layout-root { display: flex; flex-direction: column; min-height: calc(100vh - 64px); }
 
 /* ══ MOBILE: busca ══ */
-.search-wrap { background: var(--branco); border-bottom: 1px solid var(--borda); padding: 10px 16px; position: sticky; top: 64px; z-index: 99; }
+.search-wrap { background: var(--branco); border-bottom: 1px solid var(--borda); padding: 10px 16px; position: sticky; top: 67px; z-index: 99; }
 .search-inner { max-width: 720px; margin: 0 auto; position: relative; }
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texto2); pointer-events: none; }
 .search-input { width: 100%; padding: 10px 40px 10px 38px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 14px; background: var(--cinza-bg); outline: none; transition: border-color .2s, background .2s; }
@@ -150,7 +195,7 @@ header {
   .search-wrap { display: none; }
   .stats       { display: none; }
   .main        { display: none; }
-  .layout-root { flex-direction: row; align-items: stretch; height: calc(100vh - 64px); overflow: hidden; }
+  .layout-root { flex-direction: row; align-items: stretch; height: calc(100vh - 67px); overflow: hidden; }
 
   .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--branco); border-right: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .sb-search { padding: 12px; border-bottom: 1px solid var(--borda); position: relative; }
@@ -169,7 +214,30 @@ header {
   .sb-filter-btn.active.s-ok       { background: var(--verde-bg);    color: var(--verde);    }
   .sb-filter-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
   .sb-filter-left { display: flex; align-items: center; gap: 8px; }
-  .sb-filter-count { font-size: 12px; font-weight: 700; font-family: "DM Mono",monospace; min-width: 24px; text-align: right; }
+
+  /* ══ MELHORIA 3: bump nos contadores da sidebar ══ */
+  .sb-filter-count {
+    font-size: 12px; font-weight: 700; font-family: "DM Mono",monospace; min-width: 24px; text-align: right;
+    display: inline-block;
+    transition: color .2s;
+  }
+  .sb-n-bump {
+    animation: sbBump .45s cubic-bezier(.34,1.56,.64,1);
+  }
+  @keyframes sbBump {
+    0%   { transform: scale(1);    color: inherit; }
+    35%  { transform: scale(1.45); color: var(--azul); }
+    100% { transform: scale(1);    color: inherit; }
+  }
+  .sb-filter-btn.s-atrasado .sb-filter-count.sb-n-bump { animation-name: sbBumpAtrasado; }
+  @keyframes sbBumpAtrasado { 35% { transform: scale(1.45); color: var(--atrasado); } }
+  .sb-filter-btn.s-urgente .sb-filter-count.sb-n-bump { animation-name: sbBumpUrgente; }
+  @keyframes sbBumpUrgente  { 35% { transform: scale(1.45); color: var(--vermelho); } }
+  .sb-filter-btn.s-exec .sb-filter-count.sb-n-bump { animation-name: sbBumpExec; }
+  @keyframes sbBumpExec     { 35% { transform: scale(1.45); color: var(--exec);     } }
+  .sb-filter-btn.s-ok .sb-filter-count.sb-n-bump { animation-name: sbBumpOk; }
+  @keyframes sbBumpOk       { 35% { transform: scale(1.45); color: var(--verde);    } }
+
   .sb-atrasados { flex: 1; overflow-y: auto; padding: 8px 0; }
   .sb-sec { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--texto2); padding: 6px 14px 4px; }
   .sb-item { display: flex; flex-direction: column; gap: 1px; padding: 7px 14px; cursor: pointer; border-left: 3px solid transparent; transition: background .12s; }
@@ -178,7 +246,6 @@ header {
   .sb-item.selected.t-atrasado { background: var(--atrasado-bg); border-left-color: var(--atrasado); }
   .sb-item.selected.t-urgente  { background: var(--vermelho-bg); border-left-color: var(--vermelho); }
   .sb-item.selected.t-exec     { background: var(--exec-bg);     border-left-color: var(--exec);     }
-  /* NOVO: concluído na sidebar */
   .sb-item.selected.t-concluido { background: var(--verde-bg); border-left-color: var(--verde); }
   .sb-item-end { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sb-item-sub { font-size: 11px; color: var(--texto2); }
@@ -259,19 +326,75 @@ header {
   .btn-detail-cancelar { width: 100%; min-height: 40px; border-radius: var(--radius-sm); background: none; border: 1px solid var(--borda); font-family: "DM Sans",sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer; transition: background .15s; }
   .btn-detail-cancelar:hover { background: var(--cinza-bg); }
 
-  /* ── CARD TABLET ── */
-  .card-t { background: var(--branco); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); cursor: pointer; transition: box-shadow .2s, transform .15s; display: flex; flex-direction: column; }
+  /* ══ MELHORIA 1: card tablet com thumbnail de foto ══ */
+  .card-t {
+    background: var(--branco); border-radius: var(--radius); overflow: hidden;
+    box-shadow: var(--shadow); border: 1px solid var(--borda);
+    cursor: pointer; transition: box-shadow .2s, transform .15s;
+    display: flex; flex-direction: column;
+  }
   .card-t:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
   .card-t.selected { border: 2px solid var(--azul); box-shadow: 0 0 0 3px rgba(0,87,168,.15), var(--shadow-md); }
   .card-t.selected.t-atrasado  { border-color: var(--atrasado); box-shadow: 0 0 0 3px rgba(123,0,0,.15), var(--shadow-md); }
   .card-t.selected.t-urgente   { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(192,57,43,.15), var(--shadow-md); }
   .card-t.selected.t-execucao  { border-color: var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
-  /* NOVO: concluído no card tablet */
   .card-t.selected.t-concluido { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(26,122,60,.15), var(--shadow-md); }
   .card-t.t-execucao  { border: 2px solid var(--exec-borda); }
   .card-t.t-concluido { border: 1px solid var(--concluido-borda); opacity: .85; }
+
+  /* Thumbnail */
+  .card-t-thumb {
+    width: 100%;
+    aspect-ratio: 16/6;
+    overflow: hidden;
+    position: relative;
+    background: var(--cinza-bg);
+    border-bottom: 1px solid var(--borda);
+    flex-shrink: 0;
+  }
+  .card-t-thumb-sk {
+    position: absolute; inset: 0;
+    background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  .card-t-thumb-img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    display: block;
+    opacity: 0;
+    transition: opacity .35s;
+    position: relative; z-index: 1;
+    cursor: pointer;
+  }
+  .card-t-thumb-img.loaded { opacity: 1; }
+
   .card-t-inner { display: flex; flex: 1; }
-  .card-t-stripe { width: 5px; flex-shrink: 0; }
+
+  /* ══ MELHORIA 5: shimmer na stripe no hover ══ */
+  .card-t-stripe {
+    width: 5px; flex-shrink: 0;
+    position: relative; overflow: hidden;
+  }
+  .card-t-stripe::after {
+    content: "";
+    position: absolute;
+    top: -40%; left: 0;
+    width: 100%; height: 40%;
+    background: rgba(255,255,255,.55);
+    border-radius: 2px;
+    opacity: 0;
+    transition: none;
+  }
+  .card-t:hover .card-t-stripe::after {
+    opacity: 1;
+    animation: stripeSlide .55s ease forwards;
+  }
+  @keyframes stripeSlide {
+    0%   { top: -40%; opacity: .8; }
+    100% { top: 140%; opacity: 0;  }
+  }
+
   .card-t.t-urgente   .card-t-stripe { background: var(--vermelho); }
   .card-t.t-pendente  .card-t-stripe { background: var(--amarelo);  }
   .card-t.t-atrasado  .card-t-stripe { background: var(--atrasado); }
@@ -295,9 +418,42 @@ header {
   .badge-sm.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
   .badge-sm.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
   .badge-sm.t-execucao  { background: var(--exec-bg); color: var(--exec); border: 1px solid var(--exec-borda); }
-  /* NOVO: badge concluído */
   .badge-sm.t-concluido { background: var(--verde-bg); color: var(--verde); border: 1px solid var(--concluido-borda); }
   .exec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--exec); display: inline-block; margin-right: 3px; animation: pulseDot 1.4s ease-in-out infinite; flex-shrink: 0; }
+
+  /* ══ MELHORIA 2: empty state rico do centro ══ */
+  .empty-tablet {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 52px 20px; color: var(--texto2);
+    text-align: center; grid-column: 1/-1;
+    min-height: 280px;
+  }
+  .empty-centro-icon {
+    font-size: 56px; margin-bottom: 14px;
+    filter: drop-shadow(0 4px 12px rgba(26,122,60,.2));
+    animation: floatIcon 3s ease-in-out infinite;
+  }
+  @keyframes floatIcon {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+  }
+  .empty-centro-title {
+    font-size: 22px; font-weight: 700;
+    color: var(--verde); margin-bottom: 6px;
+  }
+  .empty-centro-sub {
+    font-size: 13px; color: var(--texto2); margin-bottom: 16px;
+  }
+  .empty-centro-badge {
+    font-size: 11px; font-weight: 700;
+    letter-spacing: .8px; text-transform: uppercase;
+    color: var(--verde);
+    background: var(--verde-bg);
+    border: 1.5px solid var(--concluido-borda);
+    border-radius: 20px;
+    padding: 5px 14px;
+  }
 }
 
 /* ══ MOBILE: cards ══ */
@@ -307,7 +463,6 @@ header {
 .card { background: var(--branco); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
 .card:active { transform: scale(.995); }
 .card.t-execucao  { border: 2px solid var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
-/* NOVO: card concluído mobile */
 .card.t-concluido { border: 1px solid var(--concluido-borda); opacity: .88; }
 .card-inner { display: flex; flex: 1; }
 .card-stripe { width: 6px; flex-shrink: 0; }
@@ -326,7 +481,6 @@ header {
 .badge.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
 .badge.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
 .badge.t-execucao  { background: var(--exec-bg);     color: var(--exec);     }
-/* NOVO: badge concluído mobile */
 .badge.t-concluido { background: var(--verde-bg); color: var(--verde); }
 .badge-exec { display: inline-flex; align-items: center; gap: 5px; background: var(--exec-bg); color: var(--exec); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--exec-borda); letter-spacing: .3px; white-space: nowrap; }
 .badge-exec .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--exec); animation: pulseDot 1.4s ease-in-out infinite; flex-shrink: 0; }
@@ -396,7 +550,6 @@ header {
 }
 .btn-cancelar-exec:active { background: var(--cinza-bg); }
 
-/* NOVO: banner concluído no card mobile */
 .btn-concluido-info {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; min-height: 44px; padding: 12px;
@@ -455,13 +608,11 @@ header {
 .sidebar, .centro, .detail-panel { display: none; }
 @media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } }
 
-.empty-tablet { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 52px 20px; color: var(--texto2); text-align: center; grid-column: 1/-1; }
 .busca-nada { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--texto2); }
 .busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
 .busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
 .busca-nada-sub  { font-size: 13px; margin-top: 4px; }
 
-/* ══ NOVO: seção de conclusão no painel de detalhes ══ */
 .detail-conclusao-section {
   border-top: 1.5px dashed var(--concluido-borda);
   padding-top: 12px;
@@ -523,6 +674,9 @@ header {
   </div>
 </header>
 
+<!-- ══ MELHORIA 4: Progress bar de atualização automática ══ -->
+<div id="refreshBar"><div id="refreshBarFill"></div></div>
+
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
@@ -579,6 +733,7 @@ header {
         <span class="sb-filter-count" id="sbN-concluido">—</span>
       </button>
     </div>
+    <div class="sb-atrasados" id="sbLista"></div>
   </aside>
 
   <!-- ══ TABLET CENTRO ══ -->
@@ -652,17 +807,34 @@ var LOCK_TTL  = 3600;
 var API       = API_BASE + "?acao=dados";
 var CACHE_KEY = "hyd_cache_dados";
 var CACHE_TS  = "hyd_cache_ts";
+var REFRESH_INTERVAL = 15000;
 
 if (new URLSearchParams(location.search).get('action') === 'refresh') {
   window.addEventListener('load', function(){ carregarDados(); });
 }
 
-// ══════════════════════════════════════════════
-//  HELPER: verificar se protocolo está concluído
-// ══════════════════════════════════════════════
 function isConcluido(p) {
   var st = (p.status||"").toUpperCase().trim();
   return st === "CONCLUÍDO" || st === "CONCLUIDO";
+}
+
+// ══════════════════════════════════════════════
+//  MELHORIA 6: Avatar colorido com iniciais
+// ══════════════════════════════════════════════
+function hashColor(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  var hue = Math.abs(hash) % 360;
+  if (hue >= 200 && hue <= 240) hue = (hue + 60) % 360;
+  return "hsl("+hue+",65%,52%)";
+}
+
+function getInitials(nome) {
+  var parts = nome.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+  return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
 }
 
 // ══════════════════════════════════════════════
@@ -671,18 +843,25 @@ function isConcluido(p) {
 var OPERADOR_KEY = "hyd_operador";
 function getOperador() { try { return localStorage.getItem(OPERADOR_KEY) || ""; } catch(e) { return ""; } }
 function setOperador(nome) { try { localStorage.setItem(OPERADOR_KEY, nome.trim()); } catch(e) {} atualizarChipOperador(); }
+
 function atualizarChipOperador() {
   var nome = getOperador();
   var btn  = document.getElementById("btnOperador");
   if (!btn) return;
   if (nome) {
-    var nLocks = Object.keys(meusLocks).length;
-    btn.innerHTML = "<span class='chip-avatar' style='background:rgba(255,255,255,.3);font-size:14px;'>👷🏻</span>" +
-      nome.split(" ")[0] + (nLocks > 0 ? " ("+nLocks+")" : "");
+    var nLocks   = Object.keys(meusLocks).length;
+    var initials = getInitials(nome);
+    var cor      = hashColor(nome);
+    btn.innerHTML =
+      "<span class='chip-avatar-color' style='background:"+cor+";'>" + initials + "</span>" +
+      "<span>" + nome.split(" ")[0] + (nLocks > 0 ? " ("+nLocks+")" : "") + "</span>";
     btn.className = "chip-operador";
     btn.style.display = "";
-  } else { btn.style.display = "none"; }
+  } else {
+    btn.style.display = "none";
+  }
 }
+
 function abrirModalOperador() {
   document.getElementById("modalOperador").classList.add("open");
   var inp = document.getElementById("inputOperador");
@@ -901,25 +1080,18 @@ function confirmarExecucao() {
   var protocolo     = protocoloPendente;
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
-
   var locksAtivos = Object.keys(meusLocks);
   if (locksAtivos.length > 0) {
     fecharModal();
     toast("⚠️ Você já está executando o protocolo " + locksAtivos[0] + ". Conclua ou cancele antes de iniciar outro.", "erro");
     return;
   }
-
   fecharModal();
   toast("⏳ Registrando execução...","exec");
   var operador = getOperador() || "Operador";
-
   postLock({acao:"adquirir", protocolo:protocolo, sessionId:SESSION_ID, usuario:operador})
     .then(function(res) {
-      if (!res.ok) {
-        toast("⚠️ " + (res.erro || "Serviço já em execução por outro usuário!"), "erro");
-        carregarDados();
-        return;
-      }
+      if (!res.ok) { toast("⚠️ " + (res.erro || "Serviço já em execução por outro usuário!"), "erro"); carregarDados(); return; }
       iniciarHeartbeat(protocolo);
       toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.", "exec");
       carregarDados();
@@ -932,7 +1104,7 @@ function cancelarMinhaExecucao(protocolo) {
 }
 
 // ══════════════════════════════════════════════
-//  PAINEL DE DETALHES (TABLET) — CORRIGIDO
+//  PAINEL DE DETALHES (TABLET)
 // ══════════════════════════════════════════════
 function selecionarProtocolo(p) {
   _protocoloSelecionado = p.protocolo;
@@ -946,25 +1118,16 @@ function selecionarProtocolo(p) {
   vazio.style.display = "none";
   content.classList.add("show");
 
-  // ── CORREÇÃO 1: detectar concluído antes de tudo ──
   var concluido = isConcluido(p);
-
   var t   = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:"", delta:0};
   var lock = p.lock;
   var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
   var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
-
-  // CORREÇÃO: tipo correto para concluídos
   var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
   var deltaVal, deltaLbl;
-  if (concluido) {
-    deltaVal = "✔";
-    deltaLbl = "CONCLUÍDO";
-  } else {
-    deltaVal = t.r <= 0 ? "−"+ar(t.delta) : ar(t.delta);
-    deltaLbl = t.r <= 0 ? "VENCIDO" : "RESTANTE";
-  }
+  if (concluido) { deltaVal = "✔"; deltaLbl = "CONCLUÍDO"; }
+  else { deltaVal = t.r <= 0 ? "−"+ar(t.delta) : ar(t.delta); deltaLbl = t.r <= 0 ? "VENCIDO" : "RESTANTE"; }
 
   var abertura  = p.dataHora ? new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
   var prazoHora = concluido ? (p.dataConclusao ? new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—") : (t.horaVence || "—");
@@ -979,7 +1142,6 @@ function selecionarProtocolo(p) {
     execInfoHtml = "<div style='background:#dcfce7;border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
-  // Foto de abertura
   var fotoHtml = "";
   var src = fotoSrc(p.fotoId);
   if (src) {
@@ -990,7 +1152,6 @@ function selecionarProtocolo(p) {
 
   var obsHtml = (p.obs && p.obs !== "—") ? "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(p.obs)+"</div></div>" : "";
 
-  // CORREÇÃO 3: badge correto para concluído
   var badgeMap = {
     urgente:   "<span class='badge t-urgente'>⚠️ Urgente</span>",
     pendente:  "<span class='badge t-pendente'>🟡 Pendente</span>",
@@ -1000,31 +1161,17 @@ function selecionarProtocolo(p) {
   };
   var badgeHtml = badgeMap[tipoCard] || "";
 
-  // CORREÇÃO 2: seção de dados de conclusão
   var conclusaoHtml = "";
   if (concluido) {
-    // Foto de conclusão
-var fotoConclusaoHtml = "";
-var _fcId = p.fotoConcId || p.fotoConclusaoId || "";
-var _fcUrl = p.fotoConcUrl || p.fotoConclusaoUrl || "";
-if (_fcId) {
-  var srcC = fotoSrc(_fcId);
-  fotoConclusaoHtml =
-    "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
-    "<img class='detail-foto' src='" + srcC + "' loading='lazy'" +
-    " onload='onDetailFotoLoad(this)'" +
-    " onclick='abrirFoto(\"" + esc(_fcUrl || srcC) + "\")'" +
-    " onerror='onFotoErro(this,\"" + esc(_fcUrl) + "\",\"" + esc(_fcId) + "\")'" +
-    " alt='Foto de conclusão'></div>";
-} else if (_fcUrl) {
-  fotoConclusaoHtml =
-    "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
-    "<img class='detail-foto' src='" + esc(_fcUrl) + "' loading='lazy'" +
-    " onload='onDetailFotoLoad(this)'" +
-    " onclick='abrirFoto(\"" + esc(_fcUrl) + "\")'" +
-    " alt='Foto de conclusão'></div>";
-}
-
+    var fotoConclusaoHtml = "";
+    var _fcId = p.fotoConcId || p.fotoConclusaoId || "";
+    var _fcUrl = p.fotoConcUrl || p.fotoConclusaoUrl || "";
+    if (_fcId) {
+      var srcC = fotoSrc(_fcId);
+      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(_fcUrl)+"\",\""+esc(_fcId)+"\")' alt='Foto de conclusão'></div>";
+    } else if (_fcUrl) {
+      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+esc(_fcUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl)+"\")' alt='Foto de conclusão'></div>";
+    }
     conclusaoHtml =
       "<div class='detail-conclusao-section'>" +
         "<div class='detail-conclusao-header'>✅ Dados de conclusão</div>" +
@@ -1049,11 +1196,9 @@ if (_fcId) {
       "<div class='detail-row'><div class='detail-row-lbl'>Data/hora abertura</div><div class='detail-row-val'>"+fdt(p.dataHora)+"</div></div>" +
       obsHtml +
     "</div>" +
-    fotoHtml +
-    conclusaoHtml; // ← NOVO: seção de conclusão
+    fotoHtml + conclusaoHtml;
 
   footer.classList.add("show");
-  // CORREÇÃO 1: bloquear ações para protocolos concluídos
   if (concluido) {
     footer.innerHTML = "<div style='background:var(--verde-bg);border:1.5px solid var(--concluido-borda);border-radius:var(--radius-sm);padding:12px 16px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";
   } else if (outraExecucao) {
@@ -1073,19 +1218,15 @@ function cancelarMinhaExecucaoPainel(protocolo) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER MOBILE — CORRIGIDO
+//  RENDER MOBILE
 // ══════════════════════════════════════════════
 function renderCard(p) {
   var t   = p._t;
   var pct = t.pct.toFixed(0);
   var lock = p.lock;
-
-  // CORREÇÃO 1: detectar concluído
   var concluido = isConcluido(p);
   var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
   var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
-
-  // CORREÇÃO 3: tipo correto
   var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
   var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
@@ -1096,7 +1237,6 @@ function renderCard(p) {
   }
 
   var execBadge = (outraExecucao || minhaExecucao) ? "<span class='badge-exec'><span class='dot'></span>Em execução</span>" : "";
-
   var protEsc = esc(p.protocolo);
   var endEsc  = esc(p.endereco);
 
@@ -1109,10 +1249,8 @@ function renderCard(p) {
     execInfoHtml = "<div class='exec-info' style='background:#dcfce7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
-  // CORREÇÃO 1 + 3: botões corretos para cada estado
   var btnHtml;
   if (concluido) {
-    // BLOQUEADO — serviço finalizado
     var dtConc = p.dataConclusao ? fdt(p.dataConclusao) : "—";
     btnHtml = "<div class='btn-concluido-info'>✅ Concluído em " + dtConc + "</div>";
   } else if (outraExecucao) {
@@ -1128,8 +1266,6 @@ function renderCard(p) {
   var prazoExtra = (!concluido && t.horaVence) ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>" : "";
   var prazoTxt   = concluido ? "Concluído" : t.txt;
   var prazoLabel = concluido ? "100% concluído" : pct+"% do prazo";
-
-  // CORREÇÃO 3: badge correto — verde para concluído
   var badgeTxt = {urgente:"⚠️ Urgente", pendente:"🟡 Pendente", atrasado:"🔴 Atrasado", concluido:"✅ Concluído"}[tipoCard] || "";
 
   return "<div class='card t-"+tipoCard+"'>" +
@@ -1149,22 +1285,19 @@ function renderCard(p) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER TABLET — CORRIGIDO
+//  MELHORIA 1: render card tablet com thumbnail
 // ══════════════════════════════════════════════
 function renderCardTablet(p) {
   var t    = p._t;
   var pct  = t.pct.toFixed(0);
   var lock = p.lock;
 
-  // CORREÇÃO 1: detectar concluído
-  var concluido = isConcluido(p);
+  var concluido     = isConcluido(p);
   var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
   var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
+  var tipoCard      = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
-  // CORREÇÃO 3: tipo correto
-  var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
-
-  var idSafe = p.protocolo.replace(/[^a-z0-9]/gi,"_");
+  var idSafe     = p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var selecionado = _protocoloSelecionado === p.protocolo ? " selected" : "";
 
   var badgeHtml;
@@ -1173,7 +1306,7 @@ function renderCardTablet(p) {
   } else if (outraExecucao || minhaExecucao) {
     badgeHtml = "<span class='badge-sm t-execucao'><span class='exec-dot'></span>Execução</span>";
   } else {
-    var labels = {urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};
+    var labels = {urgente:"⚠ Urgente", pendente:"Pendente", atrasado:"Atrasado"};
     badgeHtml = "<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";
   }
 
@@ -1181,30 +1314,56 @@ function renderCardTablet(p) {
   if (concluido) {
     execSub = "<span style='color:var(--verde)'>"+fdt(p.dataConclusao)+"</span>";
   } else if (outraExecucao) {
-    var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    var min  = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
     var quem = lock.usuario ? " · "+safeText(lock.usuario) : "";
-    execSub = "<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";
+    execSub  = "<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";
   } else if (minhaExecucao) {
     execSub = "<span style='color:#166534'>Você executando</span>";
   }
 
-  var prazoTxt = concluido ? "Concluído" : t.txt;
+  var prazoTxt   = concluido ? "Concluído" : t.txt;
   var prazoLabel = concluido ? "100%" : pct+"%";
 
-  return "<div class='card-t t-"+tipoCard+selecionado+"' id='card-t-"+idSafe+"'>" +
-    "<div class='card-t-inner'><div class='card-t-stripe'></div>" +
-    "<div class='card-t-body'>" +
-      "<div class='card-t-top'><div><div class='card-t-prot'>"+safeText(p.protocolo)+"</div><div class='card-t-end'>"+safeText(p.endereco)+"</div></div>"+badgeHtml+"</div>" +
-      "<div class='card-t-meta'><span>🕐 "+fdt(p.dataHora)+"</span><span>👷 "+safeText(p.registradoPor||"—")+"</span>"+(execSub?execSub:"")+"</div>" +
-      "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
-      "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:100%'></div></div>" +
-    "</div></div></div>";
+  /* ── Thumbnail de foto ── */
+  var thumbHtml = "";
+  var srcThumb  = fotoSrc(p.fotoId);
+  if (srcThumb) {
+    thumbHtml =
+      "<div class='card-t-thumb'>" +
+        "<div class='card-t-thumb-sk'></div>" +
+        "<img class='card-t-thumb-img' src='"+srcThumb+"' loading='lazy'" +
+          " onload='this.classList.add(\"loaded\");var sk=this.previousElementSibling;if(sk)sk.style.display=\"none\";'" +
+          " onerror='this.closest(\".card-t-thumb\").style.display=\"none\";'" +
+          " alt='Foto'>" +
+      "</div>";
+  }
+
+  return (
+    "<div class='card-t t-"+tipoCard+selecionado+"' id='card-t-"+idSafe+"'>" +
+      thumbHtml +
+      "<div class='card-t-inner'><div class='card-t-stripe'></div>" +
+      "<div class='card-t-body'>" +
+        "<div class='card-t-top'>" +
+          "<div><div class='card-t-prot'>"+safeText(p.protocolo)+"</div>" +
+          "<div class='card-t-end'>"+safeText(p.endereco)+"</div></div>" +
+          badgeHtml +
+        "</div>" +
+        "<div class='card-t-meta'>" +
+          "<span>🕐 "+fdt(p.dataHora)+"</span>" +
+          "<span>👷 "+safeText(p.registradoPor||"—")+"</span>" +
+          (execSub?execSub:"") +
+        "</div>" +
+        "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
+        "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:100%'></div></div>" +
+      "</div></div>" +
+    "</div>"
+  );
 }
 
 var _listaAtiva = [];
 
 // ══════════════════════════════════════════════
-//  RENDER TABLET (LAYOUT) — CORRIGIDO
+//  RENDER TABLET (LAYOUT)
 // ══════════════════════════════════════════════
 function renderTablet(lista) {
   _listaAtiva = lista;
@@ -1225,10 +1384,24 @@ function renderTablet(lista) {
     ativos.push(p);
   });
 
-  function setN(id,val){ var el=document.getElementById(id); if(el) el.textContent=val; }
-  setN("sbN-todos",ativos.length); setN("sbN-atrasado",urg);
-  setN("sbN-urgente",ativos.filter(function(p){ return !p.lock&&p._t.tipo==="urgente"; }).length);
-  setN("sbN-execucao",exec); setN("sbN-concluido",ok);
+  /* ══ MELHORIA 3: setN com bump ══ */
+  function setN(id, val) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    var prev = el.textContent;
+    el.textContent = val;
+    if (prev !== String(val) && prev !== "—") {
+      el.classList.remove("sb-n-bump");
+      void el.offsetWidth;
+      el.classList.add("sb-n-bump");
+      setTimeout(function(){ el.classList.remove("sb-n-bump"); }, 450);
+    }
+  }
+  setN("sbN-todos",    ativos.length);
+  setN("sbN-atrasado", urg);
+  setN("sbN-urgente",  ativos.filter(function(p){ return !p.lock && p._t.tipo==="urgente"; }).length);
+  setN("sbN-execucao", exec);
+  setN("sbN-concluido",ok);
 
   function setStat(id,val){ var el=document.getElementById(id); if(!el) return; var prev=_prevStats[id]; el.textContent=val; if(prev!==undefined&&prev!==val) bump(id); _prevStats[id]=val; }
   setStat("nPen",pen); setStat("nExec",exec); setStat("nUrg",urg); setStat("nOk",ok);
@@ -1240,27 +1413,29 @@ function renderTablet(lista) {
     btn.textContent=labels[ft]+(count>0?" ("+count+")":"");
   });
 
-  var sbEl=document.getElementById("sbLista");
-if (sbEl) {
-  var sbHtml="";
-  if (sbAtrasados.length) { sbHtml+="<div class='sb-sec'>🔴 Atrasados</div>"; sbAtrasados.forEach(function(p){ sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div></div>"; }); }
-  if (sbUrgentes.length) { sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>"; sbUrgentes.forEach(function(p){ sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div>"; }); }
-  if (sbExec.length) { sbHtml+="<div class='sb-sec'>🟣 Execução</div>"; sbExec.forEach(function(p){ sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div></div>"; }); }
-  if (concluidosHoje.length) { sbHtml+="<div class='sb-sec'>✅ Concluídos</div>"; concluidosHoje.forEach(function(p){ sbHtml+="<div class='sb-item t-concluido"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-concluido'>"+fdt(p.dataConclusao)+"</div></div>"; }); }
-  if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
-  sbEl.innerHTML=sbHtml;
-  var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec).concat(concluidosHoje);
-  sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
-}
+  var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
+  var sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
+  var sbExec=ativos.filter(function(p){return !!p.lock;});
 
-  // Filtros do centro: concluídos só aparecem na aba "concluido" da sidebar, não no grid principal
+  var sbEl=document.getElementById("sbLista");
+  if (sbEl) {
+    var sbHtml="";
+    if (sbAtrasados.length) { sbHtml+="<div class='sb-sec'>🔴 Atrasados</div>"; sbAtrasados.forEach(function(p){ sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div></div>"; }); }
+    if (sbUrgentes.length) { sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>"; sbUrgentes.forEach(function(p){ sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div>"; }); }
+    if (sbExec.length) { sbHtml+="<div class='sb-sec'>🟣 Execução</div>"; sbExec.forEach(function(p){ sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div></div>"; }); }
+    if (concluidosHoje.length) { sbHtml+="<div class='sb-sec'>✅ Concluídos</div>"; concluidosHoje.forEach(function(p){ sbHtml+="<div class='sb-item t-concluido"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-concluido'>"+fdt(p.dataConclusao)+"</div></div>"; }); }
+    if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
+    sbEl.innerHTML=sbHtml;
+    var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec).concat(concluidosHoje);
+    sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
+  }
+
   var filtrados=ativos.slice();
   if (termoBuscaSb) filtrados=filtrados.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0; });
   if (sbFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
   else if (sbFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
   else if (sbFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
   else if (sbFiltro==="concluido") {
-    // CORREÇÃO: filtro concluído usa concluidosHoje, com _t sintético
     filtrados = concluidosHoje.map(function(p){
       p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
       return p;
@@ -1283,7 +1458,23 @@ if (sbEl) {
   });
 
   var gt=document.getElementById("gridTablet");
-  if (!filtrados.length) { gt.innerHTML="<div class='empty-tablet'><div style='font-size:36px'>✅</div><div style='font-size:15px;font-weight:700;color:var(--verde);margin-top:8px'>Tudo limpo!</div><div style='font-size:13px;color:var(--texto2);'>Nenhum protocolo para este filtro.</div></div>"; return; }
+
+  /* ══ MELHORIA 2: empty state rico ══ */
+  if (!filtrados.length) {
+    gt.innerHTML =
+      "<div class='empty-tablet'>" +
+        "<div class='empty-centro-icon'>✅</div>" +
+        "<div class='empty-centro-title'>Tudo em dia!</div>" +
+        "<div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div>" +
+        "<div class='empty-centro-badge'>"+
+          (sbFiltro==="atrasado"?"Nenhum atraso registrado":
+           sbFiltro==="urgente"?"Sem urgências no momento":
+           sbFiltro==="execucao"?"Nenhuma execução ativa":
+           sbFiltro==="concluido"?"Nenhuma conclusão hoje":"Fila limpa")+
+        "</div>" +
+      "</div>";
+    return;
+  }
 
   var execL     = filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;});
   var urgL      = filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);});
@@ -1318,7 +1509,7 @@ if (sbEl) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER MOBILE (LAYOUT) — CORRIGIDO
+//  RENDER MOBILE (LAYOUT)
 // ══════════════════════════════════════════════
 var _prevStats={}, _prevHashes={};
 function hashProtocolo(p){ return JSON.stringify({protocolo:p.protocolo,status:p.status,lock:p.lock?p.lock.sessionId:null,lockUser:p.lock?p.lock.usuario:null,lockTs:p.lock?p.lock.timestamp:null,obs:p.obs,fotoId:p.fotoId}); }
@@ -1359,8 +1550,6 @@ function renderFiltrado(lista) {
   setCounter("nPen",pen); setCounter("nExec",exec); setCounter("nUrg",urg); setCounter("nOk",ok);
 
   var g=document.getElementById("grid");
-
-  // Para busca mobile: incluir concluídos se houver termo de busca
   var todosParaBusca = ativos.concat(concluidosHoje.map(function(p){
     p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
     return p;
@@ -1375,7 +1564,6 @@ function renderFiltrado(lista) {
   if (!ativos.length && !concluidosHoje.length) { g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>"; _prevHashes={}; return; }
   if (termoBusca&&!filtrados.length) { g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>"; return; }
 
-  // Sem busca: só ativos no grid principal; concluídos ficam só no contador
   var gridList = termoBusca ? filtrados : ativos;
 
   gridList.sort(function(a,b){
@@ -1393,7 +1581,6 @@ function renderFiltrado(lista) {
   var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;});
   var urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);});
   var norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;});
-  // Concluídos aparecem no grid mobile apenas quando há busca ativa
   var concL=gridList.filter(function(p){return isConcluido(p);});
 
   var novoHashes={};
@@ -1444,6 +1631,59 @@ function abrirConclusao(protocolo, endereco) {
 }
 
 // ══════════════════════════════════════════════
+//  MELHORIA 4: Progress bar de 15s
+// ══════════════════════════════════════════════
+function initProgressBar() {
+  var bar  = document.getElementById("refreshBarFill");
+  var wrap = document.getElementById("refreshBar");
+  if (!bar) return;
+
+  function startBar() {
+    bar.style.transition = "none";
+    bar.style.width = "0%";
+    wrap.classList.remove("paused");
+    void bar.offsetWidth;
+    bar.style.transition = "width "+REFRESH_INTERVAL+"ms linear";
+    bar.style.width = "95%";
+  }
+
+  function flashBar() {
+    bar.style.transition = "width .2s ease";
+    bar.style.width = "100%";
+    wrap.classList.add("paused");
+    setTimeout(function() {
+      bar.style.transition = "width .3s ease";
+      bar.style.width = "0%";
+      setTimeout(function() {
+        wrap.classList.remove("paused");
+        startBar();
+      }, 350);
+    }, 600);
+  }
+
+  /* Wrapa carregarDados para acionar a barra */
+  var _origCarregar = carregarDados;
+  carregarDados = function() {
+    startBar();
+    var result = _origCarregar.apply(this, arguments);
+    var btn = document.getElementById("btnReload");
+    if (btn) {
+      var obs = new MutationObserver(function(muts) {
+        muts.forEach(function(m) {
+          if (m.type === "attributes" && m.attributeName === "disabled") {
+            if (!btn.disabled) { flashBar(); obs.disconnect(); }
+          }
+        });
+      });
+      obs.observe(btn, { attributes: true });
+    }
+    return result;
+  };
+
+  startBar();
+}
+
+// ══════════════════════════════════════════════
 //  CARREGAR DADOS
 // ══════════════════════════════════════════════
 function carregarDados() {
@@ -1480,8 +1720,9 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 //  INICIAR
 // ══════════════════════════════════════════════
+initProgressBar(); // ← MELHORIA 4: iniciar antes de carregar
 carregarDados();
-setInterval(carregarDados, 15000);
+setInterval(carregarDados, REFRESH_INTERVAL);
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState==='visible') {
     carregarDados();
