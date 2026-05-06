@@ -1155,9 +1155,18 @@ function renderTablet(lista) {
   var allCards=execL.concat(urgL).concat(norL);
   gt.querySelectorAll(".card-t").forEach(function(el,idx){ if(allCards[idx]) el.onclick=(function(p){return function(){selecionarProtocolo(p);};})(allCards[idx]); });
 
-  if (_protocoloSelecionado) {
-    var pSel=ativos.find(function(p){return p.protocolo===_protocoloSelecionado;});
-    if (pSel) selecionarProtocolo(pSel);
+if (_protocoloSelecionado) {
+  var pSel = ativos.find(function(p){ return p.protocolo === _protocoloSelecionado; });
+  if (pSel) {
+    selecionarProtocolo(pSel);
+  } else {
+    // Protocolo não está mais nos ativos (foi concluído ou removido) — reseta o painel
+    _protocoloSelecionado = null;
+    document.getElementById("detailVazio").style.display = "";
+    document.getElementById("detailContent").classList.remove("show");
+    document.getElementById("detailFooter").classList.remove("show");
+    document.getElementById("detailContent").innerHTML = "";
+    document.getElementById("detailFooter").innerHTML = "";
   }
 }
 
