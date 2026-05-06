@@ -667,10 +667,6 @@ header {
     <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">🔄 Atualizar</button>
-    <button class="btn-header" id="btnReload" onclick="carregarDados()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Atualizar
-    </button>
   </div>
 </header>
 
@@ -1664,17 +1660,6 @@ function initProgressBar() {
   carregarDados = function() {
     startBar();
     var result = _origCarregar.apply(this, arguments);
-    var btn = document.getElementById("btnReload");
-    if (btn) {
-      var obs = new MutationObserver(function(muts) {
-        muts.forEach(function(m) {
-          if (m.type === "attributes" && m.attributeName === "disabled") {
-            if (!btn.disabled) { flashBar(); obs.disconnect(); }
-          }
-        });
-      });
-      obs.observe(btn, { attributes: true });
-    }
     return result;
   };
 
@@ -1685,7 +1670,6 @@ function initProgressBar() {
 //  CARREGAR DADOS
 // ══════════════════════════════════════════════
 function carregarDados() {
-  var btn=document.getElementById("btnReload"); btn.classList.add("spin"); btn.disabled=true;
   if (!estaOnline()) {
     var cache=lerCache();
     if(cache){render(cache);mostrarBannerOffline("offline");}
@@ -1701,7 +1685,7 @@ function carregarDados() {
       if(cache){render(cache);mostrarBannerOffline("cache");}
       else{ document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>"; document.getElementById("gridTablet").innerHTML="<div class='empty-tablet'><div style='font-size:36px'>⚠️</div><div style='font-size:15px;font-weight:700;margin-top:8px'>Erro ao carregar</div></div>"; }
     })
-    .finally(function(){btn.classList.remove("spin");btn.disabled=false;});
+    .finally(function(){ flashBar(); });
 }
 
 // ══════════════════════════════════════════════
