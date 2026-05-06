@@ -948,24 +948,37 @@ function selecionarProtocolo(p) {
     footer.innerHTML = "<div class='btn-bloqueado' style='min-height:48px;border-radius:var(--radius-sm);font-size:14px;'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
     // ETAPA 2: botão de concluir
-    footer.innerHTML =
-      "<a class='btn-detail-concluir' href='"+FORMS_URL+"?usp=pp_url&entry.1020787335="+encodeURIComponent(p.endereco)+"' target='_blank' onclick='agendarLiberacaoAoFechar(\""+esc(p.protocolo)+"\")'>✅ Concluir este serviço</a>" +
-      "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
+  footer.innerHTML =
+    "<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
+    "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
   } else {
     // ETAPA 1: botão de iniciar
-    footer.innerHTML =
-      "<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";
-  }
+  footer.innerHTML =
+    "<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";
+ }
 }
 
 function agendarLiberacaoAoFechar(protocolo) {
-  // Monitora quando o formulário for fechado e libera o lock
+  // Não faz nada aqui — o monitoramento é feito ao abrir o link
+  // O link já abre numa nova aba, monitoramos o fechamento dela
   setTimeout(function() {
-    liberarLockApi(protocolo).then(function(){
-      pararHeartbeat(protocolo);
-      carregarDados();
-    });
-  }, 5000);
+    var janela = window._janelaFormulario;
+    if (!janela) return;
+    var watcher = setInterval(function() {
+      try {
+        if (janela.closed) {
+          clearInterval(watcher);
+          setTimeout(function() {
+            liberarLockApi(protocolo).then(function() {
+              pararHeartbeat(protocolo);
+              toast("🔓 Formulário fechado — serviço liberado.", "");
+              carregarDados();
+            });
+          }, 2000);
+        }
+      } catch(e) { clearInterval(watcher); }
+    }, 1000);
+  }, 500);
 }
 
 function cancelarMinhaExecucaoPainel(protocolo) {
@@ -995,7 +1008,10 @@ function renderCard(p) {
     var quem = lock.usuario ? " por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>" : "";
     execInfoHtml = "<div class='exec-info'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
   } else if (minhaExecucao) {
-    execInfoHtml = "<div class='exec-info' style='background:#dcfce7;color:#166534;border-color:rgba(74,222,128,.3)'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='20 6 9 17 4 12'/></svg>Você está executando — vá ao local</div>";
+    // ETAPA 2: só aparece o botão de concluir
+    btnHtml =
+      "<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
+      "<button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";
   }
   var protEsc = esc(p.protocolo);
   var endEsc  = esc(p.endereco);
