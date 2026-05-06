@@ -1591,8 +1591,8 @@ function renderFiltrado(lista) {
     if (concluido) {
       if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) {
         ok++;
-        concluidosHoje.push(p);
       }
+      concluidosHoje.push(p); // ← todos os concluídos, não só os de hoje
       if(_aguardandoConclusao[p.protocolo]){
         toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
         delete _aguardandoConclusao[p.protocolo];
@@ -1618,16 +1618,11 @@ function renderFiltrado(lista) {
 
   var g=document.getElementById("grid");
   var todosParaBusca = ativos.concat(concluidosHoje.map(function(p){
-    p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
-    return p;
-  }));
-
-var todosVisiveis = ativos.concat(concluidosHoje.map(function(p){
   p._t = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:""};
   return p;
 }));
 
-var filtrados = !termoBusca ? ativos : todosVisiveis.filter(function(p){
+var filtrados = !termoBusca ? ativos : todosParaBusca.filter(function(p){
   return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
          (p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||
          (p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
@@ -1637,9 +1632,6 @@ var filtrados = !termoBusca ? ativos : todosVisiveis.filter(function(p){
   if (termoBusca&&!filtrados.length) { g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>"; return; }
 
  var gridList = termoBusca ? filtrados : ativos;
-
-// se a busca retornou concluídos, garante que aparecem na seção correta
-var concL = gridList.filter(function(p){ return isConcluido(p); });
 
   gridList.sort(function(a,b){
     var rank=function(p){
