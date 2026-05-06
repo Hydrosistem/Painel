@@ -574,10 +574,6 @@ header {
         <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--exec)"></span>Em execução</span>
         <span class="sb-filter-count" id="sbN-execucao">—</span>
       </button>
-      <button class="sb-filter-btn s-ok" onclick="setSbFiltro('concluido',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--verde)"></span>Concluídos hoje</span>
-        <span class="sb-filter-count" id="sbN-concluido">—</span>
-      </button>
     </div>
     <div class="sb-atrasados" id="sbLista"><div style="padding:24px;text-align:center;color:var(--texto2);font-size:13px;">Carregando…</div></div>
   </aside>
@@ -1263,13 +1259,6 @@ function renderTablet(lista) {
   if (sbFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
   else if (sbFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
   else if (sbFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
-  else if (sbFiltro==="concluido") {
-    // CORREÇÃO: filtro concluído usa concluidosHoje, com _t sintético
-    filtrados = concluidosHoje.map(function(p){
-      p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
-      return p;
-    });
-  }
   if (ftFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
   else if (ftFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
   else if (ftFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
