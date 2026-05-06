@@ -1700,40 +1700,43 @@ function abrirConclusao(protocolo, endereco) {
 // ══════════════════════════════════════════════
 //  MELHORIA 4: Progress bar de 15s
 // ══════════════════════════════════════════════
-function initProgressBar() {
-  var bar  = document.getElementById("refreshBarFill");
-  var wrap = document.getElementById("refreshBar");
-  if (!bar) return;
+var _barEl  = null;
+var _wrapEl = null;
 
-  function startBar() {
-    bar.style.transition = "none";
-    bar.style.width = "0%";
-    wrap.classList.remove("paused");
-    void bar.offsetWidth;
-    bar.style.transition = "width "+REFRESH_INTERVAL+"ms linear";
-    bar.style.width = "95%";
-  }
+function startBar() {
+  if (!_barEl) return;
+  _barEl.style.transition = "none";
+  _barEl.style.width = "0%";
+  _wrapEl.classList.remove("paused");
+  void _barEl.offsetWidth;
+  _barEl.style.transition = "width " + REFRESH_INTERVAL + "ms linear";
+  _barEl.style.width = "95%";
+}
 
-  function flashBar() {
-    bar.style.transition = "width .2s ease";
-    bar.style.width = "100%";
-    wrap.classList.add("paused");
+function flashBar() {
+  if (!_barEl) return;
+  _barEl.style.transition = "width .2s ease";
+  _barEl.style.width = "100%";
+  _wrapEl.classList.add("paused");
+  setTimeout(function() {
+    _barEl.style.transition = "width .3s ease";
+    _barEl.style.width = "0%";
     setTimeout(function() {
-      bar.style.transition = "width .3s ease";
-      bar.style.width = "0%";
-      setTimeout(function() {
-        wrap.classList.remove("paused");
-        startBar();
-      }, 350);
-    }, 600);
-  }
+      _wrapEl.classList.remove("paused");
+      startBar();
+    }, 350);
+  }, 600);
+}
 
-  /* Wrapa carregarDados para acionar a barra */
+function initProgressBar() {
+  _barEl  = document.getElementById("refreshBarFill");
+  _wrapEl = document.getElementById("refreshBar");
+  if (!_barEl) return;
+
   var _origCarregar = carregarDados;
   carregarDados = function() {
     startBar();
-    var result = _origCarregar.apply(this, arguments);
-    return result;
+    return _origCarregar.apply(this, arguments);
   };
 
   startBar();
