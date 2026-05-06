@@ -34,6 +34,10 @@
   --exec:        #6B21A8;
   --exec-bg:     #F3E8FF;
   --exec-borda:  #A855F7;
+  /* ── NOVO: concluído ── */
+  --concluido:      #1A7A3C;
+  --concluido-bg:   #E6F4EC;
+  --concluido-borda:#4ADE80;
   --cinza-bg:    #F0F4F8;
   --texto:       #111827;
   --texto2:      #6B7280;
@@ -174,10 +178,13 @@ header {
   .sb-item.selected.t-atrasado { background: var(--atrasado-bg); border-left-color: var(--atrasado); }
   .sb-item.selected.t-urgente  { background: var(--vermelho-bg); border-left-color: var(--vermelho); }
   .sb-item.selected.t-exec     { background: var(--exec-bg);     border-left-color: var(--exec);     }
+  /* NOVO: concluído na sidebar */
+  .sb-item.selected.t-concluido { background: var(--verde-bg); border-left-color: var(--verde); }
   .sb-item-end { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sb-item-sub { font-size: 11px; color: var(--texto2); }
-  .sb-item-sub.t-atrasado { color: var(--atrasado); }
-  .sb-item-sub.t-urgente  { color: var(--vermelho); }
+  .sb-item-sub.t-atrasado  { color: var(--atrasado); }
+  .sb-item-sub.t-urgente   { color: var(--vermelho); }
+  .sb-item-sub.t-concluido { color: var(--verde); }
 
   .centro { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
   .centro-top { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
@@ -206,10 +213,11 @@ header {
   .mini-card { background: var(--cinza-bg); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
   .mini-card-val { font-family: "DM Mono",monospace; font-size: 18px; font-weight: 700; line-height: 1; }
   .mini-card-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--texto2); margin-top: 3px; }
-  .mini-card-val.t-atrasado { color: var(--atrasado); }
-  .mini-card-val.t-urgente  { color: var(--vermelho); }
-  .mini-card-val.t-pendente { color: var(--amarelo);  }
-  .mini-card-val.t-execucao { color: var(--exec);     }
+  .mini-card-val.t-atrasado  { color: var(--atrasado); }
+  .mini-card-val.t-urgente   { color: var(--vermelho); }
+  .mini-card-val.t-pendente  { color: var(--amarelo);  }
+  .mini-card-val.t-execucao  { color: var(--exec);     }
+  .mini-card-val.t-concluido { color: var(--verde);    }
   .detail-rows { display: flex; flex-direction: column; gap: 6px; }
   .detail-row { display: flex; flex-direction: column; gap: 2px; }
   .detail-row-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto2); }
@@ -220,10 +228,11 @@ header {
   .detail-foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
   .detail-prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
   .detail-prazo-fill { height: 100%; border-radius: 10px; }
-  .t-urgente  .detail-prazo-fill { background: var(--vermelho); }
-  .t-pendente .detail-prazo-fill { background: var(--amarelo);  }
-  .t-atrasado .detail-prazo-fill { background: var(--atrasado); }
-  .t-execucao .detail-prazo-fill { background: var(--exec);     }
+  .t-urgente   .detail-prazo-fill { background: var(--vermelho); }
+  .t-pendente  .detail-prazo-fill { background: var(--amarelo);  }
+  .t-atrasado  .detail-prazo-fill { background: var(--atrasado); }
+  .t-execucao  .detail-prazo-fill { background: var(--exec);     }
+  .t-concluido .detail-prazo-fill { background: var(--verde);    }
   .detail-footer { padding: 12px 16px; border-top: 1px solid var(--borda); display: none; flex-direction: column; gap: 8px; }
   .detail-footer.show { display: flex; }
   .btn-detail-iniciar {
@@ -254,16 +263,20 @@ header {
   .card-t { background: var(--branco); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); cursor: pointer; transition: box-shadow .2s, transform .15s; display: flex; flex-direction: column; }
   .card-t:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
   .card-t.selected { border: 2px solid var(--azul); box-shadow: 0 0 0 3px rgba(0,87,168,.15), var(--shadow-md); }
-  .card-t.selected.t-atrasado { border-color: var(--atrasado); box-shadow: 0 0 0 3px rgba(123,0,0,.15), var(--shadow-md); }
-  .card-t.selected.t-urgente  { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(192,57,43,.15), var(--shadow-md); }
-  .card-t.selected.t-execucao { border-color: var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
-  .card-t.t-execucao { border: 2px solid var(--exec-borda); }
+  .card-t.selected.t-atrasado  { border-color: var(--atrasado); box-shadow: 0 0 0 3px rgba(123,0,0,.15), var(--shadow-md); }
+  .card-t.selected.t-urgente   { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(192,57,43,.15), var(--shadow-md); }
+  .card-t.selected.t-execucao  { border-color: var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
+  /* NOVO: concluído no card tablet */
+  .card-t.selected.t-concluido { border-color: var(--verde); box-shadow: 0 0 0 3px rgba(26,122,60,.15), var(--shadow-md); }
+  .card-t.t-execucao  { border: 2px solid var(--exec-borda); }
+  .card-t.t-concluido { border: 1px solid var(--concluido-borda); opacity: .85; }
   .card-t-inner { display: flex; flex: 1; }
   .card-t-stripe { width: 5px; flex-shrink: 0; }
-  .card-t.t-urgente  .card-t-stripe { background: var(--vermelho); }
-  .card-t.t-pendente .card-t-stripe { background: var(--amarelo);  }
-  .card-t.t-atrasado .card-t-stripe { background: var(--atrasado); }
-  .card-t.t-execucao .card-t-stripe { background: var(--exec);     }
+  .card-t.t-urgente   .card-t-stripe { background: var(--vermelho); }
+  .card-t.t-pendente  .card-t-stripe { background: var(--amarelo);  }
+  .card-t.t-atrasado  .card-t-stripe { background: var(--atrasado); }
+  .card-t.t-execucao  .card-t-stripe { background: var(--exec);     }
+  .card-t.t-concluido .card-t-stripe { background: var(--verde);    }
   .card-t-body { flex: 1; padding: 11px 12px; display: flex; flex-direction: column; gap: 7px; min-width: 0; }
   .card-t-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
   .card-t-prot { font-family: "DM Mono",monospace; font-size: 10px; color: var(--texto2); letter-spacing: 1px; }
@@ -272,15 +285,18 @@ header {
   .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 3px; }
   .card-t-prazo-bar  { height: 4px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
   .card-t-prazo-fill { height: 100%; border-radius: 10px; }
-  .card-t.t-urgente  .card-t-prazo-fill { background: var(--vermelho); }
-  .card-t.t-pendente .card-t-prazo-fill { background: var(--amarelo);  }
-  .card-t.t-atrasado .card-t-prazo-fill { background: var(--atrasado); }
-  .card-t.t-execucao .card-t-prazo-fill { background: var(--exec);     }
+  .card-t.t-urgente   .card-t-prazo-fill { background: var(--vermelho); }
+  .card-t.t-pendente  .card-t-prazo-fill { background: var(--amarelo);  }
+  .card-t.t-atrasado  .card-t-prazo-fill { background: var(--atrasado); }
+  .card-t.t-execucao  .card-t-prazo-fill { background: var(--exec);     }
+  .card-t.t-concluido .card-t-prazo-fill { background: var(--verde);    }
   .badge-sm { font-size: 9px; font-weight: 700; padding: 2px 7px; border-radius: 20px; letter-spacing: .4px; white-space: nowrap; flex-shrink: 0; }
-  .badge-sm.t-urgente  { background: var(--vermelho-bg); color: var(--vermelho); }
-  .badge-sm.t-pendente { background: var(--amarelo-bg);  color: var(--amarelo);  }
-  .badge-sm.t-atrasado { background: var(--atrasado-bg); color: var(--atrasado); }
-  .badge-sm.t-execucao { background: var(--exec-bg); color: var(--exec); border: 1px solid var(--exec-borda); }
+  .badge-sm.t-urgente   { background: var(--vermelho-bg); color: var(--vermelho); }
+  .badge-sm.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
+  .badge-sm.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
+  .badge-sm.t-execucao  { background: var(--exec-bg); color: var(--exec); border: 1px solid var(--exec-borda); }
+  /* NOVO: badge concluído */
+  .badge-sm.t-concluido { background: var(--verde-bg); color: var(--verde); border: 1px solid var(--concluido-borda); }
   .exec-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--exec); display: inline-block; margin-right: 3px; animation: pulseDot 1.4s ease-in-out infinite; flex-shrink: 0; }
 }
 
@@ -290,23 +306,28 @@ header {
 
 .card { background: var(--branco); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
 .card:active { transform: scale(.995); }
-.card.t-execucao { border: 2px solid var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
+.card.t-execucao  { border: 2px solid var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
+/* NOVO: card concluído mobile */
+.card.t-concluido { border: 1px solid var(--concluido-borda); opacity: .88; }
 .card-inner { display: flex; flex: 1; }
 .card-stripe { width: 6px; flex-shrink: 0; }
-.card.t-urgente  .card-stripe { background: var(--vermelho); }
-.card.t-pendente .card-stripe { background: var(--amarelo);  }
-.card.t-atrasado .card-stripe { background: var(--atrasado); }
-.card.t-execucao .card-stripe { background: var(--exec);     }
+.card.t-urgente   .card-stripe { background: var(--vermelho); }
+.card.t-pendente  .card-stripe { background: var(--amarelo);  }
+.card.t-atrasado  .card-stripe { background: var(--atrasado); }
+.card.t-execucao  .card-stripe { background: var(--exec);     }
+.card.t-concluido .card-stripe { background: var(--verde);    }
 .card-body { flex: 1; padding: 14px 14px 0; display: flex; flex-direction: column; gap: 10px; }
 .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
 .card-top-left { display: flex; flex-direction: column; gap: 4px; }
 .card-top-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
 .prot-num { font-family: "DM Mono",monospace; font-size: 11px; font-weight: 500; color: var(--texto2); letter-spacing: 1px; }
 .badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; letter-spacing: .5px; white-space: nowrap; }
-.badge.t-urgente  { background: var(--vermelho-bg); color: var(--vermelho); }
-.badge.t-pendente { background: var(--amarelo-bg);  color: var(--amarelo);  }
-.badge.t-atrasado { background: var(--atrasado-bg); color: var(--atrasado); }
-.badge.t-execucao { background: var(--exec-bg);     color: var(--exec);     }
+.badge.t-urgente   { background: var(--vermelho-bg); color: var(--vermelho); }
+.badge.t-pendente  { background: var(--amarelo-bg);  color: var(--amarelo);  }
+.badge.t-atrasado  { background: var(--atrasado-bg); color: var(--atrasado); }
+.badge.t-execucao  { background: var(--exec-bg);     color: var(--exec);     }
+/* NOVO: badge concluído mobile */
+.badge.t-concluido { background: var(--verde-bg); color: var(--verde); }
 .badge-exec { display: inline-flex; align-items: center; gap: 5px; background: var(--exec-bg); color: var(--exec); font-size: 10px; font-weight: 700; padding: 4px 10px; border-radius: 20px; border: 1px solid var(--exec-borda); letter-spacing: .3px; white-space: nowrap; }
 .badge-exec .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--exec); animation: pulseDot 1.4s ease-in-out infinite; flex-shrink: 0; }
 @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
@@ -329,14 +350,15 @@ header {
 .prazo-hora { font-size: 10px; color: var(--texto2); font-weight: 500; }
 .prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
 .prazo-fill { height: 100%; border-radius: 10px; transition: width .4s; }
-.t-urgente  .prazo-fill { background: var(--vermelho); }
-.t-pendente .prazo-fill { background: var(--amarelo);  }
-.t-atrasado .prazo-fill { background: var(--atrasado); }
-.t-execucao .prazo-fill { background: var(--exec);     }
+.t-urgente   .prazo-fill { background: var(--vermelho); }
+.t-pendente  .prazo-fill { background: var(--amarelo);  }
+.t-atrasado  .prazo-fill { background: var(--atrasado); }
+.t-execucao  .prazo-fill { background: var(--exec);     }
+.t-concluido .prazo-fill { background: var(--verde);    }
 
 .card-footer { padding: 12px 14px 14px; }
 
-/* ══ BOTÕES MOBILE — NOVO FLUXO DUAS ETAPAS ══ */
+/* ══ BOTÕES MOBILE ══ */
 .btn-iniciar {
   display: flex; align-items: center; justify-content: center; gap: 6px;
   width: 100%; min-height: 52px; padding: 14px;
@@ -373,6 +395,17 @@ header {
   touch-action: manipulation;
 }
 .btn-cancelar-exec:active { background: var(--cinza-bg); }
+
+/* NOVO: banner concluído no card mobile */
+.btn-concluido-info {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; min-height: 44px; padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--verde-bg); color: var(--verde);
+  font-family: "DM Sans",sans-serif; font-size: 14px; font-weight: 700;
+  border: 1.5px solid var(--concluido-borda);
+  pointer-events: none;
+}
 
 .btn-bloqueado { background: #9CA3AF !important; cursor: not-allowed; opacity: .75; pointer-events: none; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; border-radius: var(--radius-sm); color: #fff; font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700; border: none; }
 
@@ -427,6 +460,32 @@ header {
 .busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
 .busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
 .busca-nada-sub  { font-size: 13px; margin-top: 4px; }
+
+/* ══ NOVO: seção de conclusão no painel de detalhes ══ */
+.detail-conclusao-section {
+  border-top: 1.5px dashed var(--concluido-borda);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.detail-conclusao-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--verde);
+}
+.detail-conclusao-header::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--concluido-borda);
+  opacity: .5;
+}
 </style>
 </head>
 <body>
@@ -597,6 +656,14 @@ var CACHE_TS  = "hyd_cache_ts";
 
 if (new URLSearchParams(location.search).get('action') === 'refresh') {
   window.addEventListener('load', function(){ carregarDados(); });
+}
+
+// ══════════════════════════════════════════════
+//  HELPER: verificar se protocolo está concluído
+// ══════════════════════════════════════════════
+function isConcluido(p) {
+  var st = (p.status||"").toUpperCase().trim();
+  return st === "CONCLUÍDO" || st === "CONCLUIDO";
 }
 
 // ══════════════════════════════════════════════
@@ -773,7 +840,7 @@ function fotoSrc(id) {
 function onFotoErro(img, u, id) {
   if (!img.dataset.r1 && id) { img.dataset.r1="1"; img.src="https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w800"; return; }
   if (!img.dataset.r2 && id && isDesktop()) { img.dataset.r2="1"; img.src="https://drive.google.com/uc?export=view&id="+encodeURIComponent(id); return; }
-  var w = img.closest(".foto-wrap");
+  var w = img.closest(".foto-wrap,.detail-foto-wrap");
   if (w) w.outerHTML = "<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";
 }
 function onFotoLoad(img) { img.classList.add("loaded"); var sk=img.previousElementSibling; if(sk&&sk.classList.contains("foto-skeleton")) sk.style.display="none"; }
@@ -811,13 +878,13 @@ function liberarLockApi(protocolo) { return postLock({acao:"liberar",protocolo:p
 function iniciarHeartbeat(protocolo) {
   if (meusLocks[protocolo]) return;
   meusLocks[protocolo] = setInterval(function(){ postLock({acao:"heartbeat",protocolo:protocolo,sessionId:SESSION_ID}); }, 60000);
-  _lockIniciadoEm[protocolo] = Date.now(); // ← adiciona esta linha
+  _lockIniciadoEm[protocolo] = Date.now();
   atualizarChipOperador();
 }
 function pararHeartbeat(protocolo) { if (meusLocks[protocolo]){ clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; atualizarChipOperador(); } }
 
 // ══════════════════════════════════════════════
-//  MODAL INICIAR — NOVA LÓGICA DUAS ETAPAS
+//  MODAL INICIAR
 // ══════════════════════════════════════════════
 function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
@@ -836,7 +903,6 @@ function confirmarExecucao() {
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
 
-  // ← NOVO: bloqueia se já tem algum lock ativo
   var locksAtivos = Object.keys(meusLocks);
   if (locksAtivos.length > 0) {
     fecharModal();
@@ -862,33 +928,12 @@ function confirmarExecucao() {
     .catch(function(err){ console.error("[confirmarExecucao]",err); toast("❌ Erro ao iniciar execução","erro"); });
 }
 
-// Abre o formulário de conclusão (só chamado após ter lock ativo)
-function abrirFormularioConclusao(protocolo, endereco) {
-  var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + encodeURIComponent(endereco);
-  var win = window.open(url, "_blank");
-  if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.","erro"); return; }
-  var watcher = setInterval(function(){
-    try {
-      if (win.closed) {
-        clearInterval(watcher);
-        setTimeout(function(){
-          liberarLockApi(protocolo).then(function(){
-            pararHeartbeat(protocolo);
-            toast("🔓 Formulário fechado — serviço liberado.","");
-            carregarDados();
-          });
-        }, 2000);
-      }
-    } catch(e){ clearInterval(watcher); }
-  }, 1000);
-}
-
 function cancelarMinhaExecucao(protocolo) {
   liberarLockApi(protocolo).then(function(){ pararHeartbeat(protocolo); toast("🔓 Execução cancelada — serviço liberado.",""); carregarDados(); });
 }
 
 // ══════════════════════════════════════════════
-//  PAINEL DE DETALHES (TABLET)
+//  PAINEL DE DETALHES (TABLET) — CORRIGIDO
 // ══════════════════════════════════════════════
 function selecionarProtocolo(p) {
   _protocoloSelecionado = p.protocolo;
@@ -902,84 +947,115 @@ function selecionarProtocolo(p) {
   vazio.style.display = "none";
   content.classList.add("show");
 
-  var t   = p._t;
-  var lock = p.lock;
-  var minhaExecucao = lock && lock.sessionId === SESSION_ID;
-  var outraExecucao = lock && lock.sessionId !== SESSION_ID;
-  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+  // ── CORREÇÃO 1: detectar concluído antes de tudo ──
+  var concluido = isConcluido(p);
 
-  var deltaVal = t.r <= 0 ? "−"+ar(t.delta) : ar(t.delta);
-  var deltaLbl = t.r <= 0 ? "VENCIDO" : "RESTANTE";
+  var t   = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:"", delta:0};
+  var lock = p.lock;
+  var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
+  var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
+
+  // CORREÇÃO: tipo correto para concluídos
+  var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
+  var deltaVal, deltaLbl;
+  if (concluido) {
+    deltaVal = "✔";
+    deltaLbl = "CONCLUÍDO";
+  } else {
+    deltaVal = t.r <= 0 ? "−"+ar(t.delta) : ar(t.delta);
+    deltaLbl = t.r <= 0 ? "VENCIDO" : "RESTANTE";
+  }
+
   var abertura  = p.dataHora ? new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
-  var prazoHora = t.horaVence || "—";
+  var prazoHora = concluido ? (p.dataConclusao ? new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—") : (t.horaVence || "—");
+  var prazoLbl  = concluido ? "CONCLUSÃO" : "PRAZO";
 
   var execInfoHtml = "";
   if (outraExecucao) {
-    var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
-    var quem = lock.usuario ? " por <strong>"+safeText(lock.usuario)+"</strong>" : "";
-    execInfoHtml = "<div style='background:var(--exec-bg);border:1px solid rgba(168,85,247,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--exec);'>⏱ Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
+    var minEx = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+    var quemEx = lock.usuario ? " por <strong>"+safeText(lock.usuario)+"</strong>" : "";
+    execInfoHtml = "<div style='background:var(--exec-bg);border:1px solid rgba(168,85,247,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--exec);'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";
   } else if (minhaExecucao) {
     execInfoHtml = "<div style='background:#dcfce7;border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
+  // Foto de abertura
   var fotoHtml = "";
   var src = fotoSrc(p.fotoId);
   if (src) {
-    fotoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
-      "<img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")' alt='Foto do local'></div>";
+    fotoHtml = "<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div>" +
+      "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
+      "<img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")' alt='Foto do local'></div></div>";
   }
 
   var obsHtml = (p.obs && p.obs !== "—") ? "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(p.obs)+"</div></div>" : "";
-  var badgeHtml = { urgente:"<span class='badge t-urgente'>⚠️ Urgente</span>", pendente:"<span class='badge t-pendente'>🟡 Pendente</span>", atrasado:"<span class='badge t-atrasado'>🔴 Atrasado</span>", execucao:"<span class='badge-exec'><span class='dot'></span>Em execução</span>" }[tipoCard] || "";
+
+  // CORREÇÃO 3: badge correto para concluído
+  var badgeMap = {
+    urgente:   "<span class='badge t-urgente'>⚠️ Urgente</span>",
+    pendente:  "<span class='badge t-pendente'>🟡 Pendente</span>",
+    atrasado:  "<span class='badge t-atrasado'>🔴 Atrasado</span>",
+    execucao:  "<span class='badge-exec'><span class='dot'></span>Em execução</span>",
+    concluido: "<span class='badge t-concluido'>✅ Concluído</span>"
+  };
+  var badgeHtml = badgeMap[tipoCard] || "";
+
+  // CORREÇÃO 2: seção de dados de conclusão
+  var conclusaoHtml = "";
+  if (concluido) {
+    // Foto de conclusão
+    var fotoConclusaoHtml = "";
+    if (p.fotoConclusaoId) {
+      var srcC = fotoSrc(p.fotoConclusaoId);
+      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
+        "<img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoConclusaoUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoConclusaoUrl||"")+"\" ,\""+esc(p.fotoConclusaoId||"")+"\")' alt='Foto de conclusão'></div>";
+    } else if (p.fotoConclusaoUrl) {
+      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
+        "<img class='detail-foto' src='"+esc(p.fotoConclusaoUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoConclusaoUrl)+"\")' alt='Foto de conclusão'></div>";
+    }
+
+    conclusaoHtml =
+      "<div class='detail-conclusao-section'>" +
+        "<div class='detail-conclusao-header'>✅ Dados de conclusão</div>" +
+        (p.operadorConclusao ? "<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>" : "") +
+        "<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>" +
+        (p.obsConclusao && p.obsConclusao !== "—" ? "<div class='detail-row'><div class='detail-row-lbl'>Observação de conclusão</div><div class='detail-row-val'>"+safeText(p.obsConclusao)+"</div></div>" : "") +
+        (fotoConclusaoHtml ? "<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConclusaoHtml+"</div>" : "") +
+      "</div>";
+  }
 
   content.innerHTML =
     "<div><div class='detail-prot'>"+safeText(p.protocolo)+"</div><div class='detail-end'>📍 "+safeText(p.endereco)+"</div><div style='margin-top:6px'>"+badgeHtml+"</div></div>" +
     "<div class='detail-mini-cards "+tipoCard+"'>" +
       "<div class='mini-card'><div class='mini-card-val t-"+tipoCard+"'>"+deltaVal+"</div><div class='mini-card-lbl'>"+deltaLbl+"</div></div>" +
       "<div class='mini-card'><div class='mini-card-val'>"+abertura+"</div><div class='mini-card-lbl'>Abertura</div></div>" +
-      "<div class='mini-card'><div class='mini-card-val"+(t.r<=0?" t-atrasado":"")+"'>"+prazoHora+"</div><div class='mini-card-lbl'>Prazo</div></div>" +
+      "<div class='mini-card'><div class='mini-card-val"+(concluido?" t-concluido":t.r<=0?" t-atrasado":"")+"'>"+prazoHora+"</div><div class='mini-card-lbl'>"+prazoLbl+"</div></div>" +
     "</div>" +
-    "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:"+t.pct.toFixed(0)+"%'></div></div>" +
+    "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:100%'></div></div>" +
     execInfoHtml +
-    "<div class='detail-rows'><div class='detail-row'><div class='detail-row-lbl'>Registrado por</div><div class='detail-row-val'>"+safeText(p.registradoPor||"—")+"</div></div><div class='detail-row'><div class='detail-row-lbl'>Data/hora abertura</div><div class='detail-row-val'>"+fdt(p.dataHora)+"</div></div>"+obsHtml+"</div>" +
-    fotoHtml;
+    "<div class='detail-rows'>" +
+      "<div class='detail-row'><div class='detail-row-lbl'>Registrado por</div><div class='detail-row-val'>"+safeText(p.registradoPor||"—")+"</div></div>" +
+      "<div class='detail-row'><div class='detail-row-lbl'>Data/hora abertura</div><div class='detail-row-val'>"+fdt(p.dataHora)+"</div></div>" +
+      obsHtml +
+    "</div>" +
+    fotoHtml +
+    conclusaoHtml; // ← NOVO: seção de conclusão
 
   footer.classList.add("show");
-  if (outraExecucao) {
+  // CORREÇÃO 1: bloquear ações para protocolos concluídos
+  if (concluido) {
+    footer.innerHTML = "<div style='background:var(--verde-bg);border:1.5px solid var(--concluido-borda);border-radius:var(--radius-sm);padding:12px 16px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";
+  } else if (outraExecucao) {
     footer.innerHTML = "<div class='btn-bloqueado' style='min-height:48px;border-radius:var(--radius-sm);font-size:14px;'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
-    // ETAPA 2: botão de concluir
-  footer.innerHTML =
-    "<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
-    "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
+    footer.innerHTML =
+      "<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
+      "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
   } else {
-    // ETAPA 1: botão de iniciar
-  footer.innerHTML =
-    "<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";
- }
-}
-
-function agendarLiberacaoAoFechar(protocolo) {
-  // Não faz nada aqui — o monitoramento é feito ao abrir o link
-  // O link já abre numa nova aba, monitoramos o fechamento dela
-  setTimeout(function() {
-    var janela = window._janelaFormulario;
-    if (!janela) return;
-    var watcher = setInterval(function() {
-      try {
-        if (janela.closed) {
-          clearInterval(watcher);
-          setTimeout(function() {
-            liberarLockApi(protocolo).then(function() {
-              pararHeartbeat(protocolo);
-              toast("🔓 Formulário fechado — serviço liberado.", "");
-              carregarDados();
-            });
-          }, 2000);
-        }
-      } catch(e) { clearInterval(watcher); }
-    }, 1000);
-  }, 500);
+    footer.innerHTML =
+      "<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";
+  }
 }
 
 function cancelarMinhaExecucaoPainel(protocolo) {
@@ -987,21 +1063,28 @@ function cancelarMinhaExecucaoPainel(protocolo) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER MOBILE
+//  RENDER MOBILE — CORRIGIDO
 // ══════════════════════════════════════════════
 function renderCard(p) {
   var t   = p._t;
   var pct = t.pct.toFixed(0);
   var lock = p.lock;
-  var minhaExecucao = lock && lock.sessionId === SESSION_ID;
-  var outraExecucao = lock && lock.sessionId !== SESSION_ID;
-  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
+  // CORREÇÃO 1: detectar concluído
+  var concluido = isConcluido(p);
+  var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
+  var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
+
+  // CORREÇÃO 3: tipo correto
+  var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
   var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
     foto = "<div class='foto-wrap'><div class='foto-skeleton'></div>" +
            "<img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")' alt='Foto do local'></div>";
   }
+
   var execBadge = (outraExecucao || minhaExecucao) ? "<span class='badge-exec'><span class='dot'></span>Em execução</span>" : "";
 
   var protEsc = esc(p.protocolo);
@@ -1016,8 +1099,13 @@ function renderCard(p) {
     execInfoHtml = "<div class='exec-info' style='background:#dcfce7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
+  // CORREÇÃO 1 + 3: botões corretos para cada estado
   var btnHtml;
-  if (outraExecucao) {
+  if (concluido) {
+    // BLOQUEADO — serviço finalizado
+    var dtConc = p.dataConclusao ? fdt(p.dataConclusao) : "—";
+    btnHtml = "<div class='btn-concluido-info'>✅ Concluído em " + dtConc + "</div>";
+  } else if (outraExecucao) {
     btnHtml = "<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
     btnHtml =
@@ -1026,8 +1114,14 @@ function renderCard(p) {
   } else {
     btnHtml = "<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";
   }
-  var prazoExtra = t.horaVence ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>" : "";
-  var badgeTxt = {urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado"}[tipoCard] || "";
+
+  var prazoExtra = (!concluido && t.horaVence) ? " <span class='prazo-hora'>• vence às "+t.horaVence+"</span>" : "";
+  var prazoTxt   = concluido ? "Concluído" : t.txt;
+  var prazoLabel = concluido ? "100% concluído" : pct+"% do prazo";
+
+  // CORREÇÃO 3: badge correto — verde para concluído
+  var badgeTxt = {urgente:"⚠️ Urgente", pendente:"🟡 Pendente", atrasado:"🔴 Atrasado", concluido:"✅ Concluído"}[tipoCard] || "";
+
   return "<div class='card t-"+tipoCard+"'>" +
     "<div class='card-inner'><div class='card-stripe'></div>" +
     "<div class='card-body'>" +
@@ -1039,57 +1133,83 @@ function renderCard(p) {
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>" +
       "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+"</div>" +
       execInfoHtml + foto +
-      "<div class='prazo-wrap'><div class='prazo-row'><span>"+t.txt+prazoExtra+"</span><span style='color:var(--texto2)'>"+pct+"% do prazo</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>" +
+      "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>" +
     "</div></div>" +
     "<div class='card-footer'>"+btnHtml+"</div></div>";
 }
 
 // ══════════════════════════════════════════════
-//  RENDER TABLET
+//  RENDER TABLET — CORRIGIDO
 // ══════════════════════════════════════════════
 function renderCardTablet(p) {
   var t    = p._t;
   var pct  = t.pct.toFixed(0);
   var lock = p.lock;
-  var minhaExecucao = lock && lock.sessionId === SESSION_ID;
-  var outraExecucao = lock && lock.sessionId !== SESSION_ID;
-  var tipoCard = (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
+  // CORREÇÃO 1: detectar concluído
+  var concluido = isConcluido(p);
+  var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
+  var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
+
+  // CORREÇÃO 3: tipo correto
+  var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
+
   var idSafe = p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var selecionado = _protocoloSelecionado === p.protocolo ? " selected" : "";
+
   var badgeHtml;
-  if (outraExecucao || minhaExecucao) {
+  if (concluido) {
+    badgeHtml = "<span class='badge-sm t-concluido'>✅ Concluído</span>";
+  } else if (outraExecucao || minhaExecucao) {
     badgeHtml = "<span class='badge-sm t-execucao'><span class='exec-dot'></span>Execução</span>";
   } else {
     var labels = {urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};
     badgeHtml = "<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";
   }
+
   var execSub = "";
-  if (outraExecucao) {
+  if (concluido) {
+    execSub = "<span style='color:var(--verde)'>"+fdt(p.dataConclusao)+"</span>";
+  } else if (outraExecucao) {
     var min = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
     var quem = lock.usuario ? " · "+safeText(lock.usuario) : "";
     execSub = "<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";
   } else if (minhaExecucao) {
     execSub = "<span style='color:#166534'>Você executando</span>";
   }
+
+  var prazoTxt = concluido ? "Concluído" : t.txt;
+  var prazoLabel = concluido ? "100%" : pct+"%";
+
   return "<div class='card-t t-"+tipoCard+selecionado+"' id='card-t-"+idSafe+"'>" +
     "<div class='card-t-inner'><div class='card-t-stripe'></div>" +
     "<div class='card-t-body'>" +
       "<div class='card-t-top'><div><div class='card-t-prot'>"+safeText(p.protocolo)+"</div><div class='card-t-end'>"+safeText(p.endereco)+"</div></div>"+badgeHtml+"</div>" +
       "<div class='card-t-meta'><span>🕐 "+fdt(p.dataHora)+"</span><span>👷 "+safeText(p.registradoPor||"—")+"</span>"+(execSub?execSub:"")+"</div>" +
-      "<div class='card-t-prazo-row'><span>"+t.txt+"</span><span style='color:var(--texto2)'>"+pct+"%</span></div>" +
-      "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>" +
+      "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
+      "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:100%'></div></div>" +
     "</div></div></div>";
 }
 
 var _listaAtiva = [];
 
+// ══════════════════════════════════════════════
+//  RENDER TABLET (LAYOUT) — CORRIGIDO
+// ══════════════════════════════════════════════
 function renderTablet(lista) {
   _listaAtiva = lista;
   var hoje = new Date().toDateString();
-  var pen=0, exec=0, urg=0, ok=0, ativos=[];
+  var pen=0, exec=0, urg=0, ok=0, ativos=[], concluidosHoje=[];
+
   lista.forEach(function(p) {
-    var st = (p.status||"").toUpperCase().trim();
-    if (st==="CONCLUÍDO"||st==="CONCLUIDO") { if (p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) ok++; return; }
+    var concluido = isConcluido(p);
+    if (concluido) {
+      if (p.dataConclusao && new Date(p.dataConclusao).toDateString()===hoje) {
+        ok++;
+        concluidosHoje.push(p);
+      }
+      return;
+    }
     p._t = tempo(p.dataHora);
     if (p.lock) exec++; else if (p._t.tipo==="atrasado") urg++; else pen++;
     ativos.push(p);
@@ -1118,59 +1238,80 @@ function renderTablet(lista) {
   if (sbAtrasados.length) { sbHtml+="<div class='sb-sec'>🔴 Atrasados</div>"; sbAtrasados.forEach(function(p){ sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div></div>"; }); }
   if (sbUrgentes.length) { sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>"; sbUrgentes.forEach(function(p){ sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div>"; }); }
   if (sbExec.length) { sbHtml+="<div class='sb-sec'>🟣 Execução</div>"; sbExec.forEach(function(p){ sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div></div>"; }); }
+  // NOVO: concluídos na sidebar
+  if (concluidosHoje.length) { sbHtml+="<div class='sb-sec'>✅ Concluídos</div>"; concluidosHoje.forEach(function(p){ sbHtml+="<div class='sb-item t-concluido"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-concluido'>"+fdt(p.dataConclusao)+"</div></div>"; }); }
   if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
   sbEl.innerHTML=sbHtml;
-  var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec);
+
+  var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec).concat(concluidosHoje);
   sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
 
+  // Filtros do centro: concluídos só aparecem na aba "concluido" da sidebar, não no grid principal
   var filtrados=ativos.slice();
   if (termoBuscaSb) filtrados=filtrados.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0; });
-  if (sbFiltro==="atrasado") filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
-  else if (sbFiltro==="urgente") filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
+  if (sbFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
+  else if (sbFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
   else if (sbFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
-  else if (sbFiltro==="concluido") filtrados=lista.filter(function(p){ var st=(p.status||"").toUpperCase().trim(); return (st==="CONCLUÍDO"||st==="CONCLUIDO")&&p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje; }).map(function(p){ p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"pendente",horaVence:""}; return p; });
-  if (ftFiltro==="atrasado") filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
-  else if (ftFiltro==="urgente") filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
+  else if (sbFiltro==="concluido") {
+    // CORREÇÃO: filtro concluído usa concluidosHoje, com _t sintético
+    filtrados = concluidosHoje.map(function(p){
+      p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
+      return p;
+    });
+  }
+  if (ftFiltro==="atrasado")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
+  else if (ftFiltro==="urgente")  filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
   else if (ftFiltro==="execucao") filtrados=filtrados.filter(function(p){return !!p.lock;});
 
   filtrados.sort(function(a,b){
-    var rank=function(p){ if(p.lock&&p.lock.sessionId===SESSION_ID) return 0; if(p.lock) return 1; if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado")) return 2; if(p._t&&p._t.r<=4) return 3; return 4; };
+    var rank=function(p){
+      if (isConcluido(p)) return 5;
+      if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
+      if(p.lock) return 1;
+      if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado")) return 2;
+      if(p._t&&p._t.r<=4) return 3;
+      return 4;
+    };
     var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
   });
 
   var gt=document.getElementById("gridTablet");
   if (!filtrados.length) { gt.innerHTML="<div class='empty-tablet'><div style='font-size:36px'>✅</div><div style='font-size:15px;font-weight:700;color:var(--verde);margin-top:8px'>Tudo limpo!</div><div style='font-size:13px;color:var(--texto2);'>Nenhum protocolo para este filtro.</div></div>"; return; }
 
-  var execL=filtrados.filter(function(p){return !!p.lock;});
-  var urgL=filtrados.filter(function(p){return !p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);});
-  var norL=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;});
+  var execL     = filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;});
+  var urgL      = filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);});
+  var norL      = filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;});
+  var concL     = filtrados.filter(function(p){return isConcluido(p);});
+
   var h="";
   if (execL.length) h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>"+execL.map(renderCardTablet).join("");
   if (urgL.length)  h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>"+urgL.map(renderCardTablet).join("");
   if (norL.length)  h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>"+norL.map(renderCardTablet).join("");
+  if (concL.length) h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>"+concL.map(renderCardTablet).join("");
   h+="<div class='ts-tablet'>Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
   gt.innerHTML=h;
 
-  var allCards=execL.concat(urgL).concat(norL);
+  var allCards=execL.concat(urgL).concat(norL).concat(concL);
   gt.querySelectorAll(".card-t").forEach(function(el,idx){ if(allCards[idx]) el.onclick=(function(p){return function(){selecionarProtocolo(p);};})(allCards[idx]); });
 
-if (_protocoloSelecionado) {
-  var pSel = ativos.find(function(p){ return p.protocolo === _protocoloSelecionado; });
-  if (pSel) {
-    selecionarProtocolo(pSel);
-  } else {
-    // Protocolo não está mais nos ativos (foi concluído ou removido) — reseta o painel
-    _protocoloSelecionado = null;
-    document.getElementById("detailVazio").style.display = "";
-    document.getElementById("detailContent").classList.remove("show");
-    document.getElementById("detailFooter").classList.remove("show");
-    document.getElementById("detailContent").innerHTML = "";
-    document.getElementById("detailFooter").innerHTML = "";
+  if (_protocoloSelecionado) {
+    var todosParaBusca = ativos.concat(concluidosHoje);
+    var pSel = todosParaBusca.find(function(p){ return p.protocolo === _protocoloSelecionado; });
+    if (pSel) {
+      selecionarProtocolo(pSel);
+    } else {
+      _protocoloSelecionado = null;
+      document.getElementById("detailVazio").style.display = "";
+      document.getElementById("detailContent").classList.remove("show");
+      document.getElementById("detailFooter").classList.remove("show");
+      document.getElementById("detailContent").innerHTML = "";
+      document.getElementById("detailFooter").innerHTML = "";
+    }
   }
 }
-}
+
 // ══════════════════════════════════════════════
-//  RENDER MOBILE
+//  RENDER MOBILE (LAYOUT) — CORRIGIDO
 // ══════════════════════════════════════════════
 var _prevStats={}, _prevHashes={};
 function hashProtocolo(p){ return JSON.stringify({protocolo:p.protocolo,status:p.status,lock:p.lock?p.lock.sessionId:null,lockUser:p.lock?p.lock.usuario:null,lockTs:p.lock?p.lock.timestamp:null,obs:p.obs,fotoId:p.fotoId}); }
@@ -1178,27 +1319,30 @@ function hashProtocolo(p){ return JSON.stringify({protocolo:p.protocolo,status:p
 function render(lista) { _ultimaLista=lista; renderFiltrado(lista); renderTablet(lista); }
 
 function renderFiltrado(lista) {
-  var pen=0,exec=0,urg=0,ok=0,ativos=[];
+  var pen=0,exec=0,urg=0,ok=0,ativos=[],concluidosHoje=[];
   var hoje=new Date().toDateString();
   lista.forEach(function(p){
-    var st=(p.status||"").toUpperCase().trim();
-if(st==="CONCLUÍDO"||st==="CONCLUIDO"){
-  if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) ok++;
-  if(_aguardandoConclusao[p.protocolo]){
-    toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
-    delete _aguardandoConclusao[p.protocolo];
-  } else if(meusLocks[p.protocolo]){
-    pararHeartbeat(p.protocolo);
-    if(_lockIniciadoEm[p.protocolo]){
-      var dataConclusao = p.dataConclusao ? new Date(p.dataConclusao).getTime() : 0;
-      if(dataConclusao > _lockIniciadoEm[p.protocolo]){
-        toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
+    var concluido = isConcluido(p);
+    if (concluido) {
+      if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) {
+        ok++;
+        concluidosHoje.push(p);
       }
-      delete _lockIniciadoEm[p.protocolo];
+      if(_aguardandoConclusao[p.protocolo]){
+        toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
+        delete _aguardandoConclusao[p.protocolo];
+      } else if(meusLocks[p.protocolo]){
+        pararHeartbeat(p.protocolo);
+        if(_lockIniciadoEm[p.protocolo]){
+          var dataConclusao = p.dataConclusao ? new Date(p.dataConclusao).getTime() : 0;
+          if(dataConclusao > _lockIniciadoEm[p.protocolo]){
+            toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
+          }
+          delete _lockIniciadoEm[p.protocolo];
+        }
+      }
+      return;
     }
-  }
-  return;
-}
     p._t=tempo(p.dataHora);
     if(p.lock) exec++; else if(p._t.tipo==="atrasado") urg++; else pen++;
     ativos.push(p);
@@ -1208,42 +1352,69 @@ if(st==="CONCLUÍDO"||st==="CONCLUIDO"){
   setCounter("nPen",pen); setCounter("nExec",exec); setCounter("nUrg",urg); setCounter("nOk",ok);
 
   var g=document.getElementById("grid");
-  var filtrados=!termoBusca?ativos:ativos.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||(p.obs||"").toLowerCase().indexOf(termoBusca)>=0; });
 
-  if (!ativos.length) { g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>"; _prevHashes={}; return; }
+  // Para busca mobile: incluir concluídos se houver termo de busca
+  var todosParaBusca = ativos.concat(concluidosHoje.map(function(p){
+    p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
+    return p;
+  }));
+
+  var filtrados=!termoBusca ? ativos : todosParaBusca.filter(function(p){
+    return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
+           (p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||
+           (p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
+  });
+
+  if (!ativos.length && !concluidosHoje.length) { g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>"; _prevHashes={}; return; }
   if (termoBusca&&!filtrados.length) { g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>"; return; }
 
-  filtrados.sort(function(a,b){ var rank=function(p){if(p.lock&&p.lock.sessionId===SESSION_ID) return 0; if(p.lock) return 1; if(p._t.r<=0||p._t.tipo==="atrasado") return 2; if(p._t.r<=4) return 3; return 4;}; var d=rank(a)-rank(b); return d!==0?d:a._t.r-b._t.r; });
+  // Sem busca: só ativos no grid principal; concluídos ficam só no contador
+  var gridList = termoBusca ? filtrados : ativos;
 
-  var execL=filtrados.filter(function(p){return !!p.lock;});
-  var urgL=filtrados.filter(function(p){return !p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);});
-  var norL=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="pendente"&&p._t.r>4;});
+  gridList.sort(function(a,b){
+    var rank=function(p){
+      if(isConcluido(p)) return 5;
+      if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
+      if(p.lock) return 1;
+      if(p._t.r<=0||p._t.tipo==="atrasado") return 2;
+      if(p._t.r<=4) return 3;
+      return 4;
+    };
+    var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
+  });
+
+  var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;});
+  var urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);});
+  var norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;});
+  // Concluídos aparecem no grid mobile apenas quando há busca ativa
+  var concL=gridList.filter(function(p){return isConcluido(p);});
 
   var novoHashes={};
-  filtrados.forEach(function(p){novoHashes[p.protocolo]=hashProtocolo(p);});
-  var secaoAtual=[execL.length,urgL.length,norL.length].join("|");
+  gridList.forEach(function(p){novoHashes[p.protocolo]=hashProtocolo(p);});
+  var secaoAtual=[execL.length,urgL.length,norL.length,concL.length].join("|");
   var precisaReconstruir=secaoAtual!==(_prevHashes.__secoes__||"");
-  if(!precisaReconstruir&&filtrados.map(function(p){return p.protocolo;}).join(",")!==(_prevHashes.__ordem__||"")) precisaReconstruir=true;
-  if(!precisaReconstruir) filtrados.forEach(function(p){if(_prevHashes[p.protocolo]!==novoHashes[p.protocolo]) precisaReconstruir=true;});
+  if(!precisaReconstruir&&gridList.map(function(p){return p.protocolo;}).join(",")!==(_prevHashes.__ordem__||"")) precisaReconstruir=true;
+  if(!precisaReconstruir) gridList.forEach(function(p){if(_prevHashes[p.protocolo]!==novoHashes[p.protocolo]) precisaReconstruir=true;});
 
   if (precisaReconstruir) {
     var h="";
     if(execL.length) h+="<div class='sec-label'>🟣 Em execução agora</div>"+execL.map(renderCard).join("");
     if(urgL.length)  h+="<div class='sec-label'>🔴 Atenção imediata</div>"+urgL.map(renderCard).join("");
     if(norL.length)  h+="<div class='sec-label'>📋 Fila de serviços</div>"+norL.map(renderCard).join("");
+    if(concL.length) h+="<div class='sec-label'>✅ Concluídos hoje</div>"+concL.map(renderCard).join("");
+    if(!h) h="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo ativo no momento.</div></div>";
     h+="<div class='ts'>Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
     g.innerHTML=h;
   } else {
     var tsEl=g.querySelector(".ts");
     if(tsEl) tsEl.textContent="Atualizado em "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
   }
-  _prevHashes=novoHashes; _prevHashes.__secoes__=secaoAtual; _prevHashes.__ordem__=filtrados.map(function(p){return p.protocolo;}).join(",");
+  _prevHashes=novoHashes; _prevHashes.__secoes__=secaoAtual; _prevHashes.__ordem__=gridList.map(function(p){return p.protocolo;}).join(",");
 }
 
 // ══════════════════════════════════════════════
-//  CARREGAR DADOS
+//  ABRIR CONCLUSÃO
 // ══════════════════════════════════════════════
-
 function abrirConclusao(protocolo, endereco) {
   var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + decodeURIComponent(endereco);
   var win = window.open(url, "_blank");
@@ -1254,7 +1425,7 @@ function abrirConclusao(protocolo, endereco) {
       if (win.closed) {
         clearInterval(watcher);
         setTimeout(function() {
-          _aguardandoConclusao[protocolo] = Date.now(); // ← adiciona esta linha
+          _aguardandoConclusao[protocolo] = Date.now();
           liberarLockApi(protocolo).then(function() {
             pararHeartbeat(protocolo);
             carregarDados();
@@ -1265,6 +1436,9 @@ function abrirConclusao(protocolo, endereco) {
   }, 1000);
 }
 
+// ══════════════════════════════════════════════
+//  CARREGAR DADOS
+// ══════════════════════════════════════════════
 function carregarDados() {
   var btn=document.getElementById("btnReload"); btn.classList.add("spin"); btn.disabled=true;
   if (!estaOnline()) {
