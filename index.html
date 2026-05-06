@@ -832,6 +832,15 @@ function confirmarExecucao() {
   var protocolo     = protocoloPendente;
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
+
+  // ← NOVO: bloqueia se já tem algum lock ativo
+  var locksAtivos = Object.keys(meusLocks);
+  if (locksAtivos.length > 0) {
+    fecharModal();
+    toast("⚠️ Você já está executando o protocolo " + locksAtivos[0] + ". Conclua ou cancele antes de iniciar outro.", "erro");
+    return;
+  }
+
   fecharModal();
   toast("⏳ Registrando execução...","exec");
   var operador = getOperador() || "Operador";
@@ -846,7 +855,6 @@ function confirmarExecucao() {
       iniciarHeartbeat(protocolo);
       toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.", "exec");
       carregarDados();
-      // ← NÃO abre o formulário aqui. O operador vai ao local primeiro.
     })
     .catch(function(err){ console.error("[confirmarExecucao]",err); toast("❌ Erro ao iniciar execução","erro"); });
 }
