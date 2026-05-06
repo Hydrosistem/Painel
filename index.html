@@ -258,6 +258,15 @@ header {
   .sb-item-sub.t-atrasado  { color: var(--atrasado); }
   .sb-item-sub.t-urgente   { color: var(--vermelho); }
   .sb-item-sub.t-concluido { color: var(--verde); }
+  .sb-mini-card { flex-direction: row; align-items: center; gap: 8px; padding: 7px 10px; border: 0.5px solid var(--borda); border-radius: var(--radius-sm); margin: 0 6px 2px; }
+  .sb-mini-card:hover { background: var(--cinza-bg); }
+  .sb-mini-card.selected { background: var(--azul-bg); border-left: none; }
+  .sb-mini-card.t-atrasado.selected { background: var(--atrasado-bg); }
+  .sb-mini-card.t-urgente.selected  { background: var(--vermelho-bg); }
+  .sb-mini-card.t-exec.selected     { background: var(--exec-bg); }
+  .sb-mini-stripe { width: 3px; height: 30px; border-radius: 2px; flex-shrink: 0; }
+  .sb-mini-body { flex: 1; min-width: 0; }
+  
 
   .centro { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
   .centro-top { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
@@ -1424,17 +1433,64 @@ function renderTablet(lista) {
   var sbExec=ativos.filter(function(p){return !!p.lock;});
 
   var sbEl=document.getElementById("sbLista");
-  if (sbEl) {
-    var sbHtml="";
-    if (sbAtrasados.length) { sbHtml+="<div class='sb-sec'>🔴 Atrasados</div>"; sbAtrasados.forEach(function(p){ sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div></div>"; }); }
-    if (sbUrgentes.length) { sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>"; sbUrgentes.forEach(function(p){ sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div>"; }); }
-    if (sbExec.length) { sbHtml+="<div class='sb-sec'>🟣 Execução</div>"; sbExec.forEach(function(p){ sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div></div>"; }); }
-    if (concluidosHoje.length) { sbHtml+="<div class='sb-sec'>✅ Concluídos</div>"; concluidosHoje.forEach(function(p){ sbHtml+="<div class='sb-item t-concluido"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-concluido'>"+fdt(p.dataConclusao)+"</div></div>"; }); }
-    if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
-    sbEl.innerHTML=sbHtml;
-    var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec).concat(concluidosHoje);
-    sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
+if (sbEl) {
+  var sbHtml="";
+
+  if (sbAtrasados.length) {
+    sbHtml+="<div class='sb-sec'>🔴 Atenção imediata</div>";
+    sbAtrasados.forEach(function(p){
+      var minAtraso = Math.round((new Date() - (new Date(p.dataHora).getTime() + PRAZO*36e5)) / 60000);
+      var tempoTxt = minAtraso < 60 ? "venceu há "+minAtraso+"min" : "venceu há "+Math.round(minAtraso/60)+"h";
+      sbHtml+=
+        "<div class='sb-item sb-mini-card t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
+          "<div class='sb-mini-stripe' style='background:var(--atrasado)'></div>"+
+          "<div class='sb-mini-body'>"+
+            "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
+            "<div class='sb-item-sub t-atrasado'>"+tempoTxt+"</div>"+
+          "</div>"+
+          "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--atrasado)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/></svg>"+
+        "</div>";
+    });
   }
+
+  if (sbUrgentes.length) {
+    sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>";
+    sbUrgentes.forEach(function(p){
+      sbHtml+=
+        "<div class='sb-item sb-mini-card t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
+          "<div class='sb-mini-stripe' style='background:var(--vermelho)'></div>"+
+          "<div class='sb-mini-body'>"+
+            "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
+            "<div class='sb-item-sub t-urgente'>"+p._t.txt+"</div>"+
+          "</div>"+
+          "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--vermelho)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>"+
+        "</div>";
+    });
+  }
+
+  if (sbExec.length) {
+    sbHtml+="<div class='sb-sec'>🟣 Em execução</div>";
+    sbExec.forEach(function(p){
+      var minEx = Math.round((new Date() - new Date(p.lock.timestamp)) / 60000);
+      var tempoEx = (p.lock.usuario ? safeText(p.lock.usuario.split(" ")[0])+" · " : "") + "há "+(minEx<1?"<1":minEx)+"min";
+      sbHtml+=
+        "<div class='sb-item sb-mini-card t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
+          "<div class='sb-mini-stripe' style='background:var(--exec)'></div>"+
+          "<div class='sb-mini-body'>"+
+            "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
+            "<div class='sb-item-sub' style='color:var(--exec)'>"+tempoEx+"</div>"+
+          "</div>"+
+          "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--exec)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"+
+        "</div>";
+    });
+  }
+
+  if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>"+(sbFiltro==="concluido"?"✅ Ver concluídos no painel central":"✅ Tudo em dia!")+"</div>";
+  sbEl.innerHTML=sbHtml;
+
+  var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec);
+  sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
+}
 
   var filtrados=ativos.slice();
   if (termoBuscaSb) filtrados=filtrados.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0; });
