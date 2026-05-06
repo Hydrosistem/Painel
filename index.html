@@ -757,6 +757,7 @@ var SESSION_ID = (function() {
 })();
 
 var meusLocks = {}, protocoloPendente = null, enderecoPendente = null, _protocoloSelecionado = null;
+var _lockIniciadoEm = {};
 
 // ══════════════════════════════════════════════
 //  UTILITÁRIOS
@@ -809,6 +810,7 @@ function liberarLockApi(protocolo) { return postLock({acao:"liberar",protocolo:p
 function iniciarHeartbeat(protocolo) {
   if (meusLocks[protocolo]) return;
   meusLocks[protocolo] = setInterval(function(){ postLock({acao:"heartbeat",protocolo:protocolo,sessionId:SESSION_ID}); }, 60000);
+  _lockIniciadoEm[protocolo] = Date.now(); // ← adiciona esta linha
   atualizarChipOperador();
 }
 function pararHeartbeat(protocolo) { if (meusLocks[protocolo]){ clearInterval(meusLocks[protocolo]); delete meusLocks[protocolo]; atualizarChipOperador(); } }
@@ -1156,7 +1158,15 @@ function renderFiltrado(lista) {
   var hoje=new Date().toDateString();
   lista.forEach(function(p){
     var st=(p.status||"").toUpperCase().trim();
-    if(st==="CONCLUÍDO"||st==="CONCLUIDO"){ if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) ok++; if(meusLocks[p.protocolo]){pararHeartbeat(p.protocolo);toast("✅ Protocolo "+p.protocolo+" concluído!","ok");} return; }
+    if(st==="CONCLUÍDO"||st==="CONCLUIDO"){ if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) ok++; if(meusLocks[p.protocolo]){
+  pararHeartbeat(p.protocolo);
+  if(_lockIniciadoEm[p.protocolo]){
+    toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
+    delete _lockIniciadoEm[p.protocolo];
+  }
+}
+return;
+}
     p._t=tempo(p.dataHora);
     if(p.lock) exec++; else if(p._t.tipo==="atrasado") urg++; else pen++;
     ativos.push(p);
