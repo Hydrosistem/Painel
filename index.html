@@ -976,9 +976,14 @@ function ativarBotaoFallback() {
   if (ua.isAndroid) { mostrarBtnInstall(function(){ abrirModalInstall("Instalar no Android","<div style='text-align:left;line-height:1.8;font-size:13px'>1. Toque no menu <strong>⋮</strong> no canto superior direito<br>2. Procure: <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong><br>3. Confirme tocando em <strong>Adicionar</strong></div>"); }); return; }
   mostrarBtnInstall(function(){ abrirModalInstall("Instalar no computador","<div style='text-align:left;line-height:1.8;font-size:13px'>Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>"); });
 }
-window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); deferredPrompt = e; if (!estaInstalado()) ativarBotaoNativo(); });
+window.addEventListener("beforeinstallprompt", function(e){
+  e.preventDefault();
+  deferredPrompt = e;
+  clearTimeout(_promptWaitTimer); 
+  if (!estaInstalado()) ativarBotaoNativo();
+});
 window.addEventListener("appinstalled", function(){ deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!","ok"); });
-function iniciarEsperaPrompt() { if (estaInstalado() || deferredPrompt) return; clearTimeout(_promptWaitTimer); _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 8000); }
+function iniciarEsperaPrompt() { if (estaInstalado() || deferredPrompt) return; clearTimeout(_promptWaitTimer); _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 15000); }
 window.addEventListener("load", function() {
   if (estaInstalado()) { ocultarBtnInstall(); return; }
   var ua = getUA();
