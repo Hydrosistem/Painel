@@ -1232,6 +1232,32 @@ function renderFiltrado(lista) {
 // ══════════════════════════════════════════════
 //  CARREGAR DADOS
 // ══════════════════════════════════════════════
+
+function abrirConclusao(protocolo, endereco) {
+  var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + decodeURIComponent(endereco);
+  var win = window.open(url, "_blank");
+  if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.", "erro"); return; }
+  window._janelaFormulario = win;
+  var watcher = setInterval(function() {
+    try {
+      if (win.closed) {
+        clearInterval(watcher);
+        setTimeout(function() {
+          liberarLockApi(protocolo).then(function() {
+            pararHeartbeat(protocolo);
+            toast("🔓 Formulário fechado — serviço liberado.", "");
+            carregarDados();
+          });
+        }, 2000);
+      }
+    } catch(e) { clearInterval(watcher); }
+  }, 1000);
+}
+
+function agendarLiberacaoAoFechar(protocolo) {
+  // Substituída por abrirConclusao — não faz mais nada
+}
+
 function carregarDados() {
   var btn=document.getElementById("btnReload"); btn.classList.add("spin"); btn.disabled=true;
   if (!estaOnline()) {
