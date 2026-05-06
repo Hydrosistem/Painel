@@ -1622,16 +1622,24 @@ function renderFiltrado(lista) {
     return p;
   }));
 
-  var filtrados=!termoBusca ? ativos : todosParaBusca.filter(function(p){
-    return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
-           (p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||
-           (p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
-  });
+var todosVisiveis = ativos.concat(concluidosHoje.map(function(p){
+  p._t = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:""};
+  return p;
+}));
+
+var filtrados = !termoBusca ? ativos : todosVisiveis.filter(function(p){
+  return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
+         (p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||
+         (p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
+});
 
   if (!ativos.length && !concluidosHoje.length) { g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>"; _prevHashes={}; return; }
   if (termoBusca&&!filtrados.length) { g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou número de protocolo.</div></div>"; return; }
 
-  var gridList = termoBusca ? filtrados : ativos;
+ var gridList = termoBusca ? filtrados : ativos;
+
+// se a busca retornou concluídos, garante que aparecem na seção correta
+var concL = gridList.filter(function(p){ return isConcluido(p); });
 
   gridList.sort(function(a,b){
     var rank=function(p){
