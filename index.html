@@ -1005,15 +1005,26 @@ function selecionarProtocolo(p) {
   var conclusaoHtml = "";
   if (concluido) {
     // Foto de conclusão
-    var fotoConclusaoHtml = "";
-    if (p.fotoConclusaoId) {
-      var srcC = fotoSrc(p.fotoConclusaoId);
-      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
-        "<img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoConclusaoUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoConclusaoUrl||"")+"\" ,\""+esc(p.fotoConclusaoId||"")+"\")' alt='Foto de conclusão'></div>";
-    } else if (p.fotoConclusaoUrl) {
-      fotoConclusaoHtml = "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
-        "<img class='detail-foto' src='"+esc(p.fotoConclusaoUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoConclusaoUrl)+"\")' alt='Foto de conclusão'></div>";
-    }
+var fotoConclusaoHtml = "";
+var _fcId = p.fotoConcId || p.fotoConclusaoId || "";
+var _fcUrl = p.fotoConcUrl || p.fotoConclusaoUrl || "";
+if (_fcId) {
+  var srcC = fotoSrc(_fcId);
+  fotoConclusaoHtml =
+    "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
+    "<img class='detail-foto' src='" + srcC + "' loading='lazy'" +
+    " onload='onDetailFotoLoad(this)'" +
+    " onclick='abrirFoto(\"" + esc(_fcUrl || srcC) + "\")'" +
+    " onerror='onFotoErro(this,\"" + esc(_fcUrl) + "\",\"" + esc(_fcId) + "\")'" +
+    " alt='Foto de conclusão'></div>";
+} else if (_fcUrl) {
+  fotoConclusaoHtml =
+    "<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div>" +
+    "<img class='detail-foto' src='" + esc(_fcUrl) + "' loading='lazy'" +
+    " onload='onDetailFotoLoad(this)'" +
+    " onclick='abrirFoto(\"" + esc(_fcUrl) + "\")'" +
+    " alt='Foto de conclusão'></div>";
+}
 
     conclusaoHtml =
       "<div class='detail-conclusao-section'>" +
