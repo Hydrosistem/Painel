@@ -157,8 +157,14 @@ header {
 .btn-op-confirmar { width: 100%; min-height: 52px; border-radius: var(--radius-sm); background: var(--azul); color: #fff; font-family: "DM Sans",sans-serif; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity .15s; }
 .btn-op-confirmar:disabled { opacity: .4; cursor: not-allowed; }
 .btn-op-confirmar:not(:disabled):active { opacity: .85; }
-.chip-operador { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,.15); border: 1.5px solid rgba(255,255,255,.35); color: #fff; border-radius: 10px; padding: 0 12px; height: 38px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .15s; }
-.chip-operador:hover { background: rgba(255,255,255,.25); }
+.chip-operador { display: flex; align-items: center; gap: 8px; border: 1.5px solid rgba(255,255,255,.35); color: #fff; border-radius: 10px; padding: 0 12px; height: 38px; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .2s, box-shadow .2s; position: relative; overflow: hidden; }
+.chip-operador:hover { filter: brightness(1.15); box-shadow: 0 2px 12px rgba(0,0,0,.25); }
+.chip-op-dot { width: 8px; height: 8px; border-radius: 50%; background: #4ade80; flex-shrink: 0; box-shadow: 0 0 0 0 rgba(74,222,128,.6); animation: pulseOnline 2s ease-in-out infinite; }
+@keyframes pulseOnline {
+  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,.6); }
+  60%  { box-shadow: 0 0 0 5px rgba(74,222,128,0); }
+  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+}
 .chip-avatar { width: 22px; height: 22px; border-radius: 50%; background: rgba(255,255,255,.3); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
 
 /* ══ LAYOUT ══ */
@@ -846,9 +852,15 @@ function atualizarChipOperador() {
   if (!btn) return;
   if (nome) {
     var nLocks = Object.keys(meusLocks).length;
+    var cor    = hashColor(nome);
+    // fundo: cor do operador bem escurecida/transparente para não brigar com o header
+    var r = parseInt(cor.match(/hsl\((\d+)/)[1]);
+    btn.style.background = "hsla("+r+",55%,38%,.55)";
+    btn.style.borderColor = "hsla("+r+",70%,70%,.5)";
     btn.innerHTML =
-      "<span style='font-size:16px;'>👷🏼</span>" +
-      "<span>" + nome.split(" ")[0] + (nLocks > 0 ? " ("+nLocks+")" : "") + "</span>";
+      "<span style='font-size:15px;line-height:1;'>👷🏼</span>" +
+      "<span>" + nome.split(" ")[0] + (nLocks > 0 ? " <span style='opacity:.75;font-size:11px;'>("+nLocks+")</span>" : "") + "</span>" +
+      "<span class='chip-op-dot'></span>";
     btn.className = "chip-operador";
     btn.style.display = "";
   } else {
