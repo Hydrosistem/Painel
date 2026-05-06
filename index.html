@@ -1241,20 +1241,17 @@ function renderTablet(lista) {
   });
 
   var sbEl=document.getElementById("sbLista");
-  var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
-  var sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
-  var sbExec=ativos.filter(function(p){return !!p.lock;});
+if (sbEl) {
   var sbHtml="";
   if (sbAtrasados.length) { sbHtml+="<div class='sb-sec'>🔴 Atrasados</div>"; sbAtrasados.forEach(function(p){ sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>Venceu "+p._t.horaVence+"</div></div>"; }); }
   if (sbUrgentes.length) { sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>"; sbUrgentes.forEach(function(p){ sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div>"; }); }
   if (sbExec.length) { sbHtml+="<div class='sb-sec'>🟣 Execução</div>"; sbExec.forEach(function(p){ sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub'>"+safeText(p.lock.usuario||"")+"</div></div>"; }); }
-  // NOVO: concluídos na sidebar
   if (concluidosHoje.length) { sbHtml+="<div class='sb-sec'>✅ Concluídos</div>"; concluidosHoje.forEach(function(p){ sbHtml+="<div class='sb-item t-concluido"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-concluido'>"+fdt(p.dataConclusao)+"</div></div>"; }); }
   if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
   sbEl.innerHTML=sbHtml;
-
   var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec).concat(concluidosHoje);
   sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
+}
 
   // Filtros do centro: concluídos só aparecem na aba "concluido" da sidebar, não no grid principal
   var filtrados=ativos.slice();
