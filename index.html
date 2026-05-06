@@ -849,11 +849,9 @@ function atualizarChipOperador() {
   var btn  = document.getElementById("btnOperador");
   if (!btn) return;
   if (nome) {
-    var nLocks   = Object.keys(meusLocks).length;
-    var initials = getInitials(nome);
-    var cor      = hashColor(nome);
+    var nLocks = Object.keys(meusLocks).length;
     btn.innerHTML =
-      "<span class='chip-avatar-color' style='background:"+cor+";'>" + initials + "</span>" +
+      "<span style='font-size:16px;'>👷🏼</span>" +
       "<span>" + nome.split(" ")[0] + (nLocks > 0 ? " ("+nLocks+")" : "") + "</span>";
     btn.className = "chip-operador";
     btn.style.display = "";
