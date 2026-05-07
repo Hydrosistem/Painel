@@ -1341,8 +1341,16 @@ function _preencherDetalhe(p) {
       "<img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\" ,\""+esc(p.fotoId||"")+"\")' alt='Foto do local'></div></div>";
   }
 
-  var obsHtml = (p.obs && p.obs !== "—") ? "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(p.obs)+"</div></div>" : "";
-
+  function _renderObs(obs) {
+  if (!obs || obs === "—") return "";
+  var mapsMatch = obs.match(/https:\/\/maps\.google\.[^\s]+/);
+  if (mapsMatch) {
+    return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'><a href='"+mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;'>📍 Ver no Google Maps</a></div></div>";
+  }
+  return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(obs)+"</div></div>";
+}
+var obsHtml = _renderObs(p.obs);
+  
   var badgeMap = {
     urgente:   "<span class='badge t-urgente'>⚠️ Urgente</span>",
     pendente:  "<span class='badge t-pendente'>🟡 Pendente</span>",
@@ -1423,7 +1431,10 @@ function renderCard(p, idx) {
   var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
   var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
-  var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
+  var _mapsMatch = p.obs && p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
+var obs = _mapsMatch
+  ? "<span class='meta-item'><a href='"+_mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Ver no Maps</a></span>"
+  : (p.obs && p.obs !== "—" ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "");
   var dist = (_modoPerto && p._distKm != null) ? "<span class='meta-item'>📍 "+_formatarDist(p._distKm)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
