@@ -90,6 +90,20 @@ header {
 .btn-header:active, .btn-header:hover { background: rgba(255,255,255,.25); }
 .btn-header.spin svg { animation: rot .9s linear infinite; }
 .btn-header.hidden { display: none; }
+.btn-perto {
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff; border-radius: 10px; padding: 0 14px; height: 38px;
+  font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  touch-action: manipulation; -webkit-appearance: none;
+  transition: background .15s;
+}
+.btn-perto:active, .btn-perto:hover { background: rgba(255,255,255,.25); }
+.btn-perto.ativo {
+  background: #1A7A3C;
+  border-color: #4ADE80;
+}
 .btn-header.visible { display: flex; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
@@ -668,6 +682,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">🔄 Atualizar</button>
+    <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
 
@@ -1004,6 +1019,99 @@ function mostrarBotaoAtualizar(reg) {
 }
 
 // ══════════════════════════════════════════════
+//  MODO PERTO DE MIM
+// ══════════════════════════════════════════════
+var _modoPerto = false;
+var _posAtual  = null;
+var RAIO_KM    = 7;
+
+function _haversine(lat1, lng1, lat2, lng2) {
+  var R = 6371;
+  var dLat = (lat2 - lat1) * Math.PI / 180;
+  var dLng = (lng2 - lng1) * Math.PI / 180;
+  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+          Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+function togglePerto() {
+  var btn = document.getElementById("btnPerto");
+  if (_modoPerto) {
+    // Desativar
+    _modoPerto = false;
+    _posAtual  = null;
+    btn.classList.remove("ativo");
+    btn.textContent = "📍 Perto de mim";
+    toast("📍 Modo proximidade desativado", "");
+    renderFiltrado(_ultimaLista);
+    renderTablet(_ultimaLista);
+    return;
+  }
+
+  // Ativar — pede GPS
+  btn.textContent = "⏳ Buscando GPS...";
+  if (!navigator.geolocation) {
+    toast("❌ GPS não disponível neste dispositivo", "erro");
+    btn.textContent = "📍 Perto de mim";
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    function(pos) {
+      _posAtual  = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      _modoPerto = true;
+      btn.classList.add("ativo");
+      btn.textContent = "📍 Perto de mim ✓";
+      toast("✅ GPS ativo — mostrando protocolos em até " + RAIO_KM + "km", "ok");
+      renderFiltrado(_ultimaLista);
+      renderTablet(_ultimaLista);
+    },
+    function(err) {
+      btn.textContent = "📍 Perto de mim";
+      if (err.code === 1) toast("❌ Permissão de GPS negada. Ative nas configurações.", "erro");
+      else toast("❌ Não foi possível obter localização", "erro");
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+  );
+}
+
+function _aplicarProximidade(lista) {
+  if (!_modoPerto || !_posAtual) return lista;
+  var comDist = [];
+
+  lista.forEach(function(p) {
+    var st = (p.status || "").toUpperCase().trim();
+    if (st === "CONCLUÍDO" || st === "CONCLUIDO") return;
+    if (p.lat == null || p.lng == null) {
+      p._distKm = null;
+      comDist.push(p);
+      return;
+    }
+    var dist = _haversine(_posAtual.lat, _posAtual.lng, p.lat, p.lng);
+    if (dist <= RAIO_KM) {
+      p._distKm = dist;
+      comDist.push(p);
+    }
+  });
+
+  comDist.sort(function(a, b) {
+    if (a._distKm == null && b._distKm == null) return 0;
+    if (a._distKm == null) return 1;
+    if (b._distKm == null) return -1;
+    return a._distKm - b._distKm;
+  });
+
+  return comDist;
+}
+
+function _formatarDist(km) {
+  if (km == null) return "";
+  if (km < 1) return Math.round(km * 1000) + "m";
+  return km.toFixed(1) + "km";
+}
+
+// ══════════════════════════════════════════════
 //  SESSION ID
 // ══════════════════════════════════════════════
 var SESSION_ID = (function() {
@@ -1316,6 +1424,7 @@ function renderCard(p, idx) {
   var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
   var obs  = (p.obs && p.obs !== "—") ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "";
+  var dist = (_modoPerto && p._distKm != null) ? "<span class='meta-item'>📍 "+_formatarDist(p._distKm)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
     foto = "<div class='foto-wrap'><div class='foto-skeleton'></div>" +
@@ -1366,7 +1475,7 @@ function renderCard(p, idx) {
         "<div class='card-top-right'>"+execBadge+"</div>" +
       "</div>" +
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>" +
-      "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+"</div>" +
+      "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+dist+"</div>" +
       execInfoHtml + foto +
       "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>" +
     "</div></div>" +
@@ -1446,6 +1555,7 @@ function renderCardTablet(p, idx) {
         "<div class='card-t-meta'>" +
           "<span>🕐 "+fdt(p.dataHora)+"</span>" +
           "<span>👷 "+safeText(p.registradoPor||"—")+"</span>" +
+        (_modoPerto && p._distKm != null ? "<span style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>" : "") +
           (execSub?execSub:"") +
         "</div>" +
         "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
@@ -1579,6 +1689,11 @@ function renderTablet(lista) {
     return p;
   }));
 
+  // Modo perto de mim no tablet
+  if (_modoPerto && _posAtual) {
+    ativos = _aplicarProximidade(ativos);
+  }
+
   var filtrados = termoBuscaSb
     ? todosParaBuscaSb.filter(function(p){
         return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||
@@ -1703,6 +1818,11 @@ function renderFiltrado(lista) {
     p._t = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:""};
     return p;
   }));
+
+  // Modo perto de mim
+  if (_modoPerto && _posAtual) {
+    ativos = _aplicarProximidade(ativos);
+  }
 
   var filtrados = !termoBusca ? ativos : todosParaBusca.filter(function(p){
     return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
