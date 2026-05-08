@@ -652,6 +652,10 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
 /* ══ MELHORIA 1: Contador regressivo ao vivo ══ */
 .prazo-live { transition: color .4s; }
+#modalConclusao .modal { text-align: left; }
+#modalConclusao .modal-title { text-align: center; }
+#modalConclusao .modal-icon { text-align: center; }
+#modalConclusao .modal-sub { text-align: center; margin-bottom: 16px; }
 </style>
 </head>
 <body>
@@ -814,6 +818,32 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <div class="modal-btns"><button class="btn-cancelar" onclick="fecharModalInstall()">Fechar</button></div>
   </div>
 </div>
+
+<!-- ══ MODAL CONCLUSÃO ══ -->
+<div class="modal-overlay" id="modalConclusao">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">Concluir serviço</div>
+    <div class="modal-sub" id="modalConclusaoSub"></div>
+
+    <!-- Área de foto -->
+    <div id="fotoConclArea" style="margin-bottom:16px">
+      <div id="fotoConclPreview" style="display:none;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:1px solid var(--borda);margin-bottom:10px;position:relative;">
+        <img id="fotoConclImg" style="width:100%;height:100%;object-fit:cover;display:block;" src="" alt="Foto conclusão">
+        <button onclick="removerFotoConcl()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+      </div>
+      <label id="btnFotoConcl" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:var(--radius-sm);background:var(--azul-bg);border:1.5px dashed var(--azul);color:var(--azul);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">
+        📷 Tirar ou escolher foto
+        <input type="file" id="inputFotoConcl" accept="image/*" capture="environment" style="display:none" onchange="onFotoConclChange(this)">
+      </label>
+    </div>
+
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalConclusao()">Cancelar</button>
+      <button class="btn-confirmar" id="btnEnviarConclusao" onclick="enviarConclusao()">✅ Concluir</button>
+    </div>
+  </div>
+</div>  
 
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
@@ -1904,24 +1934,90 @@ function renderFiltrado(lista) {
 }
 
 // ══════════════════════════════════════════════
-//  ABRIR CONCLUSÃO
+//  MODAL CONCLUSÃO INTERNO
 // ══════════════════════════════════════════════
+var _protocoloConcluindo = null;
+var _fotoConclBase64     = null;
+
 function abrirConclusao(protocolo, endereco) {
-  var url = FORMS_URL + "?usp=pp_url&entry.1020787335=" + decodeURIComponent(endereco);
-  var win = window.open(url, "_blank");
-  if (!win) { toast("❌ Popup bloqueado! Permita popups para este site.", "erro"); return; }
-  window._janelaFormulario = win;
-  var watcher = setInterval(function() {
-    try {
-      if (win.closed) {
-        clearInterval(watcher);
-        setTimeout(function() {
-          _aguardandoConclusao[protocolo] = Date.now();
-          liberarLockApi(protocolo).then(function() { pararHeartbeat(protocolo); carregarDados(); });
-        }, 2000);
-      }
-    } catch(e) { clearInterval(watcher); }
-  }, 1000);
+  _protocoloConcluindo = protocolo;
+  _fotoConclBase64     = null;
+  document.getElementById("modalConclusaoSub").textContent =
+    protocolo + " • " + decodeURIComponent(endereco);
+  document.getElementById("fotoConclPreview").style.display = "none";
+  document.getElementById("fotoConclImg").src = "";
+  document.getElementById("btnFotoConcl").style.display = "flex";
+  document.getElementById("inputFotoConcl").value = "";
+  document.getElementById("btnEnviarConclusao").disabled = false;
+  document.getElementById("btnEnviarConclusao").textContent = "✅ Concluir";
+  document.getElementById("modalConclusao").classList.add("open");
+}
+
+function fecharModalConclusao() {
+  document.getElementById("modalConclusao").classList.remove("open");
+  _protocoloConcluindo = null;
+  _fotoConclBase64     = null;
+}
+
+function onFotoConclChange(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _fotoConclBase64 = e.target.result;
+    document.getElementById("fotoConclImg").src = _fotoConclBase64;
+    document.getElementById("fotoConclPreview").style.display = "block";
+    document.getElementById("btnFotoConcl").style.display = "none";
+  };
+  reader.readAsDataURL(file);
+}
+
+function removerFotoConcl() {
+  _fotoConclBase64 = null;
+  document.getElementById("fotoConclImg").src = "";
+  document.getElementById("fotoConclPreview").style.display = "none";
+  document.getElementById("btnFotoConcl").style.display = "flex";
+  document.getElementById("inputFotoConcl").value = "";
+}
+
+function enviarConclusao() {
+  if (!_protocoloConcluindo) return;
+  var btn = document.getElementById("btnEnviarConclusao");
+  btn.disabled = true;
+  btn.textContent = "⏳ Enviando...";
+
+  var operador = getOperador() || "Operador";
+
+  fetch(API_BASE, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      acao:      "concluir",
+      protocolo: _protocoloConcluindo,
+      operador:  operador,
+      foto:      _fotoConclBase64 || ""
+    }),
+    redirect: "follow"
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(res) {
+    if (res.ok) {
+      fecharModalConclusao();
+      pararHeartbeat(_protocoloConcluindo);
+      toast("✅ Protocolo concluído com sucesso!", "ok");
+      if (navigator.vibrate) navigator.vibrate([50,30,50]);
+      setTimeout(carregarDados, 1000);
+    } else {
+      btn.disabled = false;
+      btn.textContent = "✅ Concluir";
+      toast("❌ " + (res.erro || "Erro ao concluir"), "erro");
+    }
+  })
+  .catch(function(err) {
+    btn.disabled = false;
+    btn.textContent = "✅ Concluir";
+    toast("❌ Erro de conexão", "erro");
+  });
 }
 
 // ══════════════════════════════════════════════
