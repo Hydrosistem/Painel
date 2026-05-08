@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════
 //  HYDROSISTEM SW — AUTO UPDATE
 // ═══════════════════════════════════════
-const CACHE = "hyd-v92"; // ← sobe a versão também
+const CACHE = "hyd-v93"; // ← sobe a versão também
 const ASSETS = [
   "./",
   "./index.html",
