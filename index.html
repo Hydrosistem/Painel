@@ -1412,24 +1412,49 @@ function fecharModalConclusao() {
 
 // ── Comprime a foto via canvas antes de exibir e guardar ──
 function _comprimirImagem(file, callback) {
+  // Normaliza .jpg → image/jpeg
+  var tipo = file.type;
+  if (!tipo || tipo === "image/jpg") tipo = "image/jpeg";
+
   var reader = new FileReader();
   reader.onload = function(e) {
+    var readerResult = e.target.result;
+
+    // Corrige o data URL se vier com tipo errado
+    if (readerResult && readerResult.startsWith("data:image/jpg")) {
+      readerResult = readerResult.replace("data:image/jpg", "data:image/jpeg");
+    }
+
+    if (file.size < 800 * 1024) {
+      callback(readerResult);
+      return;
+    }
+
     var img = new Image();
     img.onload = function() {
-      var MAX = 1280;
-      var w = img.width, h = img.height;
-      if (w > MAX || h > MAX) {
-        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
-        else       { w = Math.round(w * MAX / h); h = MAX; }
+      try {
+        var MAX = 1280;
+        var w = img.width, h = img.height;
+        if (w > MAX || h > MAX) {
+          if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+          else       { w = Math.round(w * MAX / h); h = MAX; }
+        }
+        var canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0, w, h);
+        var result = canvas.toDataURL("image/jpeg", 0.82);
+        if (!result || result.length < 1000 || result === "data:,") {
+          callback(readerResult);
+        } else {
+          callback(result);
+        }
+      } catch(err) {
+        callback(readerResult);
       }
-      var canvas = document.createElement("canvas");
-      canvas.width = w; canvas.height = h;
-      var ctx = canvas.getContext("2d");
-      ctx.drawImage(img, 0, 0, w, h);
-      callback(canvas.toDataURL("image/jpeg", 0.82));
     };
-    img.onerror = function() { callback(e.target.result); };
-    img.src = e.target.result;
+    img.onerror = function() { callback(readerResult); };
+    img.src = readerResult;
   };
   reader.onerror = function() { callback(null); };
   reader.readAsDataURL(file);
