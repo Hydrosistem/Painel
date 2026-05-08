@@ -1493,7 +1493,7 @@ var obs = _mapsMatch
     btnHtml = "<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
     btnHtml =
-      "<a class='btn-concluir-exec' href='"+FORMS_URL+"?usp=pp_url&entry.1020787335="+encodeURIComponent(p.endereco)+"' target='_blank'>✅ Concluir este serviço</a>" +
+      "<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";
   } else {
     btnHtml = "<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";
