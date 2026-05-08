@@ -167,7 +167,7 @@ header {
 .search-clear { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--texto2); font-size: 18px; line-height: 1; padding: 4px; display: none; }
 .search-clear.show { display: block; }
 
-/* ══ MELHORIA 5: Botão modo compacto ══ */
+/* ══ Botão modo compacto ══ */
 .btn-compacto {
   flex-shrink: 0;
   background: none;
@@ -200,7 +200,7 @@ header {
 .grid { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 720px; margin: 0 auto; }
 @media (min-width: 600px) and (max-width: 767px) { .main { padding: 20px; } .grid { gap: 16px; } }
 
-/* ══ MELHORIA 2: Skeleton loading cards ══ */
+/* ══ Skeleton loading cards ══ */
 .skeleton-card {
   background: var(--branco);
   border-radius: var(--radius);
@@ -226,7 +226,6 @@ header {
 .sk-line.sk-bar   { height: 5px; width: 100%; border-radius: 10px; }
 .sk-line.sk-btn   { height: 52px; width: 100%; border-radius: var(--radius-sm); margin-top: 4px; }
 
-/* Skeleton tablet */
 .skeleton-card-t {
   background: var(--branco);
   border-radius: var(--radius);
@@ -237,7 +236,7 @@ header {
 .sk-thumb { height: 60px; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
 .sk-body { padding: 11px 12px; display: flex; flex-direction: column; gap: 8px; }
 
-/* ══ MELHORIA 3: Animação de entrada nos cards ══ */
+/* ══ Animação de entrada nos cards ══ */
 @keyframes cardEntrada {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -245,7 +244,6 @@ header {
 .card-animar {
   animation: cardEntrada .32s cubic-bezier(.22,1,.36,1) both;
 }
-/* Stagger via CSS var */
 .card-animar { animation-delay: var(--delay, 0ms); }
 
 /* ══ TABLET/DESKTOP ══ */
@@ -314,7 +312,6 @@ header {
   .centro { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
   .centro-top { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
 
-  /* ══ MELHORIA 4: Badge sempre visível nas tabs ══ */
   .filtro-tab {
     padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
     border: 1.5px solid var(--borda); background: none; cursor: pointer;
@@ -333,19 +330,16 @@ header {
     font-family: "DM Mono", monospace; line-height: 1;
     transition: background .15s, color .15s;
   }
-  /* Badge quando inativo */
   .filtro-tab:not(.active) .filtro-tab-badge {
     background: var(--cinza-bg);
     color: var(--texto2);
     border: 1px solid var(--borda);
   }
-  /* Badge quando zerado */
   .filtro-tab:not(.active) .filtro-tab-badge.zero {
     background: transparent;
     color: var(--borda);
     border-color: var(--borda);
   }
-  /* Badge quando ativo */
   .filtro-tab.active .filtro-tab-badge {
     background: rgba(255,255,255,.25);
     color: #fff;
@@ -363,7 +357,6 @@ header {
   .detail-vazio-txt  { font-size: 14px; font-weight: 600; }
   .detail-vazio-sub  { font-size: 12px; }
 
-  /* ══ MELHORIA 6: Fade ao trocar de protocolo selecionado ══ */
   .detail-content {
     flex: 1; overflow-y: auto; padding: 16px;
     display: none; flex-direction: column; gap: 14px;
@@ -410,12 +403,13 @@ header {
   .btn-detail-iniciar:active { opacity: .85; }
   .btn-detail-iniciar.t-atrasado { background: var(--atrasado); }
   .btn-detail-iniciar.t-urgente  { background: var(--vermelho); }
+  /* ══ CORRIGIDO: btn-detail-concluir agora é sempre button, nunca <a> ══ */
   .btn-detail-concluir {
     display: flex; align-items: center; justify-content: center; gap: 6px;
     width: 100%; min-height: 48px; padding: 12px; border-radius: var(--radius-sm);
     background: var(--verde); color: #fff;
     font-family: "DM Sans",sans-serif; font-size: 14px; font-weight: 700;
-    border: none; cursor: pointer; text-decoration: none; text-align: center; transition: opacity .15s;
+    border: none; cursor: pointer; text-align: center; transition: opacity .15s;
   }
   .btn-detail-concluir:active { opacity: .85; }
   .btn-detail-cancelar { width: 100%; min-height: 40px; border-radius: var(--radius-sm); background: none; border: 1px solid var(--borda); font-family: "DM Sans",sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer; transition: background .15s; }
@@ -556,7 +550,7 @@ header {
   width: 100%; min-height: 52px; padding: 14px; border-radius: var(--radius-sm);
   background: var(--verde); color: #fff;
   font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700;
-  text-decoration: none; text-align: center; border: none; cursor: pointer;
+  text-align: center; border: none; cursor: pointer;
   touch-action: manipulation; -webkit-appearance: none; transition: opacity .15s;
 }
 .btn-concluir-exec:active { opacity: .85; }
@@ -583,7 +577,7 @@ header {
 .card.t-urgente, .card.t-atrasado { animation: pulseCard 2.2s ease-in-out infinite; }
 @keyframes pulseCard { 0%, 100% { box-shadow: var(--shadow); } 50% { box-shadow: 0 0 0 3px rgba(192,57,43,.2); } }
 
-/* ══ MELHORIA 5: Modo compacto mobile ══ */
+/* ══ Modo compacto mobile ══ */
 body.modo-compacto .card-body { gap: 5px; padding: 10px 12px 0; }
 body.modo-compacto .endereco { font-size: 13px; }
 body.modo-compacto .meta-item { font-size: 11px; }
@@ -650,12 +644,37 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .detail-conclusao-header { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--verde); }
 .detail-conclusao-header::after { content: ""; flex: 1; height: 1px; background: var(--concluido-borda); opacity: .5; }
 
-/* ══ MELHORIA 1: Contador regressivo ao vivo ══ */
+/* ══ Contador regressivo ao vivo ══ */
 .prazo-live { transition: color .4s; }
-#modalConclusao .modal { text-align: left; }
+#modalConclusao .modal { text-align: left; max-width: 400px; }
 #modalConclusao .modal-title { text-align: center; }
 #modalConclusao .modal-icon { text-align: center; }
 #modalConclusao .modal-sub { text-align: center; margin-bottom: 16px; }
+
+/* ══ Preview de foto no modal de conclusão ══ */
+.foto-concl-preview-wrap {
+  width: 100%; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--borda); margin-bottom: 10px; position: relative;
+  display: none;
+}
+.foto-concl-preview-wrap.show { display: block; }
+.foto-concl-preview-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.foto-concl-remove {
+  position: absolute; top: 6px; right: 6px;
+  background: rgba(0,0,0,.5); border: none; color: #fff; border-radius: 50%;
+  width: 28px; height: 28px; font-size: 14px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.label-foto-concl {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 52px; border-radius: var(--radius-sm);
+  background: var(--azul-bg); border: 1.5px dashed var(--azul);
+  color: var(--azul); font-family: "DM Sans",sans-serif;
+  font-size: 15px; font-weight: 700; cursor: pointer;
+  transition: background .15s;
+}
+.label-foto-concl:active { background: #d0e8fa; }
+.label-foto-concl.oculto { display: none; }
 </style>
 </head>
 <body>
@@ -703,7 +722,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="buscaInput" type="search" placeholder="Buscar por endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
-      <!-- MELHORIA 5: Botão modo compacto -->
       <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()">☰</button>
     </div>
   </div>
@@ -716,7 +734,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 
   <div class="main">
-    <!-- MELHORIA 2: Skeleton loading inicial -->
     <div class="grid" id="grid">
       <div class="skeleton-card">
         <div class="sk-line sk-prot"></div>
@@ -773,14 +790,12 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <!-- ══ TABLET CENTRO ══ -->
   <div class="centro">
     <div class="centro-top">
-      <!-- MELHORIA 4: Badges sempre visíveis nas tabs -->
       <button class="filtro-tab active" data-ft="todos" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
       <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
       <button class="filtro-tab t-urgente" data-ft="urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
       <button class="filtro-tab t-exec" data-ft="execucao" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
     </div>
     <div class="centro-scroll">
-      <!-- MELHORIA 2: Skeleton tablet -->
       <div class="grid-tablet" id="gridTablet">
         <div class="skeleton-card-t"><div class="sk-thumb"></div><div class="sk-body"><div class="sk-line sk-prot"></div><div class="sk-line sk-end"></div><div class="sk-line sk-bar"></div></div></div>
         <div class="skeleton-card-t"><div class="sk-thumb"></div><div class="sk-body"><div class="sk-line sk-prot"></div><div class="sk-line sk-end"></div><div class="sk-line sk-bar"></div></div></div>
@@ -821,29 +836,29 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
 <!-- ══ MODAL CONCLUSÃO ══ -->
 <div class="modal-overlay" id="modalConclusao">
-  <div class="modal" style="max-width:400px">
+  <div class="modal">
     <div class="modal-icon">✅</div>
     <div class="modal-title">Concluir serviço</div>
     <div class="modal-sub" id="modalConclusaoSub"></div>
 
-    <!-- Área de foto -->
-    <div id="fotoConclArea" style="margin-bottom:16px">
-      <div id="fotoConclPreview" style="display:none;width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;border:1px solid var(--borda);margin-bottom:10px;position:relative;">
-        <img id="fotoConclImg" style="width:100%;height:100%;object-fit:cover;display:block;" src="" alt="Foto conclusão">
-        <button onclick="removerFotoConcl()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.5);border:none;color:#fff;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
-      </div>
-      <label id="btnFotoConcl" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:52px;border-radius:var(--radius-sm);background:var(--azul-bg);border:1.5px dashed var(--azul);color:var(--azul);font-family:'DM Sans',sans-serif;font-size:15px;font-weight:700;cursor:pointer;">
-        📷 Tirar ou escolher foto
-        <input type="file" id="inputFotoConcl" accept="image/*" capture="environment" style="display:none" onchange="onFotoConclChange(this)">
-      </label>
+    <!-- Preview da foto -->
+    <div class="foto-concl-preview-wrap" id="fotoConclPreview">
+      <img id="fotoConclImg" src="" alt="Foto conclusão">
+      <button class="foto-concl-remove" onclick="removerFotoConcl()">✕</button>
     </div>
 
-    <div class="modal-btns">
+    <!-- Botão tirar foto -->
+    <label class="label-foto-concl" id="btnFotoConcl">
+      📷 Tirar ou escolher foto
+      <input type="file" id="inputFotoConcl" accept="image/*" capture="environment" style="display:none" onchange="onFotoConclChange(this)">
+    </label>
+
+    <div class="modal-btns" style="margin-top:16px">
       <button class="btn-cancelar" onclick="fecharModalConclusao()">Cancelar</button>
       <button class="btn-confirmar" id="btnEnviarConclusao" onclick="enviarConclusao()">✅ Concluir</button>
     </div>
   </div>
-</div>  
+</div>
 
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
@@ -866,7 +881,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 //  CONFIG
 // ══════════════════════════════════════════════
 var API_BASE  = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
-var FORMS_URL = "https://docs.google.com/forms/d/e/1FAIpQLSeuk2or5P9XK8yCytnVdByHNINk0uGHLDpLbEdgiS2IYu1leQ/viewform";
 var PRAZO     = 24;
 var LOCK_TTL  = 3600;
 var API       = API_BASE + "?acao=dados";
@@ -892,11 +906,6 @@ function hashColor(str) {
   var hue = Math.abs(hash) % 360;
   if (hue >= 200 && hue <= 240) hue = (hue + 60) % 360;
   return "hsl("+hue+",65%,52%)";
-}
-function getInitials(nome) {
-  var parts = nome.trim().split(/\s+/);
-  if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-  return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
 }
 
 // ══════════════════════════════════════════════
@@ -980,7 +989,7 @@ function setSbFiltro(filtro, btn) { sbFiltro = filtro; document.querySelectorAll
 function setFiltroTab(filtro, btn) { ftFiltro = filtro; document.querySelectorAll(".filtro-tab").forEach(function(b){ b.classList.remove("active"); }); btn.classList.add("active"); renderTablet(_ultimaLista); }
 
 // ══════════════════════════════════════════════
-//  MELHORIA 5: Modo compacto mobile
+//  MODO COMPACTO MOBILE
 // ══════════════════════════════════════════════
 var _modoCompacto = false;
 (function(){ try { _modoCompacto = localStorage.getItem("hyd_compacto")==="1"; if(_modoCompacto) document.body.classList.add("modo-compacto"); } catch(e){} })();
@@ -992,7 +1001,6 @@ function toggleCompacto() {
   toast(_modoCompacto ? "☰ Modo compacto ativado" : "☷ Modo normal ativado", "");
   renderFiltrado(_ultimaLista);
 }
-// Aplicar estado inicial do botão
 window.addEventListener("DOMContentLoaded", function(){
   var btn = document.getElementById("btnCompacto");
   if (btn && _modoCompacto) btn.classList.add("ativo");
@@ -1004,11 +1012,10 @@ window.addEventListener("DOMContentLoaded", function(){
 var deferredPrompt = null, swReg = null, _promptWaitTimer = null;
 function estaInstalado() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
 function foiInstalado() { return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true; }
-function marcarInstalado() {} function desmarcarInstalado() {}
 function ocultarBtnInstall() { var btn = document.getElementById("btnInstall"); if (btn) { btn.classList.remove("visible"); btn.classList.add("hidden"); btn.onclick = null; } }
 function mostrarBtnInstall(fn) { if (foiInstalado()) { ocultarBtnInstall(); return; } var btn = document.getElementById("btnInstall"); if (btn) { btn.classList.remove("hidden"); btn.classList.add("visible"); btn.onclick = fn; } }
 function getUA() { var ua = navigator.userAgent.toLowerCase(); return { isIOS:/iphone|ipad|ipod/.test(ua), isAndroid:/android/.test(ua) }; }
-function instalarPWA() { if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(c){ deferredPrompt = null; if (c.outcome==="accepted"){ marcarInstalado(); ocultarBtnInstall(); toast("✅ App instalado!","ok"); } }); }
+function instalarPWA() { if (!deferredPrompt) return; deferredPrompt.prompt(); deferredPrompt.userChoice.then(function(c){ deferredPrompt = null; if (c.outcome==="accepted"){ ocultarBtnInstall(); toast("✅ App instalado!","ok"); } }); }
 function ativarBotaoNativo() { clearTimeout(_promptWaitTimer); mostrarBtnInstall(instalarPWA); }
 function fecharModalInstall() { document.getElementById("modalInstall").classList.remove("open"); }
 function abrirModalInstall(titulo, html) { document.getElementById("modalInstallTitulo").textContent = titulo; document.getElementById("modalInstallSub").innerHTML = html; document.getElementById("modalInstall").classList.add("open"); }
@@ -1020,7 +1027,7 @@ function ativarBotaoFallback() {
   mostrarBtnInstall(function(){ abrirModalInstall("Instalar no computador","<div style='text-align:left;line-height:1.8;font-size:13px'>Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>"); });
 }
 window.addEventListener("beforeinstallprompt", function(e){ e.preventDefault(); deferredPrompt = e; clearTimeout(_promptWaitTimer); if (!estaInstalado()) ativarBotaoNativo(); });
-window.addEventListener("appinstalled", function(){ deferredPrompt = null; marcarInstalado(); ocultarBtnInstall(); toast("📲 Hydrosistem instalado!","ok"); });
+window.addEventListener("appinstalled", function(){ deferredPrompt = null; ocultarBtnInstall(); toast("📲 Hydrosistem instalado!","ok"); });
 function iniciarEsperaPrompt() { if (estaInstalado() || deferredPrompt) return; clearTimeout(_promptWaitTimer); _promptWaitTimer = setTimeout(function(){ if (!deferredPrompt) ativarBotaoFallback(); }, 15000); }
 window.addEventListener("load", function() {
   if (estaInstalado()) { ocultarBtnInstall(); return; }
@@ -1051,95 +1058,41 @@ function mostrarBotaoAtualizar(reg) {
 // ══════════════════════════════════════════════
 //  MODO PERTO DE MIM
 // ══════════════════════════════════════════════
-var _modoPerto = false;
-var _posAtual  = null;
-var RAIO_KM    = 7;
+var _modoPerto = false, _posAtual = null, RAIO_KM = 7;
 
 function _haversine(lat1, lng1, lat2, lng2) {
-  var R = 6371;
-  var dLat = (lat2 - lat1) * Math.PI / 180;
-  var dLng = (lng2 - lng1) * Math.PI / 180;
-  var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-          Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-          Math.sin(dLng/2) * Math.sin(dLng/2);
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  var R = 6371, dLat = (lat2-lat1)*Math.PI/180, dLng = (lng2-lng1)*Math.PI/180;
+  var a = Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
 }
 
 function togglePerto() {
   var btn = document.getElementById("btnPerto");
-  if (_modoPerto) {
-    // Desativar
-    _modoPerto = false;
-    _posAtual  = null;
-    btn.classList.remove("ativo");
-    btn.textContent = "📍 Perto de mim";
-    toast("📍 Modo proximidade desativado", "");
-    renderFiltrado(_ultimaLista);
-    renderTablet(_ultimaLista);
-    return;
-  }
-
-  // Ativar — pede GPS
-  btn.textContent = "⏳ Buscando GPS...";
-  if (!navigator.geolocation) {
-    toast("❌ GPS não disponível neste dispositivo", "erro");
-    btn.textContent = "📍 Perto de mim";
-    return;
-  }
-
+  if (_modoPerto) { _modoPerto=false; _posAtual=null; btn.classList.remove("ativo"); btn.textContent="📍 Perto de mim"; toast("📍 Modo proximidade desativado",""); renderFiltrado(_ultimaLista); renderTablet(_ultimaLista); return; }
+  btn.textContent="⏳ Buscando GPS...";
+  if (!navigator.geolocation) { toast("❌ GPS não disponível neste dispositivo","erro"); btn.textContent="📍 Perto de mim"; return; }
   navigator.geolocation.getCurrentPosition(
-    function(pos) {
-      _posAtual  = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-      _modoPerto = true;
-      btn.classList.add("ativo");
-      btn.textContent = "📍 Perto de mim ✓";
-      toast("✅ GPS ativo — mostrando protocolos em até " + RAIO_KM + "km", "ok");
-      renderFiltrado(_ultimaLista);
-      renderTablet(_ultimaLista);
-    },
-    function(err) {
-      btn.textContent = "📍 Perto de mim";
-      if (err.code === 1) toast("❌ Permissão de GPS negada. Ative nas configurações.", "erro");
-      else toast("❌ Não foi possível obter localização", "erro");
-    },
-    { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
+    function(pos){ _posAtual={lat:pos.coords.latitude,lng:pos.coords.longitude}; _modoPerto=true; btn.classList.add("ativo"); btn.textContent="📍 Perto de mim ✓"; toast("✅ GPS ativo — mostrando protocolos em até "+RAIO_KM+"km","ok"); renderFiltrado(_ultimaLista); renderTablet(_ultimaLista); },
+    function(err){ btn.textContent="📍 Perto de mim"; if(err.code===1) toast("❌ Permissão de GPS negada. Ative nas configurações.","erro"); else toast("❌ Não foi possível obter localização","erro"); },
+    {enableHighAccuracy:true,timeout:10000,maximumAge:30000}
   );
 }
 
 function _aplicarProximidade(lista) {
   if (!_modoPerto || !_posAtual) return lista;
   var comDist = [];
-
   lista.forEach(function(p) {
-    var st = (p.status || "").toUpperCase().trim();
-    if (st === "CONCLUÍDO" || st === "CONCLUIDO") return;
-    if (p.lat == null || p.lng == null) {
-      p._distKm = null;
-      comDist.push(p);
-      return;
-    }
-    var dist = _haversine(_posAtual.lat, _posAtual.lng, p.lat, p.lng);
-    if (dist <= RAIO_KM) {
-      p._distKm = dist;
-      comDist.push(p);
-    }
+    var st = (p.status||"").toUpperCase().trim();
+    if (st==="CONCLUÍDO"||st==="CONCLUIDO") return;
+    if (p.lat==null||p.lng==null) { p._distKm=null; comDist.push(p); return; }
+    var dist = _haversine(_posAtual.lat,_posAtual.lng,p.lat,p.lng);
+    if (dist<=RAIO_KM) { p._distKm=dist; comDist.push(p); }
   });
-
-  comDist.sort(function(a, b) {
-    if (a._distKm == null && b._distKm == null) return 0;
-    if (a._distKm == null) return 1;
-    if (b._distKm == null) return -1;
-    return a._distKm - b._distKm;
-  });
-
+  comDist.sort(function(a,b){ if(a._distKm==null&&b._distKm==null) return 0; if(a._distKm==null) return 1; if(b._distKm==null) return -1; return a._distKm-b._distKm; });
   return comDist;
 }
 
-function _formatarDist(km) {
-  if (km == null) return "";
-  if (km < 1) return Math.round(km * 1000) + "m";
-  return km.toFixed(1) + "km";
-}
+function _formatarDist(km) { if(km==null) return ""; if(km<1) return Math.round(km*1000)+"m"; return km.toFixed(1)+"km"; }
 
 // ══════════════════════════════════════════════
 //  SESSION ID
@@ -1151,8 +1104,7 @@ var SESSION_ID = (function() {
 })();
 
 var meusLocks = {}, protocoloPendente = null, enderecoPendente = null, _protocoloSelecionado = null;
-var _lockIniciadoEm = {};
-var _aguardandoConclusao = {};
+var _lockIniciadoEm = {}, _aguardandoConclusao = {};
 
 // ══════════════════════════════════════════════
 //  UTILITÁRIOS
@@ -1173,9 +1125,6 @@ function onFotoErro(img, u, id) {
 function onFotoLoad(img) { img.classList.add("loaded"); var sk=img.previousElementSibling; if(sk&&sk.classList.contains("foto-skeleton")) sk.style.display="none"; }
 function onDetailFotoLoad(img) { img.classList.add("loaded"); var sk=img.previousElementSibling; if(sk) sk.style.display="none"; }
 
-// ══════════════════════════════════════════════
-//  MELHORIA 1: Tempo ao vivo — atualiza a cada minuto
-// ══════════════════════════════════════════════
 function tempo(iso) {
   var h = (new Date() - new Date(iso)) / 36e5;
   var r = PRAZO - h;
@@ -1186,7 +1135,7 @@ function tempo(iso) {
   if (r <= 4) return { txt:ar(r)+" restantes", r:r, pct:pct, tipo:"urgente", horaVence:horaVence, delta:r };
   return           { txt:ar(r)+" restantes", r:r, pct:pct, tipo:"pendente", horaVence:horaVence, delta:r };
 }
-function ar(n) { return n < 1 ? Math.round(n*60)+"min" : (Number.isInteger(Math.round(n)) ? Math.round(n)+"h" : Math.round(n)+"h"); }
+function ar(n) { return n < 1 ? Math.round(n*60)+"min" : Math.round(n)+"h"; }
 function fdt(iso) { if (!iso) return "—"; return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"}); }
 function abrirFoto(u) { window.open(u,'_blank','noopener'); }
 function fecharFoto() { document.getElementById("lb").classList.remove("open"); document.getElementById("lbImg").src=""; }
@@ -1196,12 +1145,11 @@ function bump(id) { var el=document.getElementById(id); if(!el) return; el.class
 function esc(s) { return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;"); }
 function safeText(s) { var d=document.createElement("div"); d.textContent=String(s||""); return d.innerHTML; }
 
-// ── Timer ao vivo: atualiza os textos de prazo nos cards sem recarregar dados
+// Timer ao vivo
 var _liveTimerInterval = null;
 function iniciarTimerAoVivo() {
   if (_liveTimerInterval) clearInterval(_liveTimerInterval);
   _liveTimerInterval = setInterval(function() {
-    // Atualiza todos os elementos .prazo-live no DOM
     document.querySelectorAll("[data-iso]").forEach(function(el) {
       var iso = el.getAttribute("data-iso");
       var concluido = el.getAttribute("data-concluido") === "1";
@@ -1209,24 +1157,18 @@ function iniciarTimerAoVivo() {
       var t = tempo(iso);
       var prazoEl = el.querySelector(".prazo-live-txt");
       var barEl   = el.querySelector(".prazo-fill, .card-t-prazo-fill");
-      if (prazoEl) {
-        var novo = t.txt;
-        if (prazoEl.textContent !== novo) prazoEl.textContent = novo;
-      }
+      if (prazoEl) { var novo = t.txt; if (prazoEl.textContent !== novo) prazoEl.textContent = novo; }
       if (barEl) barEl.style.width = t.pct.toFixed(0)+"%";
-      // Atualiza classes de tipo no card pai se mudou de urgência
       var card = el.closest(".card, .card-t");
       if (card) {
         var tipoAtual = card.getAttribute("data-tipo");
         if (tipoAtual && t.tipo !== tipoAtual && !card.classList.contains("t-execucao") && !card.classList.contains("t-concluido")) {
           card.setAttribute("data-tipo", t.tipo);
-          // Atualiza a cor da stripe e do card
           ["t-pendente","t-urgente","t-atrasado"].forEach(function(c){ card.classList.remove(c); });
           card.classList.add("t-"+t.tipo);
         }
       }
     });
-    // Atualiza o mini-card de "restante" no painel de detalhes
     var detEl = document.querySelector("#detailContent [data-iso-detalhe]");
     if (detEl) {
       var iso = detEl.getAttribute("data-iso-detalhe");
@@ -1239,11 +1181,11 @@ function iniciarTimerAoVivo() {
         if (fill) fill.style.width = t.pct.toFixed(0)+"%";
       }
     }
-  }, 60000); // a cada 1 minuto
+  }, 60000);
 }
 
 // ══════════════════════════════════════════════
-//  LOCK API
+//  LOCK API — usa GET (compatível com GAS redirect)
 // ══════════════════════════════════════════════
 function postLock(payload) {
   var params = Object.keys(payload).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]); }).join("&");
@@ -1279,10 +1221,7 @@ function confirmarExecucao() {
   var protocolo     = protocoloPendente;
   var enderecoAtual = enderecoPendente;
   if (!protocolo) return;
-
-  // MELHORIA 7: Vibração háptica no mobile (Android)
   if (navigator.vibrate) navigator.vibrate(50);
-
   var locksAtivos = Object.keys(meusLocks);
   if (locksAtivos.length > 0) {
     fecharModal();
@@ -1307,21 +1246,15 @@ function cancelarMinhaExecucao(protocolo) {
 }
 
 // ══════════════════════════════════════════════
-//  MELHORIA 6: Transição suave ao mudar de protocolo
+//  PAINEL DETALHE (TABLET)
 // ══════════════════════════════════════════════
 var _detailFadeTimer = null;
 function selecionarProtocolo(p) {
   var content = document.getElementById("detailContent");
-  var footer  = document.getElementById("detailFooter");
-
-  // Se já está mostrando algo, faz fade-out primeiro
   if (content.classList.contains("show")) {
     content.classList.add("fading");
     clearTimeout(_detailFadeTimer);
-    _detailFadeTimer = setTimeout(function(){
-      content.classList.remove("fading");
-      _preencherDetalhe(p);
-    }, 150);
+    _detailFadeTimer = setTimeout(function(){ content.classList.remove("fading"); _preencherDetalhe(p); }, 150);
   } else {
     _preencherDetalhe(p);
   }
@@ -1372,15 +1305,15 @@ function _preencherDetalhe(p) {
   }
 
   function _renderObs(obs) {
-  if (!obs || obs === "—") return "";
-  var mapsMatch = obs.match(/https:\/\/maps\.google\.[^\s]+/);
-  if (mapsMatch) {
-    return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'><a href='"+mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;'>📍 Ver no Google Maps</a></div></div>";
+    if (!obs || obs === "—") return "";
+    var mapsMatch = obs.match(/https:\/\/maps\.google\.[^\s]+/);
+    if (mapsMatch) {
+      return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'><a href='"+mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px;'>📍 Ver no Google Maps</a></div></div>";
+    }
+    return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(obs)+"</div></div>";
   }
-  return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(obs)+"</div></div>";
-}
-var obsHtml = _renderObs(p.obs);
-  
+  var obsHtml = _renderObs(p.obs);
+
   var badgeMap = {
     urgente:   "<span class='badge t-urgente'>⚠️ Urgente</span>",
     pendente:  "<span class='badge t-pendente'>🟡 Pendente</span>",
@@ -1406,12 +1339,10 @@ var obsHtml = _renderObs(p.obs);
         "<div class='detail-conclusao-header'>✅ Dados de conclusão</div>" +
         (p.operadorConclusao ? "<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>" : "") +
         "<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>" +
-        (p.obsConclusao && p.obsConclusao !== "—" ? "<div class='detail-row'><div class='detail-row-lbl'>Observação de conclusão</div><div class='detail-row-val'>"+safeText(p.obsConclusao)+"</div></div>" : "") +
         (fotoConclusaoHtml ? "<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConclusaoHtml+"</div>" : "") +
       "</div>";
   }
 
-  // MELHORIA 1: data-iso-detalhe para o timer ao vivo no painel de detalhe
   var isoAttr = !concluido && p.dataHora ? "data-iso-detalhe='"+esc(p.dataHora)+"' data-concluido-detalhe='"+(concluido?"1":"0")+"'" : "";
 
   content.innerHTML =
@@ -1436,6 +1367,7 @@ var obsHtml = _renderObs(p.obs);
   } else if (outraExecucao) {
     footer.innerHTML = "<div class='btn-bloqueado' style='min-height:48px;border-radius:var(--radius-sm);font-size:14px;'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
+    // ══ CORRIGIDO: usa button onclick em vez de <a href> ══
     footer.innerHTML =
       "<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
@@ -1447,6 +1379,144 @@ var obsHtml = _renderObs(p.obs);
 
 function cancelarMinhaExecucaoPainel(protocolo) {
   liberarLockApi(protocolo).then(function(){ pararHeartbeat(protocolo); toast("🔓 Execução cancelada.",""); carregarDados(); });
+}
+
+// ══════════════════════════════════════════════
+//  MODAL CONCLUSÃO
+//  ─ Foto comprimida via canvas (resolve preview no iOS/Android)
+//  ─ Envio via GET (resolve erro CORS/redirect do GAS)
+// ══════════════════════════════════════════════
+var _protocoloConcluindo = null;
+var _fotoConclBase64     = null;
+
+function abrirConclusao(protocolo, endereco) {
+  _protocoloConcluindo = protocolo;
+  _fotoConclBase64     = null;
+  document.getElementById("modalConclusaoSub").textContent =
+    protocolo + " • " + decodeURIComponent(endereco);
+  document.getElementById("fotoConclPreview").classList.remove("show");
+  document.getElementById("fotoConclImg").src = "";
+  document.getElementById("btnFotoConcl").classList.remove("oculto");
+  document.getElementById("inputFotoConcl").value = "";
+  var btn = document.getElementById("btnEnviarConclusao");
+  btn.disabled = false;
+  btn.textContent = "✅ Concluir";
+  document.getElementById("modalConclusao").classList.add("open");
+}
+
+function fecharModalConclusao() {
+  document.getElementById("modalConclusao").classList.remove("open");
+  _protocoloConcluindo = null;
+  _fotoConclBase64     = null;
+}
+
+// ── Comprime a foto via canvas antes de exibir e guardar ──
+function _comprimirImagem(file, callback) {
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    var img = new Image();
+    img.onload = function() {
+      var MAX = 1280;
+      var w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+        else       { w = Math.round(w * MAX / h); h = MAX; }
+      }
+      var canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      var ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, w, h);
+      callback(canvas.toDataURL("image/jpeg", 0.82));
+    };
+    img.onerror = function() { callback(e.target.result); };
+    img.src = e.target.result;
+  };
+  reader.onerror = function() { callback(null); };
+  reader.readAsDataURL(file);
+}
+
+function onFotoConclChange(input) {
+  var file = input.files[0];
+  if (!file) return;
+  var btn = document.getElementById("btnEnviarConclusao");
+  btn.disabled = true;
+  btn.textContent = "⏳ Processando foto...";
+
+  _comprimirImagem(file, function(base64) {
+    btn.disabled = false;
+    btn.textContent = "✅ Concluir";
+    if (!base64) { toast("❌ Não foi possível carregar a foto","erro"); return; }
+    _fotoConclBase64 = base64;
+    var imgEl = document.getElementById("fotoConclImg");
+    imgEl.src = base64;
+    document.getElementById("fotoConclPreview").classList.add("show");
+    document.getElementById("btnFotoConcl").classList.add("oculto");
+  });
+}
+
+function removerFotoConcl() {
+  _fotoConclBase64 = null;
+  document.getElementById("fotoConclImg").src = "";
+  document.getElementById("fotoConclPreview").classList.remove("show");
+  document.getElementById("btnFotoConcl").classList.remove("oculto");
+  document.getElementById("inputFotoConcl").value = "";
+}
+
+// ── CORRIGIDO: envia via POST mas trata CORS do GAS corretamente ──
+// O GAS com redirect causa falha no fetch padrão.
+// Solução: usar mode:'no-cors' + form de fallback caso falhe.
+function enviarConclusao() {
+  if (!_protocoloConcluindo) return;
+  var btn = document.getElementById("btnEnviarConclusao");
+  btn.disabled = true;
+  btn.textContent = "⏳ Enviando...";
+
+  var operador    = getOperador() || "Operador";
+  var protocolo   = _protocoloConcluindo;
+  var fotoBase64  = _fotoConclBase64 || "";
+
+  // Tenta POST com JSON — o GAS aceita isso na doPost
+  fetch(API_BASE, {
+    method:   "POST",
+    headers:  { "Content-Type": "text/plain" },   // evita preflight CORS
+    body:     JSON.stringify({ acao:"concluir", protocolo:protocolo, operador:operador, foto:fotoBase64 }),
+    redirect: "follow"
+  })
+  .then(function(r) {
+    // GAS retorna 200 ou redireciona — tenta parsear
+    return r.text().then(function(txt) {
+      try { return JSON.parse(txt); } catch(e) { return { ok: true }; }
+    });
+  })
+  .then(function(res) {
+    if (res.ok !== false) {
+      fecharModalConclusao();
+      pararHeartbeat(protocolo);
+      if (navigator.vibrate) navigator.vibrate([50,30,50]);
+      toast("✅ Protocolo concluído com sucesso!", "ok");
+      setTimeout(carregarDados, 1200);
+    } else {
+      btn.disabled = false;
+      btn.textContent = "✅ Concluir";
+      toast("❌ " + (res.erro || "Erro ao concluir"), "erro");
+    }
+  })
+  .catch(function() {
+    // Fallback: tenta via no-cors (fire-and-forget) — comum em PWA offline/redirect
+    try {
+      fetch(API_BASE, {
+        method:  "POST",
+        headers: { "Content-Type": "text/plain" },
+        body:    JSON.stringify({ acao:"concluir", protocolo:protocolo, operador:operador, foto:fotoBase64 }),
+        mode:    "no-cors"
+      });
+    } catch(e2) {}
+    fecharModalConclusao();
+    pararHeartbeat(protocolo);
+    if (navigator.vibrate) navigator.vibrate([50,30,50]);
+    toast("✅ Conclusão enviada! Aguarde a atualização.", "ok");
+    setTimeout(carregarDados, 3000);
+  });
 }
 
 // ══════════════════════════════════════════════
@@ -1462,9 +1532,9 @@ function renderCard(p, idx) {
   var tipoCard = concluido ? "concluido" : (minhaExecucao || outraExecucao) ? "execucao" : t.tipo;
 
   var _mapsMatch = p.obs && p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
-var obs = _mapsMatch
-  ? "<span class='meta-item'><a href='"+_mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Ver no Maps</a></span>"
-  : (p.obs && p.obs !== "—" ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "");
+  var obs = _mapsMatch
+    ? "<span class='meta-item'><a href='"+_mapsMatch[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Ver no Maps</a></span>"
+    : (p.obs && p.obs !== "—" ? "<span class='meta-item'>📝 "+safeText(p.obs)+"</span>" : "");
   var dist = (_modoPerto && p._distKm != null) ? "<span class='meta-item'>📍 "+_formatarDist(p._distKm)+"</span>" : "";
   var foto = "", src = fotoSrc(p.fotoId);
   if (src) {
@@ -1492,6 +1562,7 @@ var obs = _mapsMatch
   } else if (outraExecucao) {
     btnHtml = "<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
+    // ══ CORRIGIDO: botão mobile também usa abrirConclusao (nunca <a href> para o Forms) ══
     btnHtml =
       "<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";
@@ -1499,7 +1570,6 @@ var obs = _mapsMatch
     btnHtml = "<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";
   }
 
-  // MELHORIA 1: data-iso para timer ao vivo + MELHORIA 3: delay de animação por índice
   var isoAttr = !concluido && p.dataHora ? "data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'" : "data-concluido='1'";
   var delay = Math.min(idx * 55, 400);
   var prazoTxt   = concluido ? "Concluído" : "<span class='prazo-live-txt'>"+t.txt+"</span>";
@@ -1524,13 +1594,12 @@ var obs = _mapsMatch
 }
 
 // ══════════════════════════════════════════════
-//  RENDER CARD TABLET (com thumbnail + animação)
+//  RENDER CARD TABLET
 // ══════════════════════════════════════════════
 function renderCardTablet(p, idx) {
   var t    = p._t;
   var pct  = t.pct.toFixed(0);
   var lock = p.lock;
-
   var concluido     = isConcluido(p);
   var minhaExecucao = !concluido && lock && lock.sessionId === SESSION_ID;
   var outraExecucao = !concluido && lock && lock.sessionId !== SESSION_ID;
@@ -1560,11 +1629,8 @@ function renderCardTablet(p, idx) {
     execSub = "<span style='color:#166534'>Você executando</span>";
   }
 
-  // MELHORIA 1: prazo-live-txt para timer ao vivo no tablet
   var prazoTxt   = concluido ? "Concluído" : "<span class='prazo-live-txt'>"+t.txt+"</span>";
   var prazoLabel = concluido ? "100%" : pct+"%";
-
-  // MELHORIA 3: delay stagger por índice
   var delay = Math.min((idx||0) * 50, 350);
 
   var thumbHtml = "";
@@ -1580,7 +1646,6 @@ function renderCardTablet(p, idx) {
       "</div>";
   }
 
-  // MELHORIA 1: data-iso para cards tablet
   var isoAttr = !concluido && p.dataHora ? "data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'" : "data-concluido='1'";
 
   return (
@@ -1596,7 +1661,7 @@ function renderCardTablet(p, idx) {
         "<div class='card-t-meta'>" +
           "<span>🕐 "+fdt(p.dataHora)+"</span>" +
           "<span>👷 "+safeText(p.registradoPor||"—")+"</span>" +
-        (_modoPerto && p._distKm != null ? "<span style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>" : "") +
+          (_modoPerto && p._distKm != null ? "<span style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>" : "") +
           (execSub?execSub:"") +
         "</div>" +
         "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
@@ -1609,7 +1674,7 @@ function renderCardTablet(p, idx) {
 var _listaAtiva = [];
 
 // ══════════════════════════════════════════════
-//  RENDER TABLET (LAYOUT)
+//  RENDER TABLET
 // ══════════════════════════════════════════════
 function renderTablet(lista) {
   _listaAtiva = lista;
@@ -1619,10 +1684,7 @@ function renderTablet(lista) {
   lista.forEach(function(p) {
     var concluido = isConcluido(p);
     if (concluido) {
-      if (p.dataConclusao && new Date(p.dataConclusao).toDateString()===hoje) {
-        ok++;
-        concluidosHoje.push(p);
-      }
+      if (p.dataConclusao && new Date(p.dataConclusao).toDateString()===hoje) { ok++; concluidosHoje.push(p); }
       return;
     }
     p._t = tempo(p.dataHora);
@@ -1631,14 +1693,10 @@ function renderTablet(lista) {
   });
 
   function setN(id, val) {
-    var el = document.getElementById(id);
-    if (!el) return;
-    var prev = el.textContent;
-    el.textContent = val;
+    var el = document.getElementById(id); if (!el) return;
+    var prev = el.textContent; el.textContent = val;
     if (prev !== String(val) && prev !== "—") {
-      el.classList.remove("sb-n-bump");
-      void el.offsetWidth;
-      el.classList.add("sb-n-bump");
+      el.classList.remove("sb-n-bump"); void el.offsetWidth; el.classList.add("sb-n-bump");
       setTimeout(function(){ el.classList.remove("sb-n-bump"); }, 450);
     }
   }
@@ -1651,7 +1709,6 @@ function renderTablet(lista) {
   function setStat(id,val){ var el=document.getElementById(id); if(!el) return; var prev=_prevStats[id]; el.textContent=val; if(prev!==undefined&&prev!==val) bump(id); _prevStats[id]=val; }
   setStat("nPen",pen); setStat("nExec",exec); setStat("nUrg",urg); setStat("nOk",ok);
 
-  // MELHORIA 4: Atualizar badges das tabs sempre (com classe "zero" quando vazio)
   var ftCounts = {
     todos:    ativos.length,
     atrasado: ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,
@@ -1659,10 +1716,8 @@ function renderTablet(lista) {
     execucao: ativos.filter(function(p){return !!p.lock;}).length
   };
   Object.keys(ftCounts).forEach(function(ft){
-    var badge = document.getElementById("ftb-"+ft);
-    if (!badge) return;
-    var count = ftCounts[ft];
-    badge.textContent = count;
+    var badge = document.getElementById("ftb-"+ft); if (!badge) return;
+    var count = ftCounts[ft]; badge.textContent = count;
     badge.classList.toggle("zero", count === 0);
   });
 
@@ -1678,29 +1733,13 @@ function renderTablet(lista) {
       sbAtrasados.forEach(function(p){
         var minAtraso = Math.round((new Date() - (new Date(p.dataHora).getTime() + PRAZO*36e5)) / 60000);
         var tempoTxt = minAtraso < 60 ? "venceu há "+minAtraso+"min" : "venceu há "+Math.round(minAtraso/60)+"h";
-        sbHtml+=
-          "<div class='sb-item sb-mini-card t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
-            "<div class='sb-mini-stripe' style='background:var(--atrasado)'></div>"+
-            "<div class='sb-mini-body'>"+
-              "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
-              "<div class='sb-item-sub t-atrasado'>"+tempoTxt+"</div>"+
-            "</div>"+
-            "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--atrasado)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/></svg>"+
-          "</div>";
+        sbHtml+="<div class='sb-item sb-mini-card t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--atrasado)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>"+tempoTxt+"</div></div><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--atrasado)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><line x1='12' y1='8' x2='12' y2='12'/><line x1='12' y1='16' x2='12.01' y2='16'/></svg></div>";
       });
     }
     if (sbUrgentes.length) {
       sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>";
       sbUrgentes.forEach(function(p){
-        sbHtml+=
-          "<div class='sb-item sb-mini-card t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
-            "<div class='sb-mini-stripe' style='background:var(--vermelho)'></div>"+
-            "<div class='sb-mini-body'>"+
-              "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
-              "<div class='sb-item-sub t-urgente'>"+p._t.txt+"</div>"+
-            "</div>"+
-            "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--vermelho)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg>"+
-          "</div>";
+        sbHtml+="<div class='sb-item sb-mini-card t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--vermelho)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--vermelho)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><path d='M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z'/><line x1='12' y1='9' x2='12' y2='13'/><line x1='12' y1='17' x2='12.01' y2='17'/></svg></div>";
       });
     }
     if (sbExec.length) {
@@ -1708,18 +1747,10 @@ function renderTablet(lista) {
       sbExec.forEach(function(p){
         var minEx = Math.round((new Date() - new Date(p.lock.timestamp)) / 60000);
         var tempoEx = (p.lock.usuario ? safeText(p.lock.usuario.split(" ")[0])+" · " : "") + "há "+(minEx<1?"<1":minEx)+"min";
-        sbHtml+=
-          "<div class='sb-item sb-mini-card t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'>"+
-            "<div class='sb-mini-stripe' style='background:var(--exec)'></div>"+
-            "<div class='sb-mini-body'>"+
-              "<div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div>"+
-              "<div class='sb-item-sub' style='color:var(--exec)'>"+tempoEx+"</div>"+
-            "</div>"+
-            "<svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--exec)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>"+
-          "</div>";
+        sbHtml+="<div class='sb-item sb-mini-card t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--exec)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub' style='color:var(--exec)'>"+tempoEx+"</div></div><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='var(--exec)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' style='flex-shrink:0'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg></div>";
       });
     }
-    if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>"+(sbFiltro==="concluido"?"✅ Ver concluídos no painel central":"✅ Tudo em dia!")+"</div>";
+    if (!sbHtml) sbHtml="<div style='padding:24px;text-align:center;color:var(--texto2);font-size:13px;'>✅ Tudo em dia!</div>";
     sbEl.innerHTML=sbHtml;
     var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec);
     sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){ var p=allSb[idx]; if(p) el.onclick=function(){ selecionarProtocolo(p); }; });
@@ -1730,73 +1761,41 @@ function renderTablet(lista) {
     return p;
   }));
 
-  // Modo perto de mim no tablet
-  if (_modoPerto && _posAtual) {
-    ativos = _aplicarProximidade(ativos);
-  }
+  if (_modoPerto && _posAtual) ativos = _aplicarProximidade(ativos);
 
   var filtrados = termoBuscaSb
-    ? todosParaBuscaSb.filter(function(p){
-        return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||
-               (p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0;
-      })
+    ? todosParaBuscaSb.filter(function(p){ return (p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0; })
     : ativos.slice();
 
   if (!termoBuscaSb) {
     if (sbFiltro==="atrasado")       filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
     else if (sbFiltro==="urgente")   filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
     else if (sbFiltro==="execucao")  filtrados=filtrados.filter(function(p){return !!p.lock;});
-    else if (sbFiltro==="concluido") filtrados=concluidosHoje.map(function(p){
-      p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};
-      return p;
-    });
+    else if (sbFiltro==="concluido") filtrados=concluidosHoje.map(function(p){ p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""}; return p; });
     if (ftFiltro==="atrasado")       filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
     else if (ftFiltro==="urgente")   filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
     else if (ftFiltro==="execucao")  filtrados=filtrados.filter(function(p){return !!p.lock;});
   }
 
   if (_modoPerto && _posAtual) {
-    filtrados.sort(function(a,b){
-      if (a._distKm == null && b._distKm == null) return 0;
-      if (a._distKm == null) return 1;
-      if (b._distKm == null) return -1;
-      return a._distKm - b._distKm;
-    });
+    filtrados.sort(function(a,b){ if(a._distKm==null&&b._distKm==null) return 0; if(a._distKm==null) return 1; if(b._distKm==null) return -1; return a._distKm-b._distKm; });
   } else {
     filtrados.sort(function(a,b){
-      var rank=function(p){
-        if (isConcluido(p)) return 5;
-        if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
-        if(p.lock) return 1;
-        if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado")) return 2;
-        if(p._t&&p._t.r<=4) return 3;
-        return 4;
-      };
+      var rank=function(p){ if(isConcluido(p)) return 5; if(p.lock&&p.lock.sessionId===SESSION_ID) return 0; if(p.lock) return 1; if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado")) return 2; if(p._t&&p._t.r<=4) return 3; return 4; };
       var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
     });
   }
-  var gt=document.getElementById("gridTablet");
 
+  var gt=document.getElementById("gridTablet");
   if (!filtrados.length) {
-    gt.innerHTML =
-      "<div class='empty-tablet'>" +
-        "<div class='empty-centro-icon'>✅</div>" +
-        "<div class='empty-centro-title'>Tudo em dia!</div>" +
-        "<div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div>" +
-        "<div class='empty-centro-badge'>"+
-          (sbFiltro==="atrasado"?"Nenhum atraso registrado":
-           sbFiltro==="urgente"?"Sem urgências no momento":
-           sbFiltro==="execucao"?"Nenhuma execução ativa":
-           sbFiltro==="concluido"?"Nenhuma conclusão hoje":"Fila limpa")+
-        "</div>" +
-      "</div>";
+    gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'>✅</div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";
     return;
   }
 
-  var execL     = filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;});
-  var urgL      = filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);});
-  var norL      = filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;});
-  var concL     = filtrados.filter(function(p){return isConcluido(p);});
+  var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;});
+  var urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);});
+  var norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;});
+  var concL=filtrados.filter(function(p){return isConcluido(p);});
 
   var h="", gIdx=0;
   if (execL.length) { h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>"; execL.forEach(function(p){h+=renderCardTablet(p,gIdx++);});}
@@ -1811,16 +1810,15 @@ function renderTablet(lista) {
 
   if (_protocoloSelecionado) {
     var todosParaBusca = ativos.concat(concluidosHoje);
-    var pSel = todosParaBusca.find(function(p){ return p.protocolo === _protocoloSelecionado; });
+    var pSel = todosParaBusca.find ? todosParaBusca.find(function(p){ return p.protocolo === _protocoloSelecionado; }) : null;
+    if (!pSel) { for(var i=0;i<todosParaBusca.length;i++){ if(todosParaBusca[i].protocolo===_protocoloSelecionado){pSel=todosParaBusca[i];break;} } }
     if (pSel) {
       _preencherDetalhe(pSel);
     } else {
       _protocoloSelecionado = null;
       document.getElementById("detailVazio").style.display = "";
-      document.getElementById("detailContent").classList.remove("show");
-      document.getElementById("detailFooter").classList.remove("show");
-      document.getElementById("detailContent").innerHTML = "";
-      document.getElementById("detailFooter").innerHTML = "";
+      var dc = document.getElementById("detailContent"); dc.classList.remove("show"); dc.innerHTML = "";
+      var df = document.getElementById("detailFooter");  df.classList.remove("show"); df.innerHTML = "";
     }
   }
 }
@@ -1841,17 +1839,8 @@ function renderFiltrado(lista) {
     if (concluido) {
       if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje) ok++;
       concluidosHoje.push(p);
-      if(_aguardandoConclusao[p.protocolo]){
-        toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
-        delete _aguardandoConclusao[p.protocolo];
-      } else if(meusLocks[p.protocolo]){
-        pararHeartbeat(p.protocolo);
-        if(_lockIniciadoEm[p.protocolo]){
-          var dataConclusao = p.dataConclusao ? new Date(p.dataConclusao).getTime() : 0;
-          if(dataConclusao > _lockIniciadoEm[p.protocolo]) toast("✅ Protocolo "+p.protocolo+" concluído!","ok");
-          delete _lockIniciadoEm[p.protocolo];
-        }
-      }
+      if(_aguardandoConclusao[p.protocolo]){ toast("✅ Protocolo "+p.protocolo+" concluído!","ok"); delete _aguardandoConclusao[p.protocolo]; }
+      else if(meusLocks[p.protocolo]){ pararHeartbeat(p.protocolo); if(_lockIniciadoEm[p.protocolo]){ var dataConclusao=p.dataConclusao?new Date(p.dataConclusao).getTime():0; if(dataConclusao>_lockIniciadoEm[p.protocolo]) toast("✅ Protocolo "+p.protocolo+" concluído!","ok"); delete _lockIniciadoEm[p.protocolo]; } }
       return;
     }
     p._t=tempo(p.dataHora);
@@ -1863,20 +1852,12 @@ function renderFiltrado(lista) {
   setCounter("nPen",pen); setCounter("nExec",exec); setCounter("nUrg",urg); setCounter("nOk",ok);
 
   var g=document.getElementById("grid");
-  var todosParaBusca = ativos.concat(concluidosHoje.map(function(p){
-    p._t = p._t || {txt:"Concluído", r:0, pct:100, tipo:"concluido", horaVence:""};
-    return p;
-  }));
+  var todosParaBusca = ativos.concat(concluidosHoje.map(function(p){ p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""}; return p; }));
 
-  // Modo perto de mim
-  if (_modoPerto && _posAtual) {
-    ativos = _aplicarProximidade(ativos);
-  }
+  if (_modoPerto && _posAtual) ativos = _aplicarProximidade(ativos);
 
   var filtrados = !termoBusca ? ativos : todosParaBusca.filter(function(p){
-    return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||
-           (p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||
-           (p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
+    return (p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||(p.obs||"").toLowerCase().indexOf(termoBusca)>=0;
   });
 
   if (!ativos.length && !concluidosHoje.length) { g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>"; _prevHashes={}; return; }
@@ -1885,22 +1866,10 @@ function renderFiltrado(lista) {
   var gridList = termoBusca ? filtrados : ativos;
 
   if (_modoPerto && _posAtual) {
-    gridList.sort(function(a,b){
-      if (a._distKm == null && b._distKm == null) return 0;
-      if (a._distKm == null) return 1;
-      if (b._distKm == null) return -1;
-      return a._distKm - b._distKm;
-    });
+    gridList.sort(function(a,b){ if(a._distKm==null&&b._distKm==null) return 0; if(a._distKm==null) return 1; if(b._distKm==null) return -1; return a._distKm-b._distKm; });
   } else {
     gridList.sort(function(a,b){
-      var rank=function(p){
-        if(isConcluido(p)) return 5;
-        if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
-        if(p.lock) return 1;
-        if(p._t.r<=0||p._t.tipo==="atrasado") return 2;
-        if(p._t.r<=4) return 3;
-        return 4;
-      };
+      var rank=function(p){ if(isConcluido(p)) return 5; if(p.lock&&p.lock.sessionId===SESSION_ID) return 0; if(p.lock) return 1; if(p._t.r<=0||p._t.tipo==="atrasado") return 2; if(p._t.r<=4) return 3; return 4; };
       var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
     });
   }
@@ -1934,123 +1903,22 @@ function renderFiltrado(lista) {
 }
 
 // ══════════════════════════════════════════════
-//  MODAL CONCLUSÃO INTERNO
-// ══════════════════════════════════════════════
-var _protocoloConcluindo = null;
-var _fotoConclBase64     = null;
-
-function abrirConclusao(protocolo, endereco) {
-  _protocoloConcluindo = protocolo;
-  _fotoConclBase64     = null;
-  document.getElementById("modalConclusaoSub").textContent =
-    protocolo + " • " + decodeURIComponent(endereco);
-  document.getElementById("fotoConclPreview").style.display = "none";
-  document.getElementById("fotoConclImg").src = "";
-  document.getElementById("btnFotoConcl").style.display = "flex";
-  document.getElementById("inputFotoConcl").value = "";
-  document.getElementById("btnEnviarConclusao").disabled = false;
-  document.getElementById("btnEnviarConclusao").textContent = "✅ Concluir";
-  document.getElementById("modalConclusao").classList.add("open");
-}
-
-function fecharModalConclusao() {
-  document.getElementById("modalConclusao").classList.remove("open");
-  _protocoloConcluindo = null;
-  _fotoConclBase64     = null;
-}
-
-function onFotoConclChange(input) {
-  var file = input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    _fotoConclBase64 = e.target.result;
-    document.getElementById("fotoConclImg").src = _fotoConclBase64;
-    document.getElementById("fotoConclPreview").style.display = "block";
-    document.getElementById("btnFotoConcl").style.display = "none";
-  };
-  reader.readAsDataURL(file);
-}
-
-function removerFotoConcl() {
-  _fotoConclBase64 = null;
-  document.getElementById("fotoConclImg").src = "";
-  document.getElementById("fotoConclPreview").style.display = "none";
-  document.getElementById("btnFotoConcl").style.display = "flex";
-  document.getElementById("inputFotoConcl").value = "";
-}
-
-function enviarConclusao() {
-  if (!_protocoloConcluindo) return;
-  var btn = document.getElementById("btnEnviarConclusao");
-  btn.disabled = true;
-  btn.textContent = "⏳ Enviando...";
-
-  var operador = getOperador() || "Operador";
-
-  fetch(API_BASE, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      acao:      "concluir",
-      protocolo: _protocoloConcluindo,
-      operador:  operador,
-      foto:      _fotoConclBase64 || ""
-    }),
-    redirect: "follow"
-  })
-  .then(function(r){ return r.json(); })
-  .then(function(res) {
-    if (res.ok) {
-      fecharModalConclusao();
-      pararHeartbeat(_protocoloConcluindo);
-      toast("✅ Protocolo concluído com sucesso!", "ok");
-      if (navigator.vibrate) navigator.vibrate([50,30,50]);
-      setTimeout(carregarDados, 1000);
-    } else {
-      btn.disabled = false;
-      btn.textContent = "✅ Concluir";
-      toast("❌ " + (res.erro || "Erro ao concluir"), "erro");
-    }
-  })
-  .catch(function(err) {
-    btn.disabled = false;
-    btn.textContent = "✅ Concluir";
-    toast("❌ Erro de conexão", "erro");
-  });
-}
-
-// ══════════════════════════════════════════════
 //  Progress bar de 15s
 // ══════════════════════════════════════════════
-var _barEl  = null;
-var _wrapEl = null;
-
+var _barEl = null, _wrapEl = null;
 function startBar() {
   if (!_barEl) return;
-  _barEl.style.transition = "none";
-  _barEl.style.width = "0%";
-  _wrapEl.classList.remove("paused");
+  _barEl.style.transition = "none"; _barEl.style.width = "0%"; _wrapEl.classList.remove("paused");
   void _barEl.offsetWidth;
-  _barEl.style.transition = "width " + REFRESH_INTERVAL + "ms linear";
-  _barEl.style.width = "95%";
+  _barEl.style.transition = "width " + REFRESH_INTERVAL + "ms linear"; _barEl.style.width = "95%";
 }
-
 function flashBar() {
   if (!_barEl) return;
-  _barEl.style.transition = "width .2s ease";
-  _barEl.style.width = "100%";
-  _wrapEl.classList.add("paused");
-  setTimeout(function() {
-    _barEl.style.transition = "width .3s ease";
-    _barEl.style.width = "0%";
-    setTimeout(function() { _wrapEl.classList.remove("paused"); startBar(); }, 350);
-  }, 600);
+  _barEl.style.transition = "width .2s ease"; _barEl.style.width = "100%"; _wrapEl.classList.add("paused");
+  setTimeout(function() { _barEl.style.transition = "width .3s ease"; _barEl.style.width = "0%"; setTimeout(function() { _wrapEl.classList.remove("paused"); startBar(); }, 350); }, 600);
 }
-
 function initProgressBar() {
-  _barEl  = document.getElementById("refreshBarFill");
-  _wrapEl = document.getElementById("refreshBar");
+  _barEl = document.getElementById("refreshBarFill"); _wrapEl = document.getElementById("refreshBar");
   if (!_barEl) return;
   var _origCarregar = carregarDados;
   carregarDados = function() { startBar(); return _origCarregar.apply(this, arguments); };
@@ -2095,7 +1963,7 @@ window.addEventListener("beforeunload", function() {
 // ══════════════════════════════════════════════
 initProgressBar();
 carregarDados();
-iniciarTimerAoVivo(); // MELHORIA 1: timer ao vivo separado do refresh de dados
+iniciarTimerAoVivo();
 setInterval(carregarDados, REFRESH_INTERVAL);
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState==='visible') {
