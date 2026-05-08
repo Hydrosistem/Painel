@@ -19,6 +19,7 @@
 <title>Hydrosistem — Entulhos</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ══ LIGHT MODE (padrão) ══ */
 :root {
   --azul:        #0057A8;
   --azul-esc:    #003D7A;
@@ -42,13 +43,70 @@
   --texto2:      #6B7280;
   --borda:       #E2E8F0;
   --branco:      #FFFFFF;
+  --card-bg:     #FFFFFF;
+  --modal-bg:    #FFFFFF;
+  --sidebar-bg:  #FFFFFF;
+  --header-shadow: 0 2px 16px rgba(0,0,87,.3);
   --radius:      16px;
   --radius-sm:   10px;
   --shadow:      0 2px 8px rgba(0,0,0,.08);
   --shadow-md:   0 4px 20px rgba(0,0,0,.12);
   --sidebar-w:   260px;
   --detail-w:    320px;
+  /* notificações */
+  --notif-bg:    #FFFFFF;
+  --notif-borda: #E2E8F0;
+  --notif-shadow: 0 8px 32px rgba(0,0,0,.18);
 }
+
+/* ══ DARK MODE ══ */
+body.dark {
+  --azul:        #4A9EE8;
+  --azul-esc:    #1A5FA8;
+  --azul-bg:     #0F2A44;
+  --verde:       #2ECC71;
+  --verde-bg:    #0A2318;
+  --amarelo:     #F0A500;
+  --amarelo-bg:  #2A1F00;
+  --vermelho:    #E05A50;
+  --vermelho-bg: #2A0E0B;
+  --atrasado:    #FF6B6B;
+  --atrasado-bg: #2A0808;
+  --exec:        #BB86FC;
+  --exec-bg:     #1E0A36;
+  --exec-borda:  #9B59D0;
+  --concluido:      #2ECC71;
+  --concluido-bg:   #0A2318;
+  --concluido-borda:#27AE60;
+  --cinza-bg:    #1A1F2E;
+  --texto:       #E8EAF0;
+  --texto2:      #8892A4;
+  --borda:       #2A3040;
+  --branco:      #1E2333;
+  --card-bg:     #242938;
+  --modal-bg:    #1E2333;
+  --sidebar-bg:  #1A1F2E;
+  --header-shadow: 0 2px 20px rgba(0,0,0,.5);
+  --shadow:      0 2px 8px rgba(0,0,0,.3);
+  --shadow-md:   0 4px 20px rgba(0,0,0,.5);
+  --notif-bg:    #242938;
+  --notif-borda: #2A3040;
+  --notif-shadow: 0 8px 32px rgba(0,0,0,.5);
+}
+
+/* Transição global suave ao trocar tema */
+body, body * {
+  transition:
+    background-color .22s ease,
+    border-color .22s ease,
+    color .18s ease,
+    box-shadow .22s ease;
+}
+/* Exceções — não transicionar dimensões/transform/opacity */
+body *, body *::before, body *::after {
+  transition-property: background-color, border-color, color, box-shadow;
+}
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html { font-size: 16px; -webkit-text-size-adjust: 100%; }
 body {
@@ -71,7 +129,10 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 2px 16px rgba(0,0,87,.3);
+  box-shadow: var(--header-shadow);
+}
+body.dark header {
+  background: linear-gradient(135deg, #0D1520 0%, #1A2A3F 100%);
 }
 .h-brand { display: flex; align-items: center; gap: 10px; }
 .h-logo { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.15); padding: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
@@ -85,7 +146,6 @@ header {
   font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
   touch-action: manipulation; -webkit-appearance: none;
-  transition: background .15s;
 }
 .btn-header:active, .btn-header:hover { background: rgba(255,255,255,.25); }
 .btn-header.spin svg { animation: rot .9s linear infinite; }
@@ -97,13 +157,24 @@ header {
   font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
   touch-action: manipulation; -webkit-appearance: none;
-  transition: background .15s;
 }
 .btn-perto:active, .btn-perto:hover { background: rgba(255,255,255,.25); }
-.btn-perto.ativo {
-  background: #1A7A3C;
-  border-color: #4ADE80;
+.btn-perto.ativo { background: #1A7A3C; border-color: #4ADE80; }
+
+/* Botão Modo Escuro no Header (desktop) */
+.btn-dark-header {
+  background: rgba(255,255,255,.15);
+  border: 1.5px solid rgba(255,255,255,.35);
+  color: #fff; border-radius: 10px;
+  width: 38px; height: 38px;
+  font-size: 16px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  touch-action: manipulation; -webkit-appearance: none;
+  flex-shrink: 0;
 }
+.btn-dark-header:hover { background: rgba(255,255,255,.28); }
+.btn-dark-header:active { transform: scale(.93); }
+
 .btn-header.visible { display: flex; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
@@ -116,11 +187,12 @@ header {
   font-family: "DM Sans", sans-serif;
 }
 
-/* ══ Progress bar de atualização ══ */
+/* ══ Progress bar ══ */
 #refreshBar {
   height: 3px; background: rgba(0,87,168,.12); width: 100%;
   overflow: hidden; position: sticky; top: 64px; z-index: 101;
 }
+body.dark #refreshBar { background: rgba(74,158,232,.1); }
 #refreshBarFill {
   height: 100%; width: 0%;
   background: linear-gradient(90deg, var(--azul) 0%, #38bdf8 50%, var(--azul) 100%);
@@ -135,16 +207,17 @@ header {
 #bannerOffline { display: none; background: #7B0000; color: #fff; font-size: 12px; font-weight: 600; text-align: center; padding: 7px 16px; letter-spacing: .3px; }
 #bannerOffline.show { display: block; }
 #bannerCache { display: none; background: var(--amarelo-bg); color: var(--amarelo); border-bottom: 1px solid #f0d080; font-size: 12px; font-weight: 600; text-align: center; padding: 7px 16px; }
+body.dark #bannerCache { border-bottom-color: #3A2800; }
 #bannerCache.show { display: block; }
 
 /* ══ MODAL OPERADOR ══ */
 #modalOperador { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 600; align-items: center; justify-content: center; padding: 20px; }
 #modalOperador.open { display: flex; }
-.modal-op { background: var(--branco); border-radius: var(--radius); padding: 32px 24px; max-width: 360px; width: 100%; box-shadow: var(--shadow-md); text-align: center; }
+.modal-op { background: var(--modal-bg); border-radius: var(--radius); padding: 32px 24px; max-width: 360px; width: 100%; box-shadow: var(--shadow-md); text-align: center; border: 1px solid var(--borda); }
 .modal-op-icon  { font-size: 44px; margin-bottom: 12px; }
-.modal-op-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.modal-op-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: var(--texto); }
 .modal-op-sub   { font-size: 13px; color: var(--texto2); margin-bottom: 24px; line-height: 1.5; }
-.modal-op-input { width: 100%; padding: 14px 16px; border: 2px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 16px; outline: none; transition: border-color .2s; margin-bottom: 16px; }
+.modal-op-input { width: 100%; padding: 14px 16px; border: 2px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 16px; outline: none; transition: border-color .2s; margin-bottom: 16px; background: var(--cinza-bg); color: var(--texto); }
 .modal-op-input:focus { border-color: var(--azul); }
 .btn-op-confirmar { width: 100%; min-height: 52px; border-radius: var(--radius-sm); background: var(--azul); color: #fff; font-family: "DM Sans",sans-serif; font-size: 16px; font-weight: 700; border: none; cursor: pointer; transition: opacity .15s; }
 .btn-op-confirmar:disabled { opacity: .4; cursor: not-allowed; }
@@ -162,12 +235,12 @@ header {
 .search-wrap { background: var(--branco); border-bottom: 1px solid var(--borda); padding: 10px 16px; position: sticky; top: 67px; z-index: 99; }
 .search-inner { max-width: 720px; margin: 0 auto; position: relative; display: flex; align-items: center; gap: 8px; }
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texto2); pointer-events: none; }
-.search-input { flex: 1; padding: 10px 40px 10px 38px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 14px; background: var(--cinza-bg); outline: none; transition: border-color .2s, background .2s; }
+.search-input { flex: 1; padding: 10px 40px 10px 38px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 14px; background: var(--cinza-bg); color: var(--texto); outline: none; transition: border-color .2s, background .2s; }
 .search-input:focus { border-color: var(--azul); background: var(--branco); }
 .search-clear { position: absolute; right: 60px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--texto2); font-size: 18px; line-height: 1; padding: 4px; display: none; }
 .search-clear.show { display: block; }
 
-/* ══ Botão modo compacto ══ */
+/* Botão modo compacto */
 .btn-compacto {
   flex-shrink: 0;
   background: none;
@@ -178,10 +251,30 @@ header {
   width: 38px; height: 38px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer;
-  transition: background .15s, border-color .15s, color .15s;
   touch-action: manipulation;
 }
 .btn-compacto.ativo { background: var(--azul-bg); border-color: var(--azul); color: var(--azul); }
+
+/* ══ Botão Dark Mode MOBILE (na search bar) ══ */
+.btn-dark-mobile {
+  flex-shrink: 0;
+  background: none;
+  border: 1.5px solid var(--borda);
+  border-radius: var(--radius-sm);
+  color: var(--texto2);
+  font-size: 16px;
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-appearance: none;
+}
+.btn-dark-mobile:active { transform: scale(.92); }
+body.dark .btn-dark-mobile {
+  background: var(--azul-bg);
+  border-color: var(--azul);
+  color: var(--azul);
+}
 
 /* ══ MOBILE: stats ══ */
 .stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--branco); border-bottom: 1px solid var(--borda); }
@@ -200,9 +293,9 @@ header {
 .grid { display: grid; grid-template-columns: 1fr; gap: 12px; max-width: 720px; margin: 0 auto; }
 @media (min-width: 600px) and (max-width: 767px) { .main { padding: 20px; } .grid { gap: 16px; } }
 
-/* ══ Skeleton loading cards ══ */
+/* ══ Skeleton loading ══ */
 .skeleton-card {
-  background: var(--branco);
+  background: var(--card-bg);
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--borda);
@@ -214,7 +307,7 @@ header {
 }
 .sk-line {
   border-radius: 6px;
-  background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%);
+  background: linear-gradient(90deg, var(--cinza-bg) 25%, var(--borda) 50%, var(--cinza-bg) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
@@ -227,24 +320,133 @@ header {
 .sk-line.sk-btn   { height: 52px; width: 100%; border-radius: var(--radius-sm); margin-top: 4px; }
 
 .skeleton-card-t {
-  background: var(--branco);
+  background: var(--card-bg);
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--borda);
   box-shadow: var(--shadow);
 }
-.sk-thumb { height: 60px; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+.sk-thumb { height: 60px; background: linear-gradient(90deg, var(--cinza-bg) 25%, var(--borda) 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
 .sk-body { padding: 11px 12px; display: flex; flex-direction: column; gap: 8px; }
 
-/* ══ Animação de entrada nos cards ══ */
 @keyframes cardEntrada {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.card-animar {
-  animation: cardEntrada .32s cubic-bezier(.22,1,.36,1) both;
-}
+.card-animar { animation: cardEntrada .32s cubic-bezier(.22,1,.36,1) both; }
 .card-animar { animation-delay: var(--delay, 0ms); }
+
+/* ══ NOTIFICAÇÕES IN-APP ══ */
+#notif-container {
+  position: fixed;
+  top: 74px;
+  right: 12px;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+  max-width: 320px;
+  width: calc(100vw - 24px);
+}
+@media (min-width: 480px) {
+  #notif-container { width: 320px; }
+}
+
+.notif-card {
+  background: var(--notif-bg);
+  border: 1px solid var(--notif-borda);
+  border-radius: 14px;
+  padding: 12px 14px;
+  box-shadow: var(--notif-shadow);
+  pointer-events: all;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  animation: notifEntra .38s cubic-bezier(.22,1,.36,1) both;
+}
+.notif-card::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 4px;
+  background: var(--notif-accent, var(--azul));
+  border-radius: 14px 0 0 14px;
+}
+.notif-card.saindo {
+  animation: notifSai .28s ease forwards;
+}
+
+@keyframes notifEntra {
+  from { opacity: 0; transform: translateX(110%); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes notifSai {
+  from { opacity: 1; transform: translateX(0); max-height: 120px; margin-bottom: 0; }
+  to   { opacity: 0; transform: translateX(110%); max-height: 0; margin-bottom: -8px; padding-top: 0; padding-bottom: 0; }
+}
+
+.notif-icon-wrap {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  background: var(--notif-icon-bg, var(--azul-bg));
+}
+.notif-body { flex: 1; min-width: 0; }
+.notif-titulo { font-size: 12px; font-weight: 700; color: var(--texto); line-height: 1.3; }
+.notif-desc { font-size: 11px; color: var(--texto2); margin-top: 2px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.notif-hora { font-size: 10px; color: var(--texto2); margin-top: 3px; font-family: "DM Mono", monospace; }
+.notif-close {
+  position: absolute; top: 8px; right: 8px;
+  background: none; border: none; cursor: pointer;
+  color: var(--texto2); font-size: 14px; line-height: 1;
+  padding: 2px 4px; border-radius: 4px;
+  opacity: .7;
+}
+.notif-close:hover { opacity: 1; background: var(--borda); }
+.notif-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: var(--borda);
+}
+.notif-progress-fill {
+  height: 100%;
+  background: var(--notif-accent, var(--azul));
+  width: 100%;
+  animation: notifProg var(--notif-dur, 7000ms) linear forwards;
+  border-radius: 2px;
+}
+@keyframes notifProg {
+  from { width: 100%; }
+  to   { width: 0%; }
+}
+
+/* Badge de notificações no header */
+.notif-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  width: 16px; height: 16px;
+  background: var(--vermelho);
+  border-radius: 50%;
+  font-size: 9px; font-weight: 800;
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid transparent;
+  animation: badgePop .3s cubic-bezier(.34,1.56,.64,1);
+  font-family: "DM Mono", monospace;
+}
+@keyframes badgePop {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+.notif-bell-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
 /* ══ TABLET/DESKTOP ══ */
 @media (min-width: 768px) {
@@ -253,10 +455,10 @@ header {
   .main        { display: none; }
   .layout-root { flex-direction: row; align-items: stretch; height: calc(100vh - 67px); overflow: hidden; }
 
-  .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--branco); border-right: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
+  .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--sidebar-bg); border-right: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .sb-search { padding: 12px; border-bottom: 1px solid var(--borda); position: relative; }
   .sb-search-icon { position: absolute; left: 22px; top: 50%; transform: translateY(-50%); color: var(--texto2); pointer-events: none; }
-  .sb-search-input { width: 100%; padding: 9px 32px 9px 34px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-bg); outline: none; transition: border-color .2s; }
+  .sb-search-input { width: 100%; padding: 9px 32px 9px 34px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-bg); color: var(--texto); outline: none; transition: border-color .2s; }
   .sb-search-input:focus { border-color: var(--azul); background: var(--branco); }
   .sb-search-clear { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; color: var(--texto2); font-size: 16px; line-height: 1; padding: 4px; display: none; }
   .sb-search-clear.show { display: block; }
@@ -276,7 +478,7 @@ header {
     display: inline-block; transition: color .2s;
   }
   .sb-n-bump { animation: sbBump .45s cubic-bezier(.34,1.56,.64,1); }
-  @keyframes sbBump { 0% { transform: scale(1); color: inherit; } 35% { transform: scale(1.45); color: var(--azul); } 100% { transform: scale(1); color: inherit; } }
+  @keyframes sbBump { 0% { transform: scale(1); } 35% { transform: scale(1.45); color: var(--azul); } 100% { transform: scale(1); } }
   .sb-filter-btn.s-atrasado .sb-filter-count.sb-n-bump { animation-name: sbBumpAtrasado; }
   @keyframes sbBumpAtrasado { 35% { transform: scale(1.45); color: var(--atrasado); } }
   .sb-filter-btn.s-urgente .sb-filter-count.sb-n-bump { animation-name: sbBumpUrgente; }
@@ -328,7 +530,6 @@ header {
     min-width: 18px; height: 18px; padding: 0 4px;
     border-radius: 9px; font-size: 10px; font-weight: 800;
     font-family: "DM Mono", monospace; line-height: 1;
-    transition: background .15s, color .15s;
   }
   .filtro-tab:not(.active) .filtro-tab-badge {
     background: var(--cinza-bg);
@@ -345,7 +546,7 @@ header {
     color: #fff;
   }
 
-  .centro-scroll { flex: 1; overflow-y: auto; padding: 14px; }
+  .centro-scroll { flex: 1; overflow-y: auto; padding: 14px; background: var(--cinza-bg); }
   .grid-tablet { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
   @media (min-width: 1200px) { .grid-tablet { grid-template-columns: repeat(3, 1fr); } }
   .sec-label-tablet { grid-column: 1/-1; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
@@ -354,21 +555,21 @@ header {
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .detail-vazio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--texto2); gap: 10px; padding: 24px; text-align: center; }
   .detail-vazio-icon { font-size: 36px; }
-  .detail-vazio-txt  { font-size: 14px; font-weight: 600; }
+  .detail-vazio-txt  { font-size: 14px; font-weight: 600; color: var(--texto); }
   .detail-vazio-sub  { font-size: 12px; }
 
   .detail-content {
     flex: 1; overflow-y: auto; padding: 16px;
     display: none; flex-direction: column; gap: 14px;
-    transition: opacity .15s ease;
+    background: var(--branco);
   }
   .detail-content.show { display: flex; }
   .detail-content.fading { opacity: 0; }
 
   .detail-prot  { font-family: "DM Mono",monospace; font-size: 11px; color: var(--texto2); letter-spacing: 1px; }
-  .detail-end   { font-size: 17px; font-weight: 700; line-height: 1.3; }
+  .detail-end   { font-size: 17px; font-weight: 700; line-height: 1.3; color: var(--texto); }
   .detail-mini-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .mini-card { background: var(--cinza-bg); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; }
+  .mini-card { background: var(--cinza-bg); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; border: 1px solid var(--borda); }
   .mini-card-val { font-family: "DM Mono",monospace; font-size: 18px; font-weight: 700; line-height: 1; }
   .mini-card-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; color: var(--texto2); margin-top: 3px; }
   .mini-card-val.t-atrasado  { color: var(--atrasado); }
@@ -383,15 +584,15 @@ header {
   .detail-foto-wrap { width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--borda); background: var(--cinza-bg); position: relative; }
   .detail-foto { width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block; opacity: 0; transition: opacity .3s; position: relative; z-index: 1; }
   .detail-foto.loaded { opacity: 1; }
-  .detail-foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
-  .detail-prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
+  .detail-foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, var(--borda) 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+  .detail-prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; border: 1px solid var(--borda); }
   .detail-prazo-fill { height: 100%; border-radius: 10px; }
   .t-urgente   .detail-prazo-fill { background: var(--vermelho); }
   .t-pendente  .detail-prazo-fill { background: var(--amarelo);  }
   .t-atrasado  .detail-prazo-fill { background: var(--atrasado); }
   .t-execucao  .detail-prazo-fill { background: var(--exec);     }
   .t-concluido .detail-prazo-fill { background: var(--verde);    }
-  .detail-footer { padding: 12px 16px; border-top: 1px solid var(--borda); display: none; flex-direction: column; gap: 8px; }
+  .detail-footer { padding: 12px 16px; border-top: 1px solid var(--borda); display: none; flex-direction: column; gap: 8px; background: var(--branco); }
   .detail-footer.show { display: flex; }
   .btn-detail-iniciar {
     display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -403,7 +604,6 @@ header {
   .btn-detail-iniciar:active { opacity: .85; }
   .btn-detail-iniciar.t-atrasado { background: var(--atrasado); }
   .btn-detail-iniciar.t-urgente  { background: var(--vermelho); }
-  /* ══ CORRIGIDO: btn-detail-concluir agora é sempre button, nunca <a> ══ */
   .btn-detail-concluir {
     display: flex; align-items: center; justify-content: center; gap: 6px;
     width: 100%; min-height: 48px; padding: 12px; border-radius: var(--radius-sm);
@@ -412,12 +612,12 @@ header {
     border: none; cursor: pointer; text-align: center; transition: opacity .15s;
   }
   .btn-detail-concluir:active { opacity: .85; }
-  .btn-detail-cancelar { width: 100%; min-height: 40px; border-radius: var(--radius-sm); background: none; border: 1px solid var(--borda); font-family: "DM Sans",sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer; transition: background .15s; }
+  .btn-detail-cancelar { width: 100%; min-height: 40px; border-radius: var(--radius-sm); background: none; border: 1px solid var(--borda); font-family: "DM Sans",sans-serif; font-size: 13px; color: var(--texto2); cursor: pointer; }
   .btn-detail-cancelar:hover { background: var(--cinza-bg); }
 
-  /* Card tablet com thumbnail */
+  /* Card tablet */
   .card-t {
-    background: var(--branco); border-radius: var(--radius); overflow: hidden;
+    background: var(--card-bg); border-radius: var(--radius); overflow: hidden;
     box-shadow: var(--shadow); border: 1px solid var(--borda);
     cursor: pointer; transition: box-shadow .2s, transform .15s;
     display: flex; flex-direction: column;
@@ -432,16 +632,12 @@ header {
   .card-t.t-concluido { border: 1px solid var(--concluido-borda); opacity: .85; }
 
   .card-t-thumb { width: 100%; aspect-ratio: 16/6; overflow: hidden; position: relative; background: var(--cinza-bg); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
-  .card-t-thumb-sk { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+  .card-t-thumb-sk { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, var(--borda) 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
   .card-t-thumb-img { width: 100%; height: 100%; object-fit: cover; display: block; opacity: 0; transition: opacity .35s; position: relative; z-index: 1; cursor: pointer; }
   .card-t-thumb-img.loaded { opacity: 1; }
 
   .card-t-inner { display: flex; flex: 1; }
   .card-t-stripe { width: 5px; flex-shrink: 0; position: relative; overflow: hidden; }
-  .card-t-stripe::after { content: ""; position: absolute; top: -40%; left: 0; width: 100%; height: 40%; background: rgba(255,255,255,.55); border-radius: 2px; opacity: 0; transition: none; }
-  .card-t:hover .card-t-stripe::after { opacity: 1; animation: stripeSlide .55s ease forwards; }
-  @keyframes stripeSlide { 0% { top: -40%; opacity: .8; } 100% { top: 140%; opacity: 0; } }
-
   .card-t.t-urgente   .card-t-stripe { background: var(--vermelho); }
   .card-t.t-pendente  .card-t-stripe { background: var(--amarelo);  }
   .card-t.t-atrasado  .card-t-stripe { background: var(--atrasado); }
@@ -452,7 +648,7 @@ header {
   .card-t-prot { font-family: "DM Mono",monospace; font-size: 10px; color: var(--texto2); letter-spacing: 1px; }
   .card-t-end  { font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--texto); }
   .card-t-meta { font-size: 11px; color: var(--texto2); display: flex; flex-wrap: wrap; gap: 3px 8px; }
-  .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 3px; }
+  .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 3px; color: var(--texto2); }
   .card-t-prazo-bar  { height: 4px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
   .card-t-prazo-fill { height: 100%; border-radius: 10px; }
   .card-t.t-urgente   .card-t-prazo-fill { background: var(--vermelho); }
@@ -480,7 +676,7 @@ header {
 .sec-label { grid-column: 1/-1; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto2); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 .sec-label::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-.card { background: var(--branco); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); display: flex; flex-direction: column; transition: box-shadow .2s, transform .2s; }
+.card { background: var(--card-bg); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); border: 1px solid var(--borda); display: flex; flex-direction: column; }
 .card:active { transform: scale(.995); }
 .card.t-execucao  { border: 2px solid var(--exec-borda); box-shadow: 0 0 0 3px rgba(168,85,247,.15), var(--shadow-md); }
 .card.t-concluido { border: 1px solid var(--concluido-borda); opacity: .88; }
@@ -514,13 +710,13 @@ header {
 .meta-item { font-size: 12px; color: var(--texto2); display: flex; align-items: center; gap: 3px; }
 
 .foto-wrap { width: 100%; aspect-ratio: 16/9; border-radius: 10px; overflow: hidden; border: 1px solid var(--borda); background: var(--cinza-bg); position: relative; }
-.foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, #e0e8f0 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
+.foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-bg) 25%, var(--borda) 50%, var(--cinza-bg) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
 @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 .card-foto { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; position: relative; z-index: 1; opacity: 0; transition: opacity .3s; }
 .card-foto.loaded { opacity: 1; }
 
 .prazo-wrap { padding-bottom: 2px; }
-.prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; }
+.prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; color: var(--texto2); }
 .prazo-hora { font-size: 10px; color: var(--texto2); font-weight: 500; }
 .prazo-bar { height: 5px; border-radius: 10px; background: var(--cinza-bg); overflow: hidden; }
 .prazo-fill { height: 100%; border-radius: 10px; transition: width .4s; }
@@ -573,6 +769,7 @@ header {
 }
 
 .btn-bloqueado { background: #9CA3AF !important; cursor: not-allowed; opacity: .75; pointer-events: none; display: flex; align-items: center; justify-content: center; width: 100%; min-height: 52px; border-radius: var(--radius-sm); color: #fff; font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700; border: none; }
+body.dark .btn-bloqueado { background: #374151 !important; }
 
 .card.t-urgente, .card.t-atrasado { animation: pulseCard 2.2s ease-in-out infinite; }
 @keyframes pulseCard { 0%, 100% { box-shadow: var(--shadow); } 50% { box-shadow: 0 0 0 3px rgba(192,57,43,.2); } }
@@ -592,12 +789,13 @@ body.modo-compacto .btn-cancelar-exec { padding: 7px; font-size: 12px; }
 body.modo-compacto .grid { gap: 7px; }
 body.modo-compacto .card { border-radius: var(--radius-sm); }
 
-/* ══ MODAL INICIAR EXECUÇÃO ══ */
+/* ══ MODAL ══ */
 .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 500; align-items: center; justify-content: center; padding: 20px; }
+body.dark .modal-overlay { background: rgba(0,0,0,.75); }
 .modal-overlay.open { display: flex; }
-.modal { background: var(--branco); border-radius: var(--radius); padding: 28px 24px; max-width: 380px; width: 100%; box-shadow: var(--shadow-md); text-align: center; }
+.modal { background: var(--modal-bg); border-radius: var(--radius); padding: 28px 24px; max-width: 380px; width: 100%; box-shadow: var(--shadow-md); text-align: center; border: 1px solid var(--borda); }
 .modal-icon  { font-size: 44px; margin-bottom: 12px; }
-.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+.modal-title { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: var(--texto); }
 .modal-sub   { font-size: 13px; color: var(--texto2); margin-bottom: 24px; line-height: 1.5; white-space: pre-line; }
 .modal-btns  { display: flex; gap: 10px; }
 .modal-btns button { flex: 1; min-height: 48px; border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; border: none; transition: opacity .15s; }
@@ -628,30 +826,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 #toast.exec { background: var(--exec); }
 #toast.ok   { background: var(--verde); }
 
-/* ══ MODAL INSTALAÇÃO ══ */
-#modalInstall .modal-sub { font-size: 13px; color: var(--texto2); margin-bottom: 24px; line-height: 1.5; }
-
-/* ══ SIDEBAR OCULTA NO MOBILE ══ */
-.sidebar, .centro, .detail-panel { display: none; }
-@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } }
-
-.busca-nada { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--texto2); }
-.busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
-.busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
-.busca-nada-sub  { font-size: 13px; margin-top: 4px; }
-
-.detail-conclusao-section { border-top: 1.5px dashed var(--concluido-borda); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
-.detail-conclusao-header { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--verde); }
-.detail-conclusao-header::after { content: ""; flex: 1; height: 1px; background: var(--concluido-borda); opacity: .5; }
-
-/* ══ Contador regressivo ao vivo ══ */
-.prazo-live { transition: color .4s; }
-#modalConclusao .modal { text-align: left; max-width: 400px; }
-#modalConclusao .modal-title { text-align: center; }
-#modalConclusao .modal-icon { text-align: center; }
-#modalConclusao .modal-sub { text-align: center; margin-bottom: 16px; }
-
-/* ══ Preview de foto no modal de conclusão ══ */
+/* ══ MODAL CONCLUSÃO ══ */
 .foto-concl-preview-wrap {
   width: 100%; aspect-ratio: 4/3; border-radius: 10px; overflow: hidden;
   border: 1px solid var(--borda); margin-bottom: 10px; position: relative;
@@ -671,53 +846,46 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   background: var(--azul-bg); border: 1.5px dashed var(--azul);
   color: var(--azul); font-family: "DM Sans",sans-serif;
   font-size: 15px; font-weight: 700; cursor: pointer;
-  transition: background .15s;
 }
-.label-foto-concl:active { background: #d0e8fa; }
+.label-foto-concl:active { background: var(--azul-bg); filter: brightness(.92); }
 .label-foto-concl.oculto { display: none; }
+
+.detail-conclusao-section { border-top: 1.5px dashed var(--concluido-borda); padding-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+.detail-conclusao-header { display: flex; align-items: center; gap: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--verde); }
+.detail-conclusao-header::after { content: ""; flex: 1; height: 1px; background: var(--concluido-borda); opacity: .5; }
+
+.prazo-live { transition: color .4s; }
+
+/* ══ SIDEBAR OCULTA NO MOBILE ══ */
+.sidebar, .centro, .detail-panel { display: none; }
+@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } }
+
+.busca-nada { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--texto2); }
+.busca-nada-icon { font-size: 36px; margin-bottom: 10px; }
+.busca-nada-txt  { font-size: 15px; font-weight: 600; color: var(--texto); }
+.busca-nada-sub  { font-size: 13px; margin-top: 4px; }
+
+/* ══ MOBILE RESPONSIVO HEADER ══ */
 @media (max-width: 767px) {
   header {
     padding: 0 12px;
     height: 56px;
   }
-  .h-logo {
-    width: 32px;
-    height: 32px;
-  }
-  .h-nome {
-    font-size: 13px;
-  }
-  .h-sub {
-    font-size: 9px;
-    letter-spacing: 1px;
-  }
-  .btn-header {
-    border-radius: 8px;
-    padding: 0 10px;
-    height: 32px;
-    font-size: 11px;
-    gap: 5px;
-  }
-  .btn-perto {
-    border-radius: 8px;
-    padding: 0 10px;
-    height: 32px;
-    font-size: 11px;
-    gap: 5px;
-  }
-  .chip-operador {
-    border-radius: 8px;
-    padding: 0 10px;
-    height: 32px;
-    font-size: 11px;
-    gap: 6px;
-  }
-  #refreshBar {
-    top: 56px;
-  }
-  .search-wrap {
-    top: 59px;
-  }
+  .h-logo { width: 32px; height: 32px; }
+  .h-nome { font-size: 13px; }
+  .h-sub  { font-size: 9px; letter-spacing: 1px; }
+  .btn-header { border-radius: 8px; padding: 0 10px; height: 32px; font-size: 11px; gap: 5px; }
+  .btn-perto  { border-radius: 8px; padding: 0 10px; height: 32px; font-size: 11px; gap: 5px; }
+  .chip-operador { border-radius: 8px; padding: 0 10px; height: 32px; font-size: 11px; gap: 6px; }
+  /* Esconde dark btn do header no mobile (está na search bar) */
+  .btn-dark-header { display: none; }
+  #refreshBar { top: 56px; }
+  .search-wrap { top: 59px; }
+  #notif-container { top: 66px; }
+}
+/* Esconde dark btn mobile no desktop */
+@media (min-width: 768px) {
+  .btn-dark-mobile { display: none; }
 }
 </style>
 </head>
@@ -747,16 +915,27 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
   <div class="header-btns">
     <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
+    <!-- Sino de notificações com badge -->
+    <div class="notif-bell-wrap" id="notifBellWrap" style="display:none">
+      <button class="btn-header visible" id="btnNotifBell" title="Notificações" onclick="toggleNotifHistorico()" style="padding:0 12px;">
+        🔔
+      </button>
+      <span class="notif-badge" id="notifBadge" style="display:none">0</span>
+    </div>
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">🔄 Atualizar</button>
+    <!-- Botão dark mode desktop (no header) -->
+    <button class="btn-dark-header" id="btnDarkHeader" onclick="toggleDark()" title="Alternar modo escuro">🌙</button>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
 
 <div id="refreshBar"><div id="refreshBarFill"></div></div>
-
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
+
+<!-- ══ CONTAINER DE NOTIFICAÇÕES IN-APP ══ -->
+<div id="notif-container"></div>
 
 <div class="layout-root">
 
@@ -766,6 +945,8 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="buscaInput" type="search" placeholder="Buscar por endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
+      <!-- Botão dark mobile na search bar -->
+      <button class="btn-dark-mobile" id="btnDarkMobile" onclick="toggleDark()" title="Modo escuro">🌙</button>
       <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()">☰</button>
     </div>
   </div>
@@ -780,21 +961,12 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <div class="main">
     <div class="grid" id="grid">
       <div class="skeleton-card">
-        <div class="sk-line sk-prot"></div>
-        <div class="sk-line sk-end"></div>
-        <div class="sk-line sk-end2"></div>
-        <div class="sk-line sk-meta"></div>
-        <div class="sk-line sk-foto"></div>
-        <div class="sk-line sk-bar"></div>
-        <div class="sk-line sk-btn"></div>
+        <div class="sk-line sk-prot"></div><div class="sk-line sk-end"></div><div class="sk-line sk-end2"></div>
+        <div class="sk-line sk-meta"></div><div class="sk-line sk-foto"></div><div class="sk-line sk-bar"></div><div class="sk-line sk-btn"></div>
       </div>
       <div class="skeleton-card">
-        <div class="sk-line sk-prot"></div>
-        <div class="sk-line sk-end"></div>
-        <div class="sk-line sk-end2"></div>
-        <div class="sk-line sk-meta"></div>
-        <div class="sk-line sk-bar"></div>
-        <div class="sk-line sk-btn"></div>
+        <div class="sk-line sk-prot"></div><div class="sk-line sk-end"></div><div class="sk-line sk-end2"></div>
+        <div class="sk-line sk-meta"></div><div class="sk-line sk-bar"></div><div class="sk-line sk-btn"></div>
       </div>
     </div>
   </div>
@@ -884,19 +1056,14 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <div class="modal-icon">✅</div>
     <div class="modal-title">Concluir serviço</div>
     <div class="modal-sub" id="modalConclusaoSub"></div>
-
-    <!-- Preview da foto -->
     <div class="foto-concl-preview-wrap" id="fotoConclPreview">
       <img id="fotoConclImg" src="" alt="Foto conclusão">
       <button class="foto-concl-remove" onclick="removerFotoConcl()">✕</button>
     </div>
-
-    <!-- Botão tirar foto -->
     <label class="label-foto-concl" id="btnFotoConcl">
       📷 Tirar ou escolher foto
       <input type="file" id="inputFotoConcl" accept="image/*" capture="environment" style="display:none" onchange="onFotoConclChange(this)">
     </label>
-
     <div class="modal-btns" style="margin-top:16px">
       <button class="btn-cancelar" onclick="fecharModalConclusao()">Cancelar</button>
       <button class="btn-confirmar" id="btnEnviarConclusao" onclick="enviarConclusao()">✅ Concluir</button>
@@ -939,6 +1106,232 @@ if (new URLSearchParams(location.search).get('action') === 'refresh') {
 function isConcluido(p) {
   var st = (p.status||"").toUpperCase().trim();
   return st === "CONCLUÍDO" || st === "CONCLUIDO";
+}
+
+// ══════════════════════════════════════════════
+//  MODO ESCURO
+// ══════════════════════════════════════════════
+var DARK_KEY = "hyd_dark";
+var _isDark = false;
+
+function initDark() {
+  try {
+    var saved = localStorage.getItem(DARK_KEY);
+    if (saved === "1") {
+      _isDark = true;
+    } else if (saved === null) {
+      // Detecta preferência do sistema na primeira vez
+      _isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
+    }
+  } catch(e) {}
+  applyDark(false);
+}
+
+function applyDark(animate) {
+  if (!animate) {
+    document.body.style.transition = "none";
+    // force reflow
+    void document.body.offsetWidth;
+    document.body.style.transition = "";
+  }
+  document.body.classList.toggle("dark", _isDark);
+  // Atualiza ícones dos botões
+  var icon = _isDark ? "☀️" : "🌙";
+  var bh = document.getElementById("btnDarkHeader");
+  var bm = document.getElementById("btnDarkMobile");
+  if (bh) bh.textContent = icon;
+  if (bm) bm.textContent = icon;
+  // Atualiza theme-color
+  var tc = document.querySelector('meta[name="theme-color"]');
+  if (tc) tc.setAttribute("content", _isDark ? "#0D1520" : "#003D7A");
+}
+
+function toggleDark() {
+  _isDark = !_isDark;
+  try { localStorage.setItem(DARK_KEY, _isDark ? "1" : "0"); } catch(e) {}
+  applyDark(true);
+  toast(_isDark ? "🌙 Modo escuro ativado" : "☀️ Modo claro ativado", "");
+}
+
+// Inicializa dark mode antes do DOMContentLoaded para evitar flash
+initDark();
+
+// ══════════════════════════════════════════════
+//  NOTIFICAÇÕES IN-APP
+// ══════════════════════════════════════════════
+var _protocolosConhecidos = null; // null = primeira carga, Set após
+var _notifCount = 0;
+var _notifFila = [];
+var MAX_NOTIF_VISIVEIS = 3;
+var NOTIF_DURACAO = 7000;
+
+var NOTIF_CONFIGS = {
+  novo_atrasado: {
+    icon: "🔴", iconBg: "var(--atrasado-bg)", accent: "var(--atrasado)",
+    titulo: "Protocolo atrasado",
+    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
+  },
+  novo_urgente: {
+    icon: "⚠️", iconBg: "var(--amarelo-bg)", accent: "var(--vermelho)",
+    titulo: "Urgente adicionado",
+    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
+  },
+  novo_pendente: {
+    icon: "📋", iconBg: "var(--azul-bg)", accent: "var(--azul)",
+    titulo: "Novo protocolo",
+    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
+  },
+  virou_atrasado: {
+    icon: "🚨", iconBg: "var(--atrasado-bg)", accent: "var(--atrasado)",
+    titulo: "Prazo vencido!",
+    desc: function(p){ return "Protocolo " + p.protocolo + " passou do prazo." }
+  }
+};
+
+function _criarNotifCard(cfg, protocolo) {
+  var dur = NOTIF_DURACAO;
+  var hora = new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+
+  var el = document.createElement("div");
+  el.className = "notif-card";
+  el.style.setProperty("--notif-accent", cfg.accent);
+  el.style.setProperty("--notif-dur", dur + "ms");
+  el.innerHTML =
+    "<div class='notif-icon-wrap' style='background:" + cfg.iconBg + "'>" + cfg.icon + "</div>" +
+    "<div class='notif-body'>" +
+      "<div class='notif-titulo'>" + safeText(cfg.titulo) + "</div>" +
+      "<div class='notif-desc'>" + safeText(cfg.desc(protocolo)) + "</div>" +
+      "<div class='notif-hora'>" + hora + "</div>" +
+    "</div>" +
+    "<button class='notif-close' onclick='_fecharNotif(this.closest(\".notif-card\"))'>✕</button>" +
+    "<div class='notif-progress'><div class='notif-progress-fill'></div></div>";
+
+  // Click na notificação vai para o protocolo
+  el.addEventListener("click", function(e) {
+    if (e.target.classList.contains("notif-close")) return;
+    // Tenta selecionar protocolo se tablet
+    if (_ultimaLista) {
+      var p = _ultimaLista.find ? _ultimaLista.find(function(x){ return x.protocolo === protocolo.protocolo; }) : null;
+      if (p) selecionarProtocolo(p);
+    }
+    _fecharNotif(el);
+  });
+
+  return el;
+}
+
+function _fecharNotif(el) {
+  if (!el || el.classList.contains("saindo")) return;
+  el.classList.add("saindo");
+  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+}
+
+function exibirNotif(cfg, protocolo) {
+  var container = document.getElementById("notif-container");
+  if (!container) return;
+
+  // Limita visíveis
+  var atuais = container.querySelectorAll(".notif-card:not(.saindo)");
+  if (atuais.length >= MAX_NOTIF_VISIVEIS) {
+    _fecharNotif(atuais[0]);
+  }
+
+  var el = _criarNotifCard(cfg, protocolo);
+  container.appendChild(el);
+
+  // Auto-dismiss
+  var timer = setTimeout(function() { _fecharNotif(el); }, NOTIF_DURACAO);
+  el.addEventListener("mouseenter", function() { clearTimeout(timer); });
+  el.addEventListener("mouseleave", function() { timer = setTimeout(function(){ _fecharNotif(el); }, 2000); });
+
+  // Atualiza badge
+  _notifCount++;
+  _atualizarBadge();
+
+  // Som suave (optional, Web Audio)
+  _tocarSomNotif();
+}
+
+function _atualizarBadge() {
+  var badge = document.getElementById("notifBadge");
+  var wrap  = document.getElementById("notifBellWrap");
+  if (!badge || !wrap) return;
+  if (_notifCount > 0) {
+    badge.textContent = _notifCount > 9 ? "9+" : _notifCount;
+    badge.style.display = "flex";
+    wrap.style.display  = "flex";
+    badge.style.animation = "none";
+    void badge.offsetWidth;
+    badge.style.animation = "";
+  } else {
+    badge.style.display = "none";
+    // Oculta sino se nunca houve notificação
+  }
+}
+
+function toggleNotifHistorico() {
+  // Zera badge ao clicar
+  _notifCount = 0;
+  _atualizarBadge();
+  // Fecha todas visíveis
+  document.querySelectorAll(".notif-card").forEach(function(el){ _fecharNotif(el); });
+  toast("✓ Notificações lidas", "ok");
+}
+
+function _tocarSomNotif() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    var osc = ctx.createOscillator();
+    var gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.08);
+    gain.gain.setValueAtTime(0.06, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.18);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.18);
+  } catch(e) {}
+}
+
+function detectarNovosProtocolos(lista) {
+  if (_protocolosConhecidos === null) {
+    // Primeira carga — apenas registra, não notifica
+    _protocolosConhecidos = {};
+    lista.forEach(function(p) {
+      _protocolosConhecidos[p.protocolo] = { status: p.status || "", tipo: _tipoProtocolo(p) };
+    });
+    return;
+  }
+
+  var novosConhecidos = {};
+  lista.forEach(function(p) {
+    var prot = p.protocolo;
+    var tipoAtual = _tipoProtocolo(p);
+    novosConhecidos[prot] = { status: p.status || "", tipo: tipoAtual };
+
+    if (!_protocolosConhecidos[prot]) {
+      // Novo protocolo detectado
+      if (!isConcluido(p)) {
+        var cfg = NOTIF_CONFIGS["novo_" + tipoAtual] || NOTIF_CONFIGS.novo_pendente;
+        exibirNotif(cfg, p);
+      }
+    } else {
+      // Verificar se virou atrasado
+      var anterior = _protocolosConhecidos[prot];
+      if (anterior.tipo !== "atrasado" && tipoAtual === "atrasado" && !isConcluido(p)) {
+        exibirNotif(NOTIF_CONFIGS.virou_atrasado, p);
+      }
+    }
+  });
+  _protocolosConhecidos = novosConhecidos;
+}
+
+function _tipoProtocolo(p) {
+  if (isConcluido(p)) return "concluido";
+  if (p.lock) return "execucao";
+  var t = tempo(p.dataHora);
+  return t.tipo;
 }
 
 // ══════════════════════════════════════════════
@@ -1229,7 +1622,7 @@ function iniciarTimerAoVivo() {
 }
 
 // ══════════════════════════════════════════════
-//  LOCK API — usa GET (compatível com GAS redirect)
+//  LOCK API
 // ══════════════════════════════════════════════
 function postLock(payload) {
   var params = Object.keys(payload).map(function(k){ return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]); }).join("&");
@@ -1337,7 +1730,7 @@ function _preencherDetalhe(p) {
     var quemEx = lock.usuario ? " por <strong>"+safeText(lock.usuario)+"</strong>" : "";
     execInfoHtml = "<div style='background:var(--exec-bg);border:1px solid rgba(168,85,247,.25);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--exec);'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";
   } else if (minhaExecucao) {
-    execInfoHtml = "<div style='background:#dcfce7;border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
+    execInfoHtml = "<div style='background:var(--verde-bg);border:1px solid rgba(74,222,128,.3);border-radius:8px;padding:8px 12px;font-size:12px;color:var(--verde);'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
   var fotoHtml = "";
@@ -1411,7 +1804,6 @@ function _preencherDetalhe(p) {
   } else if (outraExecucao) {
     footer.innerHTML = "<div class='btn-bloqueado' style='min-height:48px;border-radius:var(--radius-sm);font-size:14px;'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
-    // ══ CORRIGIDO: usa button onclick em vez de <a href> ══
     footer.innerHTML =
       "<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
@@ -1427,8 +1819,6 @@ function cancelarMinhaExecucaoPainel(protocolo) {
 
 // ══════════════════════════════════════════════
 //  MODAL CONCLUSÃO
-//  ─ Foto comprimida via canvas (resolve preview no iOS/Android)
-//  ─ Envio via GET (resolve erro CORS/redirect do GAS)
 // ══════════════════════════════════════════════
 var _protocoloConcluindo = null;
 var _fotoConclBase64     = null;
@@ -1454,26 +1844,16 @@ function fecharModalConclusao() {
   _fotoConclBase64     = null;
 }
 
-// ── Comprime a foto via canvas antes de exibir e guardar ──
 function _comprimirImagem(file, callback) {
-  // Normaliza .jpg → image/jpeg
   var tipo = file.type;
   if (!tipo || tipo === "image/jpg") tipo = "image/jpeg";
-
   var reader = new FileReader();
   reader.onload = function(e) {
     var readerResult = e.target.result;
-
-    // Corrige o data URL se vier com tipo errado
     if (readerResult && readerResult.startsWith("data:image/jpg")) {
       readerResult = readerResult.replace("data:image/jpg", "data:image/jpeg");
     }
-
-    if (file.size < 800 * 1024) {
-      callback(readerResult);
-      return;
-    }
-
+    if (file.size < 800 * 1024) { callback(readerResult); return; }
     var img = new Image();
     img.onload = function() {
       try {
@@ -1488,14 +1868,9 @@ function _comprimirImagem(file, callback) {
         var ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0, w, h);
         var result = canvas.toDataURL("image/jpeg", 0.82);
-        if (!result || result.length < 1000 || result === "data:,") {
-          callback(readerResult);
-        } else {
-          callback(result);
-        }
-      } catch(err) {
-        callback(readerResult);
-      }
+        if (!result || result.length < 1000 || result === "data:,") { callback(readerResult); }
+        else { callback(result); }
+      } catch(err) { callback(readerResult); }
     };
     img.onerror = function() { callback(readerResult); };
     img.src = readerResult;
@@ -1510,7 +1885,6 @@ function onFotoConclChange(input) {
   var btn = document.getElementById("btnEnviarConclusao");
   btn.disabled = true;
   btn.textContent = "⏳ Processando foto...";
-
   _comprimirImagem(file, function(base64) {
     btn.disabled = false;
     btn.textContent = "✅ Concluir";
@@ -1531,28 +1905,21 @@ function removerFotoConcl() {
   document.getElementById("inputFotoConcl").value = "";
 }
 
-// ── CORRIGIDO: envia via POST mas trata CORS do GAS corretamente ──
-// O GAS com redirect causa falha no fetch padrão.
-// Solução: usar mode:'no-cors' + form de fallback caso falhe.
 function enviarConclusao() {
   if (!_protocoloConcluindo) return;
   var btn = document.getElementById("btnEnviarConclusao");
   btn.disabled = true;
   btn.textContent = "⏳ Enviando...";
-
   var operador    = getOperador() || "Operador";
   var protocolo   = _protocoloConcluindo;
   var fotoBase64  = _fotoConclBase64 || "";
-
-  // Tenta POST com JSON — o GAS aceita isso na doPost
   fetch(API_BASE, {
     method:   "POST",
-    headers:  { "Content-Type": "text/plain" },   // evita preflight CORS
+    headers:  { "Content-Type": "text/plain" },
     body:     JSON.stringify({ acao:"concluir", protocolo:protocolo, operador:operador, foto:fotoBase64 }),
     redirect: "follow"
   })
   .then(function(r) {
-    // GAS retorna 200 ou redireciona — tenta parsear
     return r.text().then(function(txt) {
       try { return JSON.parse(txt); } catch(e) { return { ok: true }; }
     });
@@ -1571,7 +1938,6 @@ function enviarConclusao() {
     }
   })
   .catch(function() {
-    // Fallback: tenta via no-cors (fire-and-forget) — comum em PWA offline/redirect
     try {
       fetch(API_BASE, {
         method:  "POST",
@@ -1621,7 +1987,7 @@ function renderCard(p, idx) {
     var quem = lock.usuario ? " por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>" : "";
     execInfoHtml = "<div class='exec-info'><svg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><circle cx='12' cy='12' r='10'/><polyline points='12 6 12 12 16 14'/></svg>Iniciado há "+(min<1?"menos de 1 min":min+" min")+quem+"</div>";
   } else if (minhaExecucao) {
-    execInfoHtml = "<div class='exec-info' style='background:#dcfce7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando — vá ao local e conclua aqui</div>";
+    execInfoHtml = "<div class='exec-info' style='background:var(--verde-bg);border-color:rgba(74,222,128,.3);color:var(--verde);'>✔ Você está executando — vá ao local e conclua aqui</div>";
   }
 
   var btnHtml;
@@ -1631,7 +1997,6 @@ function renderCard(p, idx) {
   } else if (outraExecucao) {
     btnHtml = "<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   } else if (minhaExecucao) {
-    // ══ CORRIGIDO: botão mobile também usa abrirConclusao (nunca <a href> para o Forms) ══
     btnHtml =
       "<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";
@@ -1657,7 +2022,7 @@ function renderCard(p, idx) {
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>" +
       "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+dist+"</div>" +
       execInfoHtml + foto +
-      "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>" +
+      "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>" +
     "</div></div>" +
     "<div class='card-footer'>"+btnHtml+"</div></div>";
 }
@@ -1695,7 +2060,7 @@ function renderCardTablet(p, idx) {
     var quem = lock.usuario ? " · "+safeText(lock.usuario) : "";
     execSub  = "<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";
   } else if (minhaExecucao) {
-    execSub = "<span style='color:#166534'>Você executando</span>";
+    execSub = "<span style='color:var(--verde)'>Você executando</span>";
   }
 
   var prazoTxt   = concluido ? "Concluído" : "<span class='prazo-live-txt'>"+t.txt+"</span>";
@@ -1733,7 +2098,7 @@ function renderCardTablet(p, idx) {
           (_modoPerto && p._distKm != null ? "<span style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>" : "") +
           (execSub?execSub:"") +
         "</div>" +
-        "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto2)'>"+prazoLabel+"</span></div>" +
+        "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span>"+prazoLabel+"</span></div>" +
         "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>" +
       "</div></div>" +
     "</div>"
@@ -1879,8 +2244,8 @@ function renderTablet(lista) {
 
   if (_protocoloSelecionado) {
     var todosParaBusca = ativos.concat(concluidosHoje);
-    var pSel = todosParaBusca.find ? todosParaBusca.find(function(p){ return p.protocolo === _protocoloSelecionado; }) : null;
-    if (!pSel) { for(var i=0;i<todosParaBusca.length;i++){ if(todosParaBusca[i].protocolo===_protocoloSelecionado){pSel=todosParaBusca[i];break;} } }
+    var pSel = null;
+    for(var i=0;i<todosParaBusca.length;i++){ if(todosParaBusca[i].protocolo===_protocoloSelecionado){pSel=todosParaBusca[i];break;} }
     if (pSel) {
       _preencherDetalhe(pSel);
     } else {
@@ -1893,12 +2258,18 @@ function renderTablet(lista) {
 }
 
 // ══════════════════════════════════════════════
-//  RENDER MOBILE (LAYOUT)
+//  RENDER MOBILE
 // ══════════════════════════════════════════════
 var _prevStats={}, _prevHashes={};
 function hashProtocolo(p){ return JSON.stringify({protocolo:p.protocolo,status:p.status,lock:p.lock?p.lock.sessionId:null,lockUser:p.lock?p.lock.usuario:null,lockTs:p.lock?p.lock.timestamp:null,obs:p.obs,fotoId:p.fotoId}); }
 
-function render(lista) { _ultimaLista=lista; renderFiltrado(lista); renderTablet(lista); }
+function render(lista) {
+  _ultimaLista = lista;
+  // Detecção de novos protocolos para notificações
+  detectarNovosProtocolos(lista);
+  renderFiltrado(lista);
+  renderTablet(lista);
+}
 
 function renderFiltrado(lista) {
   var pen=0,exec=0,urg=0,ok=0,ativos=[],concluidosHoje=[];
