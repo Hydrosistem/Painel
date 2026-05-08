@@ -1161,16 +1161,28 @@ function detectarNovosProtocolos(lista) {
         var icone = tipoAtual === "atrasado" ? "🔴" : tipoAtual === "urgente" ? "⚠️" : "📋";
         var end = (p.endereco || p.protocolo || "").split(",")[0];
         novosMsgs.push(icone + " " + end);
+        novosConhecidos[prot].tipo = tipoAtual;
       }
     } else {
-      // Verificar se virou atrasado
+      // Verificar mudança de tipo relevante
       var anterior = _protocolosConhecidos[prot];
-      if (anterior.tipo !== "atrasado" && tipoAtual === "atrasado" && !isConcluido(p)) {
-        var end2 = (p.endereco || p.protocolo || "").split(",")[0];
-        novosMsgs.push("🚨 Prazo vencido: " + end2);
+      if (!isConcluido(p)) {
+        var mudouParaAtrasado = anterior.tipo !== "atrasado" && tipoAtual === "atrasado";
+        var mudouParaUrgente  = anterior.tipo === "pendente"  && tipoAtual === "urgente";
+        if (mudouParaAtrasado) {
+          var end2 = (p.endereco || p.protocolo || "").split(",")[0];
+          novosMsgs.push("🚨 Prazo vencido: " + end2);
+          novosConhecidos[prot].tipo = "atrasado";
+        } else if (mudouParaUrgente) {
+          var end3 = (p.endereco || p.protocolo || "").split(",")[0];
+          novosMsgs.push("⚠️ Urgente: " + end3);
+          novosConhecidos[prot].tipo = "urgente";
+        }
       }
     }
-  });
+  });  
+
+  _protocolosConhecidos = novosConhecidos;
 
   _protocolosConhecidos = novosConhecidos;
 
@@ -1490,6 +1502,13 @@ function pararHeartbeat(protocolo) { if (meusLocks[protocolo]){ clearInterval(me
 // ══════════════════════════════════════════════
 //  MODAL INICIAR
 // ══════════════════════════════════════════════
+
+function abrirModalBtn(btn) {
+  var protocolo = btn.getAttribute("data-prot");
+  var endereco  = btn.getAttribute("data-end");
+  abrirModal(protocolo, endereco);
+}
+
 function abrirModal(protocolo, endereco) {
   protocoloPendente = protocolo;
   enderecoPendente  = endereco;
@@ -1657,7 +1676,7 @@ function _preencherDetalhe(p) {
       "<button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";
   } else {
     footer.innerHTML =
-      "<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";
+      "<button class='btn-detail-iniciar t-"+tipoCard+"' data-prot='"+esc(p.protocolo)+"' data-end='"+esc(p.endereco)+"' onclick='abrirModalBtn(this)'>▶ Iniciar execução</button>";
   }
 }
 
@@ -1849,7 +1868,7 @@ function renderCard(p, idx) {
       "<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button>" +
       "<button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";
   } else {
-    btnHtml = "<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";
+    btnHtml = "<button class='btn-iniciar' data-prot='"+protEsc+"' data-end='"+endEsc+"' onclick='abrirModalBtn(this)'>▶ Iniciar execução</button>";
   }
 
   var isoAttr = !concluido && p.dataHora ? "data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'" : "data-concluido='1'";
