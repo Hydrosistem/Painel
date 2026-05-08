@@ -53,10 +53,6 @@
   --shadow-md:   0 4px 20px rgba(0,0,0,.12);
   --sidebar-w:   260px;
   --detail-w:    320px;
-  /* notificações */
-  --notif-bg:    #FFFFFF;
-  --notif-borda: #E2E8F0;
-  --notif-shadow: 0 8px 32px rgba(0,0,0,.18);
 }
 
 /* ══ DARK MODE ══ */
@@ -89,9 +85,6 @@ body.dark {
   --header-shadow: 0 2px 20px rgba(0,0,0,.5);
   --shadow:      0 2px 8px rgba(0,0,0,.3);
   --shadow-md:   0 4px 20px rgba(0,0,0,.5);
-  --notif-bg:    #242938;
-  --notif-borda: #2A3040;
-  --notif-shadow: 0 8px 32px rgba(0,0,0,.5);
 }
 
 /* Transição global suave ao trocar tema */
@@ -102,7 +95,6 @@ body, body * {
     color .18s ease,
     box-shadow .22s ease;
 }
-/* Exceções — não transicionar dimensões/transform/opacity */
 body *, body *::before, body *::after {
   transition-property: background-color, border-color, color, box-shadow;
 }
@@ -336,116 +328,61 @@ body.dark .btn-dark-mobile {
 .card-animar { animation: cardEntrada .32s cubic-bezier(.22,1,.36,1) both; }
 .card-animar { animation-delay: var(--delay, 0ms); }
 
-/* ══ NOTIFICAÇÕES IN-APP ══ */
-#notif-container {
+/* ══════════════════════════════════════════════
+   BALÃO FLUTUANTE DE NOTIFICAÇÃO
+   Mobile: aparece na faixa da search bar (top fixo)
+   Desktop/Tablet: canto superior direito
+══════════════════════════════════════════════ */
+#notifBubble {
   position: fixed;
-  top: 74px;
-  right: 12px;
-  z-index: 900;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  pointer-events: none;
-  max-width: 320px;
-  width: calc(100vw - 24px);
-}
-@media (min-width: 480px) {
-  #notif-container { width: 320px; }
-}
-
-.notif-card {
-  background: var(--notif-bg);
-  border: 1px solid var(--notif-borda);
-  border-radius: 14px;
-  padding: 12px 14px;
-  box-shadow: var(--notif-shadow);
-  pointer-events: all;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  position: relative;
-  overflow: hidden;
-  cursor: pointer;
-  animation: notifEntra .38s cubic-bezier(.22,1,.36,1) both;
-}
-.notif-card::before {
-  content: "";
-  position: absolute;
-  left: 0; top: 0; bottom: 0;
-  width: 4px;
-  background: var(--notif-accent, var(--azul));
-  border-radius: 14px 0 0 14px;
-}
-.notif-card.saindo {
-  animation: notifSai .28s ease forwards;
-}
-
-@keyframes notifEntra {
-  from { opacity: 0; transform: translateX(110%); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-@keyframes notifSai {
-  from { opacity: 1; transform: translateX(0); max-height: 120px; margin-bottom: 0; }
-  to   { opacity: 0; transform: translateX(110%); max-height: 0; margin-bottom: -8px; padding-top: 0; padding-bottom: 0; }
-}
-
-.notif-icon-wrap {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 18px; flex-shrink: 0;
-  background: var(--notif-icon-bg, var(--azul-bg));
-}
-.notif-body { flex: 1; min-width: 0; }
-.notif-titulo { font-size: 12px; font-weight: 700; color: var(--texto); line-height: 1.3; }
-.notif-desc { font-size: 11px; color: var(--texto2); margin-top: 2px; line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.notif-hora { font-size: 10px; color: var(--texto2); margin-top: 3px; font-family: "DM Mono", monospace; }
-.notif-close {
-  position: absolute; top: 8px; right: 8px;
-  background: none; border: none; cursor: pointer;
-  color: var(--texto2); font-size: 14px; line-height: 1;
-  padding: 2px 4px; border-radius: 4px;
-  opacity: .7;
-}
-.notif-close:hover { opacity: 1; background: var(--borda); }
-.notif-progress {
-  position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
-  background: var(--borda);
-}
-.notif-progress-fill {
-  height: 100%;
-  background: var(--notif-accent, var(--azul));
-  width: 100%;
-  animation: notifProg var(--notif-dur, 7000ms) linear forwards;
-  border-radius: 2px;
-}
-@keyframes notifProg {
-  from { width: 100%; }
-  to   { width: 0%; }
-}
-
-/* Badge de notificações no header */
-.notif-badge {
-  position: absolute;
-  top: -4px; right: -4px;
-  width: 16px; height: 16px;
-  background: var(--vermelho);
-  border-radius: 50%;
-  font-size: 9px; font-weight: 800;
-  color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  border: 2px solid transparent;
-  animation: badgePop .3s cubic-bezier(.34,1.56,.64,1);
-  font-family: "DM Mono", monospace;
-}
-@keyframes badgePop {
-  from { transform: scale(0); }
-  to   { transform: scale(1); }
-}
-.notif-bell-wrap {
-  position: relative;
+  z-index: 200;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  background: #1F2937;
+  color: #fff;
+  font-family: "DM Sans", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0,0,0,.32);
+  white-space: nowrap;
+  pointer-events: none;
+  /* Mobile: aparece centralizado na faixa da search bar */
+  left: 50%;
+  transform: translateX(-50%) translateY(-70px);
+  top: 72px; /* logo abaixo do header+progressbar */
+  transition: transform .38s cubic-bezier(.34,1.56,.64,1), opacity .3s;
+  opacity: 0;
+  max-width: calc(100vw - 32px);
+}
+body.dark #notifBubble {
+  background: #374151;
+}
+#notifBubble.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+#notifBubble .nb-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4ade80; flex-shrink: 0;
+  animation: nbPulse 1.4s ease-in-out infinite;
+}
+@keyframes nbPulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+
+/* Tablet/Desktop: canto superior direito */
+@media (min-width: 768px) {
+  #notifBubble {
+    left: auto;
+    right: 16px;
+    top: 74px;
+    transform: translateY(-70px);
+    border-radius: 10px;
+  }
+  #notifBubble.show {
+    transform: translateY(0);
+  }
 }
 
 /* ══ TABLET/DESKTOP ══ */
@@ -881,7 +818,8 @@ body.dark .modal-overlay { background: rgba(0,0,0,.75); }
   .btn-dark-header { display: none; }
   #refreshBar { top: 56px; }
   .search-wrap { top: 59px; }
-  #notif-container { top: 66px; }
+  /* Balão no mobile: logo abaixo da search bar */
+  #notifBubble { top: 118px; }
 }
 /* Esconde dark btn mobile no desktop */
 @media (min-width: 768px) {
@@ -915,13 +853,6 @@ body.dark .modal-overlay { background: rgba(0,0,0,.75); }
   </div>
   <div class="header-btns">
     <button class="btn-header hidden" id="btnOperador" title="Trocar operador"></button>
-    <!-- Sino de notificações com badge -->
-    <div class="notif-bell-wrap" id="notifBellWrap" style="display:none">
-      <button class="btn-header visible" id="btnNotifBell" title="Notificações" onclick="toggleNotifHistorico()" style="padding:0 12px;">
-        🔔
-      </button>
-      <span class="notif-badge" id="notifBadge" style="display:none">0</span>
-    </div>
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">🔄 Atualizar</button>
     <!-- Botão dark mode desktop (no header) -->
@@ -934,8 +865,11 @@ body.dark .modal-overlay { background: rgba(0,0,0,.75); }
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
-<!-- ══ CONTAINER DE NOTIFICAÇÕES IN-APP ══ -->
-<div id="notif-container"></div>
+<!-- ══ BALÃO FLUTUANTE DE NOTIFICAÇÃO ══ -->
+<div id="notifBubble">
+  <span class="nb-dot"></span>
+  <span id="notifBubbleTxt">Novo protocolo adicionado</span>
+</div>
 
 <div class="layout-root">
 
@@ -1120,7 +1054,6 @@ function initDark() {
     if (saved === "1") {
       _isDark = true;
     } else if (saved === null) {
-      // Detecta preferência do sistema na primeira vez
       _isDark = window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
     }
   } catch(e) {}
@@ -1130,18 +1063,15 @@ function initDark() {
 function applyDark(animate) {
   if (!animate) {
     document.body.style.transition = "none";
-    // force reflow
     void document.body.offsetWidth;
     document.body.style.transition = "";
   }
   document.body.classList.toggle("dark", _isDark);
-  // Atualiza ícones dos botões
   var icon = _isDark ? "☀️" : "🌙";
   var bh = document.getElementById("btnDarkHeader");
   var bm = document.getElementById("btnDarkMobile");
   if (bh) bh.textContent = icon;
   if (bm) bm.textContent = icon;
-  // Atualiza theme-color
   var tc = document.querySelector('meta[name="theme-color"]');
   if (tc) tc.setAttribute("content", _isDark ? "#0D1520" : "#003D7A");
 }
@@ -1153,129 +1083,35 @@ function toggleDark() {
   toast(_isDark ? "🌙 Modo escuro ativado" : "☀️ Modo claro ativado", "");
 }
 
-// Inicializa dark mode antes do DOMContentLoaded para evitar flash
 initDark();
 
 // ══════════════════════════════════════════════
-//  NOTIFICAÇÕES IN-APP
+//  BALÃO FLUTUANTE DE NOTIFICAÇÃO
 // ══════════════════════════════════════════════
-var _protocolosConhecidos = null; // null = primeira carga, Set após
-var _notifCount = 0;
-var _notifFila = [];
-var MAX_NOTIF_VISIVEIS = 3;
-var NOTIF_DURACAO = 7000;
+var _protocolosConhecidos = null;
+var _notifBubbleTimer = null;
 
-var NOTIF_CONFIGS = {
-  novo_atrasado: {
-    icon: "🔴", iconBg: "var(--atrasado-bg)", accent: "var(--atrasado)",
-    titulo: "Protocolo atrasado",
-    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
-  },
-  novo_urgente: {
-    icon: "⚠️", iconBg: "var(--amarelo-bg)", accent: "var(--vermelho)",
-    titulo: "Urgente adicionado",
-    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
-  },
-  novo_pendente: {
-    icon: "📋", iconBg: "var(--azul-bg)", accent: "var(--azul)",
-    titulo: "Novo protocolo",
-    desc: function(p){ return "📍 " + (p.endereco || p.protocolo); }
-  },
-  virou_atrasado: {
-    icon: "🚨", iconBg: "var(--atrasado-bg)", accent: "var(--atrasado)",
-    titulo: "Prazo vencido!",
-    desc: function(p){ return "Protocolo " + p.protocolo + " passou do prazo." }
-  }
-};
+function exibirBalaoBubble(texto) {
+  var el  = document.getElementById("notifBubble");
+  var txt = document.getElementById("notifBubbleTxt");
+  if (!el) return;
+  if (txt) txt.textContent = texto;
 
-function _criarNotifCard(cfg, protocolo) {
-  var dur = NOTIF_DURACAO;
-  var hora = new Date().toLocaleTimeString("pt-BR", {hour:"2-digit", minute:"2-digit"});
+  // Cancela o timer anterior se houver
+  clearTimeout(_notifBubbleTimer);
 
-  var el = document.createElement("div");
-  el.className = "notif-card";
-  el.style.setProperty("--notif-accent", cfg.accent);
-  el.style.setProperty("--notif-dur", dur + "ms");
-  el.innerHTML =
-    "<div class='notif-icon-wrap' style='background:" + cfg.iconBg + "'>" + cfg.icon + "</div>" +
-    "<div class='notif-body'>" +
-      "<div class='notif-titulo'>" + safeText(cfg.titulo) + "</div>" +
-      "<div class='notif-desc'>" + safeText(cfg.desc(protocolo)) + "</div>" +
-      "<div class='notif-hora'>" + hora + "</div>" +
-    "</div>" +
-    "<button class='notif-close' onclick='_fecharNotif(this.closest(\".notif-card\"))'>✕</button>" +
-    "<div class='notif-progress'><div class='notif-progress-fill'></div></div>";
+  // Reseta animação
+  el.classList.remove("show");
+  void el.offsetWidth;
+  el.classList.add("show");
 
-  // Click na notificação vai para o protocolo
-  el.addEventListener("click", function(e) {
-    if (e.target.classList.contains("notif-close")) return;
-    // Tenta selecionar protocolo se tablet
-    if (_ultimaLista) {
-      var p = _ultimaLista.find ? _ultimaLista.find(function(x){ return x.protocolo === protocolo.protocolo; }) : null;
-      if (p) selecionarProtocolo(p);
-    }
-    _fecharNotif(el);
-  });
-
-  return el;
-}
-
-function _fecharNotif(el) {
-  if (!el || el.classList.contains("saindo")) return;
-  el.classList.add("saindo");
-  setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
-}
-
-function exibirNotif(cfg, protocolo) {
-  var container = document.getElementById("notif-container");
-  if (!container) return;
-
-  // Limita visíveis
-  var atuais = container.querySelectorAll(".notif-card:not(.saindo)");
-  if (atuais.length >= MAX_NOTIF_VISIVEIS) {
-    _fecharNotif(atuais[0]);
-  }
-
-  var el = _criarNotifCard(cfg, protocolo);
-  container.appendChild(el);
-
-  // Auto-dismiss
-  var timer = setTimeout(function() { _fecharNotif(el); }, NOTIF_DURACAO);
-  el.addEventListener("mouseenter", function() { clearTimeout(timer); });
-  el.addEventListener("mouseleave", function() { timer = setTimeout(function(){ _fecharNotif(el); }, 2000); });
-
-  // Atualiza badge
-  _notifCount++;
-  _atualizarBadge();
-
-  // Som suave (optional, Web Audio)
+  // Som suave
   _tocarSomNotif();
-}
 
-function _atualizarBadge() {
-  var badge = document.getElementById("notifBadge");
-  var wrap  = document.getElementById("notifBellWrap");
-  if (!badge || !wrap) return;
-  if (_notifCount > 0) {
-    badge.textContent = _notifCount > 9 ? "9+" : _notifCount;
-    badge.style.display = "flex";
-    wrap.style.display  = "flex";
-    badge.style.animation = "none";
-    void badge.offsetWidth;
-    badge.style.animation = "";
-  } else {
-    badge.style.display = "none";
-    // Oculta sino se nunca houve notificação
-  }
-}
-
-function toggleNotifHistorico() {
-  // Zera badge ao clicar
-  _notifCount = 0;
-  _atualizarBadge();
-  // Fecha todas visíveis
-  document.querySelectorAll(".notif-card").forEach(function(el){ _fecharNotif(el); });
-  toast("✓ Notificações lidas", "ok");
+  // Auto-dismiss após 3.5s
+  _notifBubbleTimer = setTimeout(function() {
+    el.classList.remove("show");
+  }, 3500);
 }
 
 function _tocarSomNotif() {
@@ -1294,9 +1130,16 @@ function _tocarSomNotif() {
   } catch(e) {}
 }
 
+function _tipoProtocolo(p) {
+  if (isConcluido(p)) return "concluido";
+  if (p.lock) return "execucao";
+  var t = tempo(p.dataHora);
+  return t.tipo;
+}
+
 function detectarNovosProtocolos(lista) {
   if (_protocolosConhecidos === null) {
-    // Primeira carga — apenas registra, não notifica
+    // Primeira carga — apenas registra, sem notificar
     _protocolosConhecidos = {};
     lista.forEach(function(p) {
       _protocolosConhecidos[p.protocolo] = { status: p.status || "", tipo: _tipoProtocolo(p) };
@@ -1305,6 +1148,8 @@ function detectarNovosProtocolos(lista) {
   }
 
   var novosConhecidos = {};
+  var novosMsgs = [];
+
   lista.forEach(function(p) {
     var prot = p.protocolo;
     var tipoAtual = _tipoProtocolo(p);
@@ -1313,25 +1158,28 @@ function detectarNovosProtocolos(lista) {
     if (!_protocolosConhecidos[prot]) {
       // Novo protocolo detectado
       if (!isConcluido(p)) {
-        var cfg = NOTIF_CONFIGS["novo_" + tipoAtual] || NOTIF_CONFIGS.novo_pendente;
-        exibirNotif(cfg, p);
+        var icone = tipoAtual === "atrasado" ? "🔴" : tipoAtual === "urgente" ? "⚠️" : "📋";
+        var end = (p.endereco || p.protocolo || "").split(",")[0];
+        novosMsgs.push(icone + " " + end);
       }
     } else {
       // Verificar se virou atrasado
       var anterior = _protocolosConhecidos[prot];
       if (anterior.tipo !== "atrasado" && tipoAtual === "atrasado" && !isConcluido(p)) {
-        exibirNotif(NOTIF_CONFIGS.virou_atrasado, p);
+        var end2 = (p.endereco || p.protocolo || "").split(",")[0];
+        novosMsgs.push("🚨 Prazo vencido: " + end2);
       }
     }
   });
-  _protocolosConhecidos = novosConhecidos;
-}
 
-function _tipoProtocolo(p) {
-  if (isConcluido(p)) return "concluido";
-  if (p.lock) return "execucao";
-  var t = tempo(p.dataHora);
-  return t.tipo;
+  _protocolosConhecidos = novosConhecidos;
+
+  // Exibe apenas o primeiro (ou resume se múltiplos)
+  if (novosMsgs.length === 1) {
+    exibirBalaoBubble(novosMsgs[0]);
+  } else if (novosMsgs.length > 1) {
+    exibirBalaoBubble("📋 " + novosMsgs.length + " novos protocolos");
+  }
 }
 
 // ══════════════════════════════════════════════
@@ -2265,7 +2113,6 @@ function hashProtocolo(p){ return JSON.stringify({protocolo:p.protocolo,status:p
 
 function render(lista) {
   _ultimaLista = lista;
-  // Detecção de novos protocolos para notificações
   detectarNovosProtocolos(lista);
   renderFiltrado(lista);
   renderTablet(lista);
