@@ -1846,17 +1846,26 @@ function renderFiltrado(lista) {
 
   var gridList = termoBusca ? filtrados : ativos;
 
-  gridList.sort(function(a,b){
-    var rank=function(p){
-      if(isConcluido(p)) return 5;
-      if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
-      if(p.lock) return 1;
-      if(p._t.r<=0||p._t.tipo==="atrasado") return 2;
-      if(p._t.r<=4) return 3;
-      return 4;
-    };
-    var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
-  });
+  if (_modoPerto && _posAtual) {
+    gridList.sort(function(a,b){
+      if (a._distKm == null && b._distKm == null) return 0;
+      if (a._distKm == null) return 1;
+      if (b._distKm == null) return -1;
+      return a._distKm - b._distKm;
+    });
+  } else {
+    gridList.sort(function(a,b){
+      var rank=function(p){
+        if(isConcluido(p)) return 5;
+        if(p.lock&&p.lock.sessionId===SESSION_ID) return 0;
+        if(p.lock) return 1;
+        if(p._t.r<=0||p._t.tipo==="atrasado") return 2;
+        if(p._t.r<=4) return 3;
+        return 4;
+      };
+      var d=rank(a)-rank(b); return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);
+    });
+  }
 
   var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;});
   var urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);});
