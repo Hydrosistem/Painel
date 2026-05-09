@@ -735,6 +735,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none">📊 Relatório</a>
+    <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none">👷 Equipe</a>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
@@ -1014,6 +1015,8 @@ function atualizarBotaoRelatorio() {
   var btn = document.getElementById("btnRelatorio");
   if (!btn) return;
   btn.style.display = isSupervisor() ? "" : "none";
+  var btnE = document.getElementById("btnEquipe");
+  if (btnE) btnE.style.display = isSupervisor() ? "" : "none";
 }
 
 function atualizarChipOperador() {
@@ -1770,8 +1773,22 @@ function formatarTempoOp(iso) {
 function enviarPingPresenca() {
   var operador = getOperador();
   if (!operador) return;
-  fetch(API_BASE + "?acao=ping&operador=" + encodeURIComponent(operador) + "&sessionId=" + encodeURIComponent(SESSION_ID) + "&t=" + Date.now(), { redirect: "follow" })
-    .catch(function(){});
+  /* Tenta obter GPS — sem bloquear */
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      _enviarPingComGps(operador, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
+    }, function() {
+      _enviarPingComGps(operador, null, null, null);
+    }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
+  } else {
+    _enviarPingComGps(operador, null, null, null);
+  }
+}
+
+function _enviarPingComGps(operador, lat, lng, accuracy) {
+  var params = "acao=ping&operador=" + encodeURIComponent(operador) + "&sessionId=" + encodeURIComponent(SESSION_ID) + "&t=" + Date.now();
+  if (lat != null) params += "&lat=" + lat + "&lng=" + lng + "&accuracy=" + (accuracy || 0);
+  fetch(API_BASE + "?" + params, { redirect: "follow" }).catch(function(){});
 }
 
 function carregarOperadoresOnline() {
@@ -1844,6 +1861,10 @@ confirmarOperador = function() {
 /* Inicia presença se já estava logado */
 window.addEventListener("DOMContentLoaded", function() {
   if (getOperador()) setTimeout(iniciarPresenca, 500);
+  /* Pede permissão de GPS logo ao abrir para já ter localização no primeiro ping */
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(){}, function(){}, {enableHighAccuracy:true,timeout:10000,maximumAge:0});
+  }
 });
 
 var _mapaObj = null, _mapaIniciado = false, _mapaMarcadores = [], _mapaFiltro = "todos", _mapaInfoAberta = null;
