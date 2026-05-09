@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hydrosistem — Relatório Diário</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul:       #1469C7;
+  --azul-esc:   #0A3F7F;
+  --azul-bg:    #EBF3FD;
+  --verde:      #15803D;
+  --verde-bg:   #DCFCE7;
+  --verde-b:    #86EFAC;
+  --amarelo:    #A16207;
+  --amarelo-bg: #FEF9C3;
+  --vermelho:   #B91C1C;
+  --vermelho-bg:#FEE2E2;
+  --vermelho-b: #FCA5A5;
+  --exec:       #7C3AED;
+  --exec-bg:    #EDE9FE;
+  --cinza-bg:   #F8FAFC;
+  --cinza-md:   #F1F5F9;
+  --texto:      #0F172A;
+  --texto2:     #64748B;
+  --texto3:     #94A3B8;
+  --borda:      #E2E8F0;
+  --branco:     #FFFFFF;
+  --radius:     12px;
+  --radius-sm:  8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body { font-family: "DM Sans", sans-serif; background: var(--cinza-bg); color: var(--texto); min-height: 100vh; }
+
+/* ══ HEADER ══ */
+header {
+  background: var(--azul-esc);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.h-brand { display: flex; align-items: center; gap: 12px; }
+.h-logo { width: 36px; height: 36px; border-radius: 10px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.h-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.h-nome { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .6px; }
+.h-sub  { font-size: 10px; color: rgba(255,255,255,.5); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
+.h-badge { font-size: 11px; font-weight: 700; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.8); padding: 4px 12px; border-radius: 20px; letter-spacing: .4px; }
+.btn-sair { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.75); border-radius: var(--radius-sm); padding: 0 14px; height: 34px; font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+.btn-sair:hover { background: rgba(255,255,255,.15); }
+
+/* ══ LOGIN ══ */
+#telaLogin { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
+.login-card { background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda); padding: 36px 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
+.login-icon { font-size: 40px; margin-bottom: 16px; line-height: 1; }
+.login-title { font-size: 18px; font-weight: 700; color: var(--texto); margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: var(--texto2); margin-bottom: 28px; line-height: 1.6; }
+.login-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 16px; outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; margin-bottom: 12px; text-align: center; letter-spacing: 6px; font-weight: 700; }
+.login-input:focus { border-color: var(--azul); box-shadow: 0 0 0 3px rgba(20,105,199,.12); }
+.login-input.erro { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(185,28,28,.1); animation: shake .3s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+.btn-entrar { width: 100%; min-height: 48px; border-radius: var(--radius-sm); background: var(--azul); color: #fff; font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: background .15s; }
+.btn-entrar:hover { background: #1058a8; }
+.login-erro { font-size: 12px; color: var(--vermelho); margin-top: 10px; min-height: 18px; }
+
+/* ══ PAINEL RELATÓRIO ══ */
+#painelRelatorio { display: none; }
+.relatorio-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 48px; }
+
+/* ══ TOOLBAR ══ */
+.toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.toolbar-left { display: flex; flex-direction: column; gap: 3px; }
+.toolbar-data { font-size: 20px; font-weight: 700; color: var(--texto); }
+.toolbar-sub { font-size: 13px; color: var(--texto2); }
+.toolbar-right { display: flex; gap: 8px; align-items: center; }
+.btn-nav { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius-sm); padding: 0 14px; height: 36px; font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; color: var(--texto2); display: flex; align-items: center; gap: 5px; transition: background .15s, border-color .15s; }
+.btn-nav:hover { background: var(--cinza-md); border-color: #CBD5E1; }
+.btn-exportar { background: var(--azul); color: #fff; border: none; border-radius: var(--radius-sm); padding: 0 16px; height: 36px; font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+.btn-exportar:hover { background: #1058a8; }
+
+/* ══ STATS ══ */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); padding: 18px 16px; }
+.stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto3); margin-bottom: 8px; }
+.stat-valor { font-size: 32px; font-weight: 700; line-height: 1; font-family: "DM Mono", monospace; }
+.stat-sub { font-size: 11px; color: var(--texto2); margin-top: 4px; }
+.stat-card.s-azul .stat-valor { color: var(--azul); }
+.stat-card.s-verde .stat-valor { color: var(--verde); }
+.stat-card.s-vermelho .stat-valor { color: var(--vermelho); }
+.stat-card.s-amarelo .stat-valor { color: var(--amarelo); }
+
+/* ══ SEÇÕES ══ */
+.sec-titulo { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--texto3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.sec-titulo::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+
+/* ══ GRÁFICO BARRAS ══ */
+.chart-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.chart-title { font-size: 13px; font-weight: 600; color: var(--texto2); margin-bottom: 16px; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-hora { font-size: 11px; color: var(--texto3); width: 36px; text-align: right; flex-shrink: 0; font-family: "DM Mono", monospace; }
+.bar-track { flex: 1; height: 24px; background: var(--cinza-md); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--azul); border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; transition: width .6s cubic-bezier(.22,1,.36,1); }
+.bar-fill-val { font-size: 11px; font-weight: 700; color: #fff; }
+.bar-zero { height: 100%; background: transparent; }
+
+/* ══ DUAS COLUNAS ══ */
+.dois-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+/* ══ OPERADORES ══ */
+.op-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); overflow: hidden; }
+.op-header { padding: 16px 18px 10px; font-size: 13px; font-weight: 600; color: var(--texto2); border-bottom: 1px solid var(--borda); }
+.op-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--borda); }
+.op-row:last-child { border-bottom: none; }
+.op-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; color: #fff; flex-shrink: 0; }
+.op-info { flex: 1; min-width: 0; }
+.op-nome { font-size: 13px; font-weight: 600; color: var(--texto); }
+.op-detalhe { font-size: 11px; color: var(--texto2); margin-top: 1px; }
+.op-pct { font-size: 13px; font-weight: 700; font-family: "DM Mono", monospace; }
+.op-bar-wrap { width: 60px; height: 4px; background: var(--cinza-md); border-radius: 10px; overflow: hidden; margin-top: 4px; }
+.op-bar-fill { height: 100%; border-radius: 10px; }
+
+/* ══ TEMPOS ══ */
+.tempo-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); overflow: hidden; }
+.tempo-header { padding: 16px 18px 10px; font-size: 13px; font-weight: 600; color: var(--texto2); border-bottom: 1px solid var(--borda); }
+.tempo-grid { display: grid; grid-template-columns: repeat(3,1fr); }
+.tempo-item { padding: 16px; text-align: center; border-right: 1px solid var(--borda); }
+.tempo-item:last-child { border-right: none; }
+.tempo-val { font-size: 22px; font-weight: 700; font-family: "DM Mono", monospace; line-height: 1; margin-bottom: 4px; }
+.tempo-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--texto3); }
+
+/* ══ LISTA PROTOCOLOS ══ */
+.proto-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
+.proto-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--borda); }
+.proto-header-title { font-size: 13px; font-weight: 600; color: var(--texto2); }
+.proto-filtros { display: flex; gap: 5px; }
+.proto-filtro { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid var(--borda); background: none; cursor: pointer; color: var(--texto2); transition: all .15s; font-family: "DM Sans", sans-serif; }
+.proto-filtro.active { background: var(--azul); border-color: var(--azul); color: #fff; }
+.proto-item { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--borda); }
+.proto-item:last-child { border-bottom: none; }
+.proto-stripe { width: 4px; border-radius: 2px; align-self: stretch; min-height: 36px; flex-shrink: 0; }
+.proto-end { font-size: 13px; font-weight: 600; color: var(--texto); line-height: 1.35; }
+.proto-meta { font-size: 11px; color: var(--texto2); margin-top: 2px; }
+.proto-badge { font-size: 10px; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid transparent; margin-left: auto; flex-shrink: 0; white-space: nowrap; }
+.proto-badge.t-concluido { background: var(--verde-bg); color: var(--verde); border-color: var(--verde-b); }
+.proto-badge.t-atrasado  { background: var(--vermelho-bg); color: var(--vermelho); border-color: var(--vermelho-b); }
+.proto-badge.t-pendente  { background: var(--amarelo-bg); color: var(--amarelo); }
+.proto-badge.t-execucao  { background: var(--exec-bg); color: var(--exec); }
+.proto-tempo { font-size: 11px; font-family: "DM Mono", monospace; color: var(--texto3); margin-left: 8px; flex-shrink: 0; }
+
+/* ══ VAZIO ══ */
+.vazio { text-align: center; padding: 40px 20px; color: var(--texto2); }
+.vazio-icon { font-size: 36px; margin-bottom: 10px; }
+.vazio-txt { font-size: 14px; font-weight: 600; }
+
+/* ══ FOOTER ══ */
+.relatorio-footer { text-align: center; font-size: 12px; color: var(--texto3); margin-top: 32px; }
+
+@media (max-width: 640px) {
+  .stat-grid { grid-template-columns: repeat(2,1fr); }
+  .dois-col { grid-template-columns: 1fr; }
+  .tempo-grid { grid-template-columns: 1fr; }
+  .tempo-item { border-right: none; border-bottom: 1px solid var(--borda); }
+  .tempo-item:last-child { border-bottom: none; }
+  .toolbar { flex-direction: column; align-items: flex-start; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="h-brand">
+    <div class="h-logo">
+      <img src="./icons/icon-192.png" alt="Hydrosistem" onerror="this.style.display='none'">
+    </div>
+    <div>
+      <div class="h-nome">HYDROSISTEM</div>
+      <div class="h-sub">Relatório Diário</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span class="h-badge" id="badgeSupervisor" style="display:none">🔐 Supervisor</span>
+    <button class="btn-sair" id="btnSair" style="display:none" onclick="sair()">✕ Sair</button>
+  </div>
+</header>
+
+<!-- ══ TELA LOGIN ══ -->
+<div id="telaLogin">
+  <div class="login-card">
+    <div class="login-icon">🔐</div>
+    <div class="login-title">Acesso restrito</div>
+    <div class="login-sub">Este relatório é exclusivo para o supervisor. Digite a senha para continuar.</div>
+    <input class="login-input" id="inputSenha" type="password" placeholder="••••" maxlength="8" autocomplete="off" inputmode="numeric">
+    <button class="btn-entrar" onclick="verificarSenha()">Entrar</button>
+    <div class="login-erro" id="loginErro"></div>
+  </div>
+</div>
+
+<!-- ══ PAINEL RELATÓRIO ══ -->
+<div id="painelRelatorio">
+  <div class="relatorio-wrap">
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <div class="toolbar-data" id="toolbarData">—</div>
+        <div class="toolbar-sub" id="toolbarSub">Carregando dados…</div>
+      </div>
+      <div class="toolbar-right">
+        <button class="btn-nav" onclick="mudarDia(-1)">← Dia anterior</button>
+        <button class="btn-nav" id="btnHoje" onclick="mudarDia(0)" style="display:none">Hoje</button>
+        <button class="btn-nav" onclick="mudarDia(1)" id="btnProximo">Próximo →</button>
+        <button class="btn-exportar" onclick="exportarPDF()">⬇ Exportar PDF</button>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stat-grid">
+      <div class="stat-card s-azul">
+        <div class="stat-label">Total abertos</div>
+        <div class="stat-valor" id="sTotal">—</div>
+        <div class="stat-sub" id="sSubTotal">protocolos no dia</div>
+      </div>
+      <div class="stat-card s-verde">
+        <div class="stat-label">Concluídos</div>
+        <div class="stat-valor" id="sConcluidos">—</div>
+        <div class="stat-sub" id="sSubConc">no prazo</div>
+      </div>
+      <div class="stat-card s-vermelho">
+        <div class="stat-label">Atrasados</div>
+        <div class="stat-valor" id="sAtrasados">—</div>
+        <div class="stat-sub" id="sSubAtr">vencidos sem conclusão</div>
+      </div>
+      <div class="stat-card s-amarelo">
+        <div class="stat-label">Taxa conclusão</div>
+        <div class="stat-valor" id="sTaxa">—</div>
+        <div class="stat-sub" id="sSubTaxa">meta: 85%</div>
+      </div>
+    </div>
+
+    <!-- GRÁFICO HORAS -->
+    <div class="sec-titulo">Conclusões por hora</div>
+    <div class="chart-card">
+      <div id="barrasHora"></div>
+    </div>
+
+    <!-- OPERADORES + TEMPOS -->
+    <div class="sec-titulo">Desempenho</div>
+    <div class="dois-col">
+      <div class="op-card">
+        <div class="op-header">Por operador</div>
+        <div id="listaOperadores"></div>
+      </div>
+      <div class="tempo-card">
+        <div class="tempo-header">Tempo médio de execução</div>
+        <div class="tempo-grid">
+          <div class="tempo-item">
+            <div class="tempo-val" id="tMedia" style="color:var(--azul)">—</div>
+            <div class="tempo-lbl">Média geral</div>
+          </div>
+          <div class="tempo-item">
+            <div class="tempo-val" id="tRapido" style="color:var(--verde)">—</div>
+            <div class="tempo-lbl">Mais rápido</div>
+          </div>
+          <div class="tempo-item">
+            <div class="tempo-val" id="tLento" style="color:var(--vermelho)">—</div>
+            <div class="tempo-lbl">Mais lento</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LISTA PROTOCOLOS -->
+    <div class="sec-titulo">Protocolos do dia</div>
+    <div class="proto-card">
+      <div class="proto-header">
+        <div class="proto-header-title" id="protoCount">—</div>
+        <div class="proto-filtros">
+          <button class="proto-filtro active" onclick="filtrarProtos('todos',this)">Todos</button>
+          <button class="proto-filtro" onclick="filtrarProtos('concluido',this)">Concluídos</button>
+          <button class="proto-filtro" onclick="filtrarProtos('atrasado',this)">Atrasados</button>
+          <button class="proto-filtro" onclick="filtrarProtos('pendente',this)">Pendentes</button>
+        </div>
+      </div>
+      <div id="listaProtos"></div>
+    </div>
+
+    <div class="relatorio-footer" id="relatorioFooter"></div>
+
+  </div>
+</div>
+
+<script>
+/* ══ CONFIG ══ */
+var SENHA = "2309";
+var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
+var API = API_BASE + "?acao=dados";
+var PRAZO = 24;
+var SESSION_KEY = "hyd_relatorio_auth";
+
+/* ══ AUTH ══ */
+function verificarSenha() {
+  var val = document.getElementById("inputSenha").value.trim();
+  if (val === SENHA) {
+    try { sessionStorage.setItem(SESSION_KEY, "1"); } catch(e) {}
+    entrar();
+  } else {
+    var inp = document.getElementById("inputSenha");
+    inp.classList.add("erro");
+    document.getElementById("loginErro").textContent = "Senha incorreta. Tente novamente.";
+    inp.value = "";
+    setTimeout(function() { inp.classList.remove("erro"); }, 600);
+  }
+}
+function entrar() {
+  document.getElementById("telaLogin").style.display = "none";
+  document.getElementById("painelRelatorio").style.display = "block";
+  document.getElementById("badgeSupervisor").style.display = "";
+  document.getElementById("btnSair").style.display = "";
+  carregarRelatorio();
+}
+function sair() {
+  try { sessionStorage.removeItem(SESSION_KEY); } catch(e) {}
+  document.getElementById("telaLogin").style.display = "flex";
+  document.getElementById("painelRelatorio").style.display = "none";
+  document.getElementById("badgeSupervisor").style.display = "none";
+  document.getElementById("btnSair").style.display = "none";
+  document.getElementById("inputSenha").value = "";
+  document.getElementById("loginErro").textContent = "";
+}
+document.getElementById("inputSenha").addEventListener("keydown", function(e) {
+  if (e.key === "Enter") verificarSenha();
+});
+window.addEventListener("DOMContentLoaded", function() {
+  try { if (sessionStorage.getItem(SESSION_KEY) === "1") { entrar(); return; } } catch(e) {}
+});
+
+/* ══ DATA ATUAL ══ */
+var _diaOffset = 0;
+function getDiaAtual() {
+  var d = new Date();
+  d.setDate(d.getDate() + _diaOffset);
+  return d;
+}
+function formatarData(d) {
+  return d.toLocaleDateString("pt-BR", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
+}
+function formatarDataCurta(d) {
+  return d.toLocaleDateString("pt-BR", { day:"2-digit", month:"2-digit", year:"numeric" });
+}
+function isMesmaData(iso, d) {
+  var dd = new Date(iso);
+  return dd.toDateString() === d.toDateString();
+}
+
+/* ══ CARREGAR DADOS ══ */
+var _todosProtos = [];
+var _filtroAtual = "todos";
+
+function carregarRelatorio() {
+  var dia = getDiaAtual();
+  var isHoje = _diaOffset === 0;
+  document.getElementById("toolbarData").textContent = formatarData(dia);
+  document.getElementById("toolbarSub").textContent = "Carregando dados…";
+  document.getElementById("btnHoje").style.display = _diaOffset < 0 ? "" : "none";
+  document.getElementById("btnProximo").style.display = _diaOffset < 0 ? "" : "none";
+
+  fetch(API + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r) { return r.json(); })
+    .then(function(lista) { processarDados(lista, dia); })
+    .catch(function() {
+      document.getElementById("toolbarSub").textContent = "Erro ao carregar dados da API.";
+    });
+}
+
+function processarDados(lista, dia) {
+  var doDia = lista.filter(function(p) {
+    var abertura = p.dataHora && isMesmaData(p.dataHora, dia);
+    var conclusaoDia = p.dataConclusao && isMesmaData(p.dataConclusao, dia);
+    return abertura || conclusaoDia;
+  });
+
+  _todosProtos = doDia.map(function(p) {
+    var concluido = (p.status||"").toUpperCase().trim() === "CONCLUÍDO" || (p.status||"").toUpperCase().trim() === "CONCLUIDO";
+    var t = !concluido ? calcTempo(p.dataHora) : null;
+    var tipo = concluido ? "concluido" : (p.lock ? "execucao" : (t && t.tipo === "atrasado" ? "atrasado" : "pendente"));
+    var duracaoMin = null;
+    if (concluido && p.dataHora && p.dataConclusao) {
+      duracaoMin = Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000);
+    }
+    return Object.assign({}, p, { _tipo: tipo, _duracaoMin: duracaoMin });
+  });
+
+  renderRelatorio(dia);
+}
+
+function calcTempo(iso) {
+  var h = (new Date() - new Date(iso)) / 36e5;
+  var r = PRAZO - h;
+  if (r <= 0) return { tipo: "atrasado" };
+  if (r <= 4) return { tipo: "urgente" };
+  return { tipo: "pendente" };
+}
+
+function formatarMin(min) {
+  if (min == null || isNaN(min)) return "—";
+  if (min < 60) return min + "min";
+  return Math.floor(min/60) + "h " + (min%60) + "m";
+}
+
+var coresOp = ["#1469C7","#15803D","#7C3AED","#A16207","#B91C1C","#0F6E56","#993556"];
+
+function renderRelatorio(dia) {
+  var total     = _todosProtos.length;
+  var concl     = _todosProtos.filter(function(p){return p._tipo==="concluido";});
+  var atrasados = _todosProtos.filter(function(p){return p._tipo==="atrasado";});
+  var taxa      = total > 0 ? Math.round(concl.length / total * 100) : 0;
+
+  document.getElementById("toolbarSub").textContent = "Arapongas · PR · " + formatarDataCurta(dia);
+  document.getElementById("sTotal").textContent = total;
+  document.getElementById("sConcluidos").textContent = concl.length;
+  document.getElementById("sAtrasados").textContent = atrasados.length;
+  document.getElementById("sTaxa").textContent = taxa + "%";
+  document.getElementById("sSubTaxa").className = "stat-sub";
+
+  /* ── Barras por hora ── */
+  var horas = {};
+  for (var h = 6; h <= 18; h++) horas[h] = 0;
+  concl.forEach(function(p) {
+    if (!p.dataConclusao) return;
+    var hr = new Date(p.dataConclusao).getHours();
+    if (horas[hr] !== undefined) horas[hr]++;
+  });
+  var maxVal = Math.max.apply(null, Object.values(horas).concat([1]));
+  var barHTML = "";
+  Object.keys(horas).forEach(function(h) {
+    var v = horas[h];
+    var pct = Math.round(v / maxVal * 100);
+    var label = h < 10 ? "0"+h+"h" : h+"h";
+    barHTML += '<div class="bar-row">' +
+      '<span class="bar-hora">'+label+'</span>' +
+      '<div class="bar-track">' +
+        (v > 0
+          ? '<div class="bar-fill" style="width:'+pct+'%"><span class="bar-fill-val">'+v+'</span></div>'
+          : '<div class="bar-zero" style="width:100%"></div>') +
+      '</div></div>';
+  });
+  document.getElementById("barrasHora").innerHTML = barHTML;
+
+  /* ── Operadores ── */
+  var ops = {};
+  _todosProtos.forEach(function(p) {
+    var nome = p.operadorConclusao || p.registradoPor || "Desconhecido";
+    if (!ops[nome]) ops[nome] = { concl: 0, atr: 0, total: 0 };
+    ops[nome].total++;
+    if (p._tipo === "concluido") ops[nome].concl++;
+    if (p._tipo === "atrasado")  ops[nome].atr++;
+  });
+  var opKeys = Object.keys(ops).sort(function(a,b){ return ops[b].concl - ops[a].concl; });
+  var opHTML = "";
+  opKeys.forEach(function(nome, idx) {
+    var o = ops[nome];
+    var pct = o.total > 0 ? Math.round(o.concl / o.total * 100) : 0;
+    var cor = coresOp[idx % coresOp.length];
+    var initials = nome.split(" ").map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();
+    var corPct = pct >= 75 ? "var(--verde)" : pct >= 50 ? "var(--amarelo)" : "var(--vermelho)";
+    opHTML += '<div class="op-row">' +
+      '<div class="op-avatar" style="background:'+cor+'">'+initials+'</div>' +
+      '<div class="op-info">' +
+        '<div class="op-nome">'+safeText(nome)+'</div>' +
+        '<div class="op-detalhe">'+o.concl+' concluído'+(o.concl!==1?"s":"")+(o.atr>0?" · "+o.atr+" atrasado"+(o.atr!==1?"s":""):"")+'</div>' +
+        '<div class="op-bar-wrap"><div class="op-bar-fill" style="width:'+pct+'%;background:'+corPct+'"></div></div>' +
+      '</div>' +
+      '<div class="op-pct" style="color:'+corPct+'">'+pct+'%</div>' +
+    '</div>';
+  });
+  document.getElementById("listaOperadores").innerHTML = opHTML || '<div class="vazio"><div class="vazio-icon">👷</div><div class="vazio-txt">Sem dados de operadores</div></div>';
+
+  /* ── Tempos ── */
+  var duracoes = concl.filter(function(p){return p._duracaoMin!=null;}).map(function(p){return p._duracaoMin;});
+  if (duracoes.length > 0) {
+    var media  = Math.round(duracoes.reduce(function(a,b){return a+b;},0) / duracoes.length);
+    var minimo = Math.min.apply(null, duracoes);
+    var maximo = Math.max.apply(null, duracoes);
+    document.getElementById("tMedia").textContent  = formatarMin(media);
+    document.getElementById("tRapido").textContent = formatarMin(minimo);
+    document.getElementById("tLento").textContent  = formatarMin(maximo);
+  } else {
+    document.getElementById("tMedia").textContent  = "—";
+    document.getElementById("tRapido").textContent = "—";
+    document.getElementById("tLento").textContent  = "—";
+  }
+
+  /* ── Lista protocolos ── */
+  renderProtos();
+
+  /* ── Footer ── */
+  document.getElementById("relatorioFooter").textContent =
+    "Gerado em " + new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) + " · Hydrosistem";
+}
+
+function renderProtos() {
+  var filtrados = _filtroAtual === "todos"
+    ? _todosProtos
+    : _todosProtos.filter(function(p){return p._tipo === _filtroAtual;});
+
+  document.getElementById("protoCount").textContent = filtrados.length + " protocolo" + (filtrados.length!==1?"s":"");
+
+  var cores   = { concluido:"var(--verde)", atrasado:"var(--vermelho)", pendente:"var(--amarelo)", execucao:"var(--exec)" };
+  var labels  = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
+  var badgeCls= { concluido:"t-concluido", atrasado:"t-atrasado", pendente:"t-pendente", execucao:"t-execucao" };
+
+  if (!filtrados.length) {
+    document.getElementById("listaProtos").innerHTML = '<div class="vazio"><div class="vazio-icon">✅</div><div class="vazio-txt">Nenhum protocolo neste filtro</div></div>';
+    return;
+  }
+
+  var html = "";
+  filtrados.forEach(function(p) {
+    var durStr = p._duracaoMin != null ? formatarMin(p._duracaoMin) : "";
+    html += '<div class="proto-item">' +
+      '<div class="proto-stripe" style="background:'+cores[p._tipo]+'"></div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div class="proto-end">'+safeText(p.endereco||"—")+'</div>' +
+        '<div class="proto-meta">'+safeText(p.protocolo)+(p.registradoPor?" · "+safeText(p.registradoPor):"")+'</div>' +
+      '</div>' +
+      (durStr ? '<span class="proto-tempo">'+durStr+'</span>' : '') +
+      '<span class="proto-badge '+badgeCls[p._tipo]+'">'+labels[p._tipo]+'</span>' +
+    '</div>';
+  });
+  document.getElementById("listaProtos").innerHTML = html;
+}
+
+function filtrarProtos(filtro, btn) {
+  _filtroAtual = filtro;
+  document.querySelectorAll(".proto-filtro").forEach(function(b){b.classList.remove("active");});
+  btn.classList.add("active");
+  renderProtos();
+}
+
+function mudarDia(dir) {
+  if (dir === 0) { _diaOffset = 0; }
+  else { _diaOffset += dir; if (_diaOffset > 0) _diaOffset = 0; }
+  _filtroAtual = "todos";
+  document.querySelectorAll(".proto-filtro").forEach(function(b,i){b.classList.toggle("active",i===0);});
+  carregarRelatorio();
+}
+
+function exportarPDF() { window.print(); }
+
+function safeText(s) { var d = document.createElement("div"); d.textContent = String(s||""); return d.innerHTML; }
+</script>
+
+</body>
+</html>
