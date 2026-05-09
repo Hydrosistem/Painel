@@ -577,6 +577,24 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .detail-conclusao-header { display: flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--verde); }
 .detail-conclusao-header::after { content: ""; flex: 1; height: 1px; background: var(--verde-borda); opacity: .5; }
 
+.btn-remover-card {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 20px; border: 1px solid var(--vermelho-borda);
+  background: var(--vermelho-bg); color: var(--vermelho);
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  font-family: "DM Sans",sans-serif; white-space: nowrap;
+  transition: background .15s;
+}
+.btn-remover-card:hover { background: #fecaca; }
+.btn-remover-detalhe {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 8px; border-radius: var(--radius-sm);
+  background: var(--vermelho-bg); border: 1.5px solid var(--vermelho-borda);
+  color: var(--vermelho); font-family: "DM Sans",sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s;
+}
+.btn-remover-detalhe:hover { background: #fecaca; }
+
 /* ══ PRIORIDADE MÁXIMA ══ */
 .card.t-prioridade { border: 2px solid var(--prioridade-b) !important; box-shadow: 0 0 0 3px rgba(180,83,9,.1), var(--sombra-sm) !important; }
 .card-t.t-prioridade { border: 2px solid var(--prioridade-b) !important; box-shadow: 0 0 0 3px rgba(180,83,9,.1), var(--sombra-md) !important; }
@@ -853,6 +871,19 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 </div>
 
+<!-- ══ MODAL REMOVER PROTOCOLO ══ -->
+<div class="modal-overlay" id="modalRemover">
+  <div class="modal">
+    <div class="modal-icon">🗑️</div>
+    <div class="modal-title">Remover protocolo?</div>
+    <div class="modal-sub" id="modalRemoverSub"></div>
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalRemover()">Cancelar</button>
+      <button class="btn-confirmar" style="background:var(--vermelho)" id="btnConfirmarRemover" onclick="confirmarRemover()">🗑️ Remover</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL REDISTRIBUIÇÃO ══ -->
 <div class="modal-overlay" id="modalRedistribuir">
   <div class="modal">
@@ -1083,14 +1114,15 @@ function _preencherDetalhe(p){
       obsHtml+
     "</div>"+
     fotoHtml+conclusaoHtml;
+  var _btnRemDet = isSupervisor() ? "<button class='btn-remover-detalhe' onclick='abrirModalRemover(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>🗑️ Remover protocolo</button>" : "";
   footer.classList.add("show");
-  if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";}
+  if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>"+_btnRemDet;}
   else if(outraExecucao){
     footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>"+
-      (isSupervisor()?"<button class='btn-prioridade' style='margin-top:6px' onclick='abrirModalRedistribuir(\""+esc(p.protocolo)+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\")'>↔ Redistribuir para outro operador</button>":"");
+      (isSupervisor()?"<button class='btn-prioridade' style='margin-top:6px' onclick='abrirModalRedistribuir(\""+esc(p.protocolo)+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\")'>↔ Redistribuir para outro operador</button>":"")+_btnRemDet;
   }
-  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
-  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
+  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"")+_btnRemDet;}
+  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"")+_btnRemDet;}
 }
 function cancelarMinhaExecucaoPainel(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
 
@@ -1133,7 +1165,7 @@ function renderCard(p,idx){
     "<div class='card-body'>"+
       "<div class='card-top'>"+
         "<div class='card-top-left'><span class='prot-num'>"+safeText(p.protocolo)+"</span>"+(prioridade?"<span class='badge-prioridade'>⚡ Prioridade máxima</span>":(tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt+"</span>":""))+"</div>"+
-        "<div class='card-top-right'>"+execBadge+_btnPrioridade(p.protocolo,prioridade)+"</div>"+
+        "<div class='card-top-right'>"+execBadge+_btnPrioridade(p.protocolo,prioridade)+_btnRemoverCard(p.protocolo,p.endereco)+"</div>"+
       "</div>"+
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>"+
       "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+dist+"</div>"+
@@ -1282,6 +1314,64 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+/* ══ REMOVER PROTOCOLO ══ */
+var _removerProtocolo = null;
+
+function abrirModalRemover(protocolo, endereco) {
+  if (!isSupervisor()) return;
+  _removerProtocolo = protocolo;
+  document.getElementById("modalRemoverSub").textContent =
+    "Protocolo " + protocolo + "\n📍 " + endereco + "\n\nEsta ação é permanente e não pode ser desfeita.";
+  document.getElementById("modalRemover").classList.add("open");
+}
+
+function fecharModalRemover() {
+  document.getElementById("modalRemover").classList.remove("open");
+  _removerProtocolo = null;
+}
+
+function confirmarRemover() {
+  if (!_removerProtocolo) return;
+  var protocolo = _removerProtocolo;
+  var btn = document.getElementById("btnConfirmarRemover");
+  btn.disabled = true;
+  btn.textContent = "⏳ Removendo…";
+
+  fetch(API_BASE + "?acao=remover&protocolo=" + encodeURIComponent(protocolo) + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      fecharModalRemover();
+      btn.disabled = false;
+      btn.textContent = "🗑️ Remover";
+      if (res.ok) {
+        /* Limpa seleção do painel de detalhe se era esse protocolo */
+        if (_protocoloSelecionado === protocolo) {
+          _protocoloSelecionado = null;
+          document.getElementById("detailVazio").style.display = "";
+          var dc = document.getElementById("detailContent");
+          dc.classList.remove("show"); dc.innerHTML = "";
+          var df = document.getElementById("detailFooter");
+          df.classList.remove("show"); df.innerHTML = "";
+        }
+        toast("🗑️ Protocolo " + protocolo + " removido.", "");
+        carregarDados();
+      } else {
+        toast("❌ Erro ao remover: " + (res.erro || "tente novamente"), "erro");
+      }
+    })
+    .catch(function(){
+      fecharModalRemover();
+      btn.disabled = false;
+      btn.textContent = "🗑️ Remover";
+      toast("❌ Erro ao remover", "erro");
+    });
+}
+
+function _btnRemoverCard(protocolo, endereco) {
+  if (!isSupervisor()) return "";
+  return "<button class='btn-remover-card' onclick='event.stopPropagation();abrirModalRemover(\"" + esc(protocolo) + "\",\"" + esc(endereco) + "\")'>🗑️ Remover</button>";
+}
+
 /* ══ REDISTRIBUIÇÃO DE PROTOCOLO ══ */
 var _redistProtocolo = null, _redistSessionAtual = null;
 
