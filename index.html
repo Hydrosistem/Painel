@@ -1069,6 +1069,22 @@ function fecharModal(){document.getElementById("modalOverlay").classList.remove(
 function confirmarExecucao(){var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;if(!protocolo)return;if(navigator.vibrate)navigator.vibrate(50);var locksAtivos=Object.keys(meusLocks);if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}fecharModal();toast("⏳ Registrando execução…","exec");var operador=getOperador()||"Operador";postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){if(!res.ok){toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");carregarDados();return;}iniciarHeartbeat(protocolo);toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");carregarDados();}).catch(function(err){console.error("[confirmarExecucao]",err);toast("❌ Erro ao iniciar execução","erro");});}
 function cancelarMinhaExecucao(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
 
+/* ══ HELPER: verifica se lock pertence a este dispositivo ══
+   Cobre dois casos:
+   1. sessionId bate exatamente (execução normal)
+   2. lock foi redistribuído para este operador (sessionId começa com "redist_"
+      e lock.usuario bate com o nome do operador logado neste dispositivo) */
+function isMinhaExecucao(lock, concluido) {
+  if (concluido || !lock) return false;
+  if (lock.sessionId === SESSION_ID) return true;
+  if (lock.sessionId && lock.sessionId.indexOf("redist_") === 0) {
+    var meuNome = getOperador().trim().toLowerCase();
+    var lockNome = (lock.usuario || "").trim().toLowerCase();
+    return meuNome.length > 0 && meuNome === lockNome;
+  }
+  return false;
+}
+
 /* ══ PAINEL DETALHE ══ */
 var _detailFadeTimer=null;
 function selecionarProtocolo(p){var content=document.getElementById("detailContent");if(content.classList.contains("show")){content.classList.add("fading");clearTimeout(_detailFadeTimer);_detailFadeTimer=setTimeout(function(){content.classList.remove("fading");_preencherDetalhe(p);},150);}else{_preencherDetalhe(p);}}
@@ -1080,7 +1096,7 @@ function _preencherDetalhe(p){
   var vazio=document.getElementById("detailVazio"),content=document.getElementById("detailContent"),footer=document.getElementById("detailFooter");
   vazio.style.display="none";content.classList.add("show");
   var concluido=isConcluido(p),t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:"",delta:0};
-  var lock=p.lock,minhaExecucao=!concluido&&lock&&lock.sessionId===SESSION_ID,outraExecucao=!concluido&&lock&&lock.sessionId!==SESSION_ID;
+  var lock=p.lock,minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido);
   var tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var deltaVal,deltaLbl;
   if(concluido){deltaVal="✔";deltaLbl="CONCLUÍDO";}else{deltaVal=t.r<=0?"−"+ar(t.delta):ar(t.delta);deltaLbl=t.r<=0?"VENCIDO":"RESTANTE";}
@@ -1137,7 +1153,7 @@ function enviarConclusao(){if(!_protocoloConcluindo)return;var btn=document.getE
 
 /* ══ RENDER MOBILE ══ */
 function renderCard(p,idx){
-  var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=!concluido&&lock&&lock.sessionId===SESSION_ID,outraExecucao=!concluido&&lock&&lock.sessionId!==SESSION_ID,tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
+  var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
   var obs=_mm?"<span class='meta-item'><a href='"+_mm[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Maps</a></span>":(p.obs&&p.obs!=="—"?"<span class='meta-item'>📝 "+safeText(p.obs)+"</span>":"");
@@ -1177,7 +1193,7 @@ function renderCard(p,idx){
 
 /* ══ RENDER CARD TABLET ══ */
 function renderCardTablet(p,idx){
-  var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=!concluido&&lock&&lock.sessionId===SESSION_ID,outraExecucao=!concluido&&lock&&lock.sessionId!==SESSION_ID,tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
+  var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
   var idSafe=p.protocolo.replace(/[^a-z0-9]/gi,"_"),selecionado=_protocoloSelecionado===p.protocolo?" selected":"";
   var badgeHtml;
