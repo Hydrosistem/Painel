@@ -643,6 +643,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnOperador"></button>
     <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
+    <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none">📊 Relatório</a>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
@@ -829,8 +830,37 @@ function isConcluido(p) { var s=(p.status||"").toUpperCase().trim(); return s===
 
 /* ══ OPERADOR ══ */
 var OPERADOR_KEY = "hyd_operador";
+var SUPERVISOR_KEY = "hyd_supervisor";
+var SUPERVISOR_SENHA = "2309";
+
 function getOperador() { try { return localStorage.getItem(OPERADOR_KEY)||""; } catch(e){return "";} }
-function setOperador(n) { try { localStorage.setItem(OPERADOR_KEY,n.trim()); } catch(e){} atualizarChipOperador(); }
+function isSupervisor() { try { return localStorage.getItem(SUPERVISOR_KEY)==="1"; } catch(e){return false;} }
+
+function setOperador(n) {
+  var nomeLimpo = n.trim();
+  var ehSupervisor = false;
+
+  /* Detecta palavra-chave: qualquer nome que termine com #2309 */
+  if (nomeLimpo.indexOf("#"+SUPERVISOR_SENHA) >= 0) {
+    nomeLimpo = nomeLimpo.replace("#"+SUPERVISOR_SENHA, "").trim();
+    ehSupervisor = true;
+  }
+
+  try {
+    localStorage.setItem(OPERADOR_KEY, nomeLimpo);
+    localStorage.setItem(SUPERVISOR_KEY, ehSupervisor ? "1" : "0");
+  } catch(e) {}
+
+  atualizarChipOperador();
+  atualizarBotaoRelatorio();
+}
+
+function atualizarBotaoRelatorio() {
+  var btn = document.getElementById("btnRelatorio");
+  if (!btn) return;
+  btn.style.display = isSupervisor() ? "" : "none";
+}
+
 function atualizarChipOperador() {
   var nome=getOperador(), btn=document.getElementById("btnOperador"); if(!btn) return;
   if(nome) {
@@ -847,7 +877,7 @@ document.getElementById("inputOperador").addEventListener("input",validarInputOp
 document.getElementById("inputOperador").addEventListener("keydown",function(e){if(e.key==="Enter") confirmarOperador();});
 document.getElementById("btnConfirmarOperador").onclick=confirmarOperador;
 document.getElementById("btnOperador").onclick=abrirModalOperador;
-window.addEventListener("DOMContentLoaded",function(){ if(!getOperador()) abrirModalOperador(); else atualizarChipOperador(); });
+window.addEventListener("DOMContentLoaded",function(){ if(!getOperador()) abrirModalOperador(); else { atualizarChipOperador(); atualizarBotaoRelatorio(); } });
 
 /* ══ OFFLINE / CACHE ══ */
 function estaOnline(){return navigator.onLine;}
