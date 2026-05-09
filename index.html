@@ -1416,6 +1416,91 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+/* ══ EDITAR ENDEREÇO ══ */
+var _editEndProtocolo = null;
+
+function abrirModalEditarEndereco(protocolo, enderecoAtual) {
+  if (!isSupervisor()) return;
+  _editEndProtocolo = protocolo;
+  document.getElementById("modalEditarEnderecoSub").textContent = protocolo;
+  var inp = document.getElementById("inputNovoEndereco");
+  inp.value = enderecoAtual || "";
+  document.getElementById("btnConfirmarEndereco").disabled = inp.value.trim().length < 5;
+  document.getElementById("modalEditarEndereco").classList.add("open");
+  setTimeout(function(){ inp.focus(); inp.select(); }, 100);
+}
+
+function fecharModalEditarEndereco() {
+  document.getElementById("modalEditarEndereco").classList.remove("open");
+  _editEndProtocolo = null;
+}
+
+(function(){
+  document.addEventListener("DOMContentLoaded", function() {
+    var inp = document.getElementById("inputNovoEndereco");
+    if (inp) {
+      inp.addEventListener("input", function() {
+        document.getElementById("btnConfirmarEndereco").disabled = this.value.trim().length < 5;
+      });
+      inp.addEventListener("keydown", function(e){ if(e.key==="Enter") confirmarEditarEndereco(); });
+    }
+    var ta = document.getElementById("inputObs");
+    if (ta) {
+      ta.addEventListener("focus", function(){ this.style.borderColor="var(--azul)"; this.style.boxShadow="0 0 0 3px rgba(20,105,199,.12)"; });
+      ta.addEventListener("blur",  function(){ this.style.borderColor="var(--borda)"; this.style.boxShadow="none"; });
+    }
+  });
+})();
+
+function confirmarEditarEndereco() {
+  var novoEndereco = document.getElementById("inputNovoEndereco").value.trim();
+  if (!novoEndereco || novoEndereco.length < 5 || !_editEndProtocolo) return;
+  var btn = document.getElementById("btnConfirmarEndereco");
+  btn.disabled = true; btn.textContent = "⏳ Salvando…";
+  fetch(API_BASE + "?acao=editarEndereco&protocolo=" + encodeURIComponent(_editEndProtocolo) + "&endereco=" + encodeURIComponent(novoEndereco) + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      fecharModalEditarEndereco();
+      btn.disabled = false; btn.textContent = "✏️ Salvar";
+      if (res.ok) { toast("✏️ Endereço atualizado.", "ok"); carregarDados(); }
+      else toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+    })
+    .catch(function(){ fecharModalEditarEndereco(); btn.disabled=false; btn.textContent="✏️ Salvar"; toast("❌ Erro ao salvar","erro"); });
+}
+
+/* ══ OBSERVAÇÃO ══ */
+var _obsProtocolo = null;
+
+function abrirModalObs(protocolo, obsAtual) {
+  if (!isSupervisor()) return;
+  _obsProtocolo = protocolo;
+  document.getElementById("modalObsSub").textContent = protocolo;
+  document.getElementById("inputObs").value = obsAtual || "";
+  document.getElementById("modalObs").classList.add("open");
+  setTimeout(function(){ document.getElementById("inputObs").focus(); }, 100);
+}
+
+function fecharModalObs() {
+  document.getElementById("modalObs").classList.remove("open");
+  _obsProtocolo = null;
+}
+
+function confirmarObs() {
+  var obs = document.getElementById("inputObs").value.trim();
+  if (!_obsProtocolo) return;
+  var btn = document.getElementById("btnConfirmarObs");
+  btn.disabled = true; btn.textContent = "⏳ Salvando…";
+  fetch(API_BASE + "?acao=adicionarObs&protocolo=" + encodeURIComponent(_obsProtocolo) + "&obs=" + encodeURIComponent(obs || "—") + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      fecharModalObs();
+      btn.disabled = false; btn.textContent = "📝 Salvar";
+      if (res.ok) { toast("📝 Observação salva.", "ok"); carregarDados(); }
+      else toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+    })
+    .catch(function(){ fecharModalObs(); btn.disabled=false; btn.textContent="📝 Salvar"; toast("❌ Erro ao salvar","erro"); });
+}
+
 /* ══ FORÇAR CONCLUSÃO (supervisor) ══ */
 function forcarConclusaoSupervisor(protocolo) {
   if (!isSupervisor()) return;
