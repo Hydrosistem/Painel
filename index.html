@@ -113,12 +113,13 @@ header {
 
 .chip-operador {
   display: flex; align-items: center; gap: 7px;
-  border: 1px solid rgba(255,255,255,.14);
-  color: rgba(255,255,255,.9); border-radius: var(--radius-sm); padding: 0 10px; height: 34px;
-  font-size: 12px; font-weight: 600; cursor: pointer;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff; border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
   transition: background .15s;
 }
-.chip-operador:hover { background: rgba(255,255,255,.1); }
+.chip-operador:hover { background: rgba(255,255,255,.26); }
 .chip-op-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; animation: pulseOnline 2s ease-in-out infinite; }
 @keyframes pulseOnline { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.5); } 60% { box-shadow: 0 0 0 4px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 @keyframes rot { to { transform: rotate(360deg); } }
