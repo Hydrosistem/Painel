@@ -853,6 +853,20 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 </div>
 
+<!-- ══ MODAL REDISTRIBUIÇÃO ══ -->
+<div class="modal-overlay" id="modalRedistribuir">
+  <div class="modal">
+    <div class="modal-icon">↔️</div>
+    <div class="modal-title">Redistribuir protocolo</div>
+    <div class="modal-sub" id="modalRedistribuirSub"></div>
+    <input class="modal-op-input" id="inputNovoOperador" type="text" placeholder="Nome do novo operador" maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false">
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalRedistribuir()">Cancelar</button>
+      <button class="btn-confirmar" id="btnConfirmarRedistribuir" disabled onclick="confirmarRedistribuir()">↔ Redistribuir</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
 
@@ -1071,7 +1085,10 @@ function _preencherDetalhe(p){
     fotoHtml+conclusaoHtml;
   footer.classList.add("show");
   if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";}
-  else if(outraExecucao){footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
+  else if(outraExecucao){
+    footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>"+
+      (isSupervisor()?"<button class='btn-prioridade' style='margin-top:6px' onclick='abrirModalRedistribuir(\""+esc(p.protocolo)+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\")'>↔ Redistribuir para outro operador</button>":"");
+  }
   else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
   else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
 }
@@ -1265,6 +1282,75 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+/* ══ REDISTRIBUIÇÃO DE PROTOCOLO ══ */
+var _redistProtocolo = null, _redistSessionAtual = null;
+
+function abrirModalRedistribuir(protocolo, operadorAtual, sessionAtual) {
+  if (!isSupervisor()) return;
+  _redistProtocolo    = protocolo;
+  _redistSessionAtual = sessionAtual;
+  document.getElementById("modalRedistribuirSub").textContent =
+    protocolo + " — atualmente com " + (operadorAtual || "operador desconhecido") + "\n\nDigite o nome do novo operador:";
+  document.getElementById("inputNovoOperador").value = "";
+  document.getElementById("btnConfirmarRedistribuir").disabled = true;
+  document.getElementById("modalRedistribuir").classList.add("open");
+  setTimeout(function(){ document.getElementById("inputNovoOperador").focus(); }, 100);
+}
+
+function fecharModalRedistribuir() {
+  document.getElementById("modalRedistribuir").classList.remove("open");
+  _redistProtocolo = null; _redistSessionAtual = null;
+}
+
+document.addEventListener("DOMContentLoaded", function() {
+  var inp = document.getElementById("inputNovoOperador");
+  if (inp) {
+    inp.addEventListener("input", function() {
+      document.getElementById("btnConfirmarRedistribuir").disabled = this.value.trim().length < 2;
+    });
+    inp.addEventListener("keydown", function(e) {
+      if (e.key === "Enter") confirmarRedistribuir();
+    });
+  }
+});
+
+function confirmarRedistribuir() {
+  var novoOperador = document.getElementById("inputNovoOperador").value.trim();
+  if (!novoOperador || novoOperador.length < 2 || !_redistProtocolo) return;
+
+  var btn = document.getElementById("btnConfirmarRedistribuir");
+  btn.disabled = true;
+  btn.textContent = "⏳ Redistribuindo…";
+
+  var protocolo = _redistProtocolo;
+  var sessionAtual = _redistSessionAtual;
+
+  /* 1. Libera lock atual */
+  postLock({ acao: "liberar", protocolo: protocolo, sessionId: sessionAtual || SESSION_ID })
+    .then(function() {
+      /* 2. Cria novo lock com sessionId único para o novo operador */
+      var novaSession = "redist_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+      return postLock({ acao: "adquirir", protocolo: protocolo, sessionId: novaSession, usuario: novoOperador });
+    })
+    .then(function(res) {
+      fecharModalRedistribuir();
+      btn.disabled = false;
+      btn.textContent = "↔ Redistribuir";
+      if (res.ok) {
+        toast("↔ Protocolo redistribuído para " + novoOperador, "ok");
+        carregarDados();
+      } else {
+        toast("❌ Erro ao redistribuir: " + (res.erro || "tente novamente"), "erro");
+      }
+    })
+    .catch(function() {
+      fecharModalRedistribuir();
+      btn.disabled = false;
+      btn.textContent = "↔ Redistribuir";
+      toast("❌ Erro ao redistribuir", "erro");
+    });
+}
+
 /* ══ PRIORIDADE MANUAL ══ */
 function togglePrioridade(protocolo, ativaAtual) {
   if (!isSupervisor()) return;
