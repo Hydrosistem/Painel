@@ -1,7 +1,7 @@
 // ═══════════════════════════════════════
 //  HYDROSISTEM SW — AUTO UPDATE
 // ═══════════════════════════════════════
-const CACHE = "hyd-v116"; // ← sobe a versão também
+const CACHE = "hyd-v117";
 const ASSETS = [
   "./",
   "./index.html",
@@ -28,21 +28,23 @@ self.addEventListener("activate", (e) => {
 self.addEventListener("fetch", (e) => {
   const url = new URL(e.request.url);
 
-  // Requisições de API (Google Apps Script) — sempre rede, sem cache
+  // Requisições externas — NÃO intercepta, deixa o browser resolver
   if (url.hostname.includes("script.google.com") ||
-      url.hostname.includes("googleapis.com")) {
-    e.respondWith(fetch(e.request));
-    return;
+      url.hostname.includes("googleapis.com") ||
+      url.hostname.includes("lh3.googleusercontent.com") ||
+      url.hostname.includes("drive.google.com") ||
+      url.hostname.includes("fonts.googleapis.com") ||
+      url.hostname.includes("fonts.gstatic.com")) {
+    return; // ← não chama e.respondWith(), browser trata normalmente
   }
 
-  // Navegação e HTML — Network First (sempre tenta buscar versão nova)
+  // Navegação e HTML — Network First
   if (e.request.mode === "navigate" ||
       url.pathname.endsWith(".html") ||
-      url.pathname === "/" ) {
+      url.pathname === "/") {
     e.respondWith(
       fetch(e.request)
         .then(res => {
-          // Atualiza o cache com a versão nova
           const clone = res.clone();
           caches.open(CACHE).then(c => c.put(e.request, clone));
           return res;
@@ -52,7 +54,7 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Ícones e assets estáticos — Cache First (ok, mudam raramente)
+  // Assets estáticos — Cache First
   e.respondWith(
     caches.match(e.request).then(res => res || fetch(e.request))
   );
