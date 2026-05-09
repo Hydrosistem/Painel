@@ -29,7 +29,9 @@
   --exec-bg:     #EDE9FE;
   --exec-borda:  #A78BFA;
   --concluido:   #15803D;
-  --cinza-bg:    #F8FAFC;
+  --prioridade:    #B45309;
+  --prioridade-bg: #FEF3C7;
+  --prioridade-b:  #FCD34D;
   --cinza-md:    #F1F5F9;
   --texto:       #0F172A;
   --texto2:      #64748B;
@@ -575,6 +577,47 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .detail-conclusao-header { display: flex; align-items: center; gap: 6px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--verde); }
 .detail-conclusao-header::after { content: ""; flex: 1; height: 1px; background: var(--verde-borda); opacity: .5; }
 
+/* ══ PRIORIDADE MÁXIMA ══ */
+.card.t-prioridade { border: 2px solid var(--prioridade-b) !important; box-shadow: 0 0 0 3px rgba(180,83,9,.1), var(--sombra-sm) !important; }
+.card-t.t-prioridade { border: 2px solid var(--prioridade-b) !important; box-shadow: 0 0 0 3px rgba(180,83,9,.1), var(--sombra-md) !important; }
+.card.t-prioridade .card-stripe,
+.card-t.t-prioridade .card-t-stripe { background: var(--prioridade) !important; }
+.badge-prioridade { font-size: 10px; font-weight: 700; padding: 3px 8px; border-radius: 20px; background: var(--prioridade-bg); color: var(--prioridade); border: 1px solid var(--prioridade-b); white-space: nowrap; letter-spacing: .3px; }
+.btn-prioridade {
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  width: 100%; padding: 8px; border-radius: var(--radius-sm);
+  background: var(--prioridade-bg); border: 1.5px solid var(--prioridade-b);
+  color: var(--prioridade); font-family: "DM Sans",sans-serif;
+  font-size: 12px; font-weight: 700; cursor: pointer; transition: background .15s;
+}
+.btn-prioridade:hover { background: #fde68a; }
+.btn-prioridade.ativa { background: var(--prioridade); color: #fff; border-color: var(--prioridade); }
+.btn-prioridade-card {
+  display: flex; align-items: center; gap: 4px;
+  padding: 4px 8px; border-radius: 20px; border: 1px solid var(--prioridade-b);
+  background: var(--prioridade-bg); color: var(--prioridade);
+  font-size: 10px; font-weight: 700; cursor: pointer;
+  font-family: "DM Sans",sans-serif; white-space: nowrap;
+  transition: background .15s;
+}
+.btn-prioridade-card.ativa { background: var(--prioridade); color: #fff; }
+
+/* ══ PAINEL OPERADORES ══ */
+  .sb-operadores { border-top: 1px solid var(--borda); flex-shrink: 0; }
+  .sb-op-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 4px; }
+  .sb-op-titulo { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: var(--texto3); }
+  .sb-op-dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--verde); flex-shrink: 0; animation: pulseOnline 2s ease-in-out infinite; }
+  .sb-op-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--borda); }
+  .sb-op-item:last-child { border-bottom: none; }
+  .sb-op-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .sb-op-info { flex: 1; min-width: 0; }
+  .sb-op-nome { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-op-status { font-size: 10px; color: var(--texto2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sb-op-status.executando { color: var(--exec); }
+  .sb-op-status.online { color: var(--verde); }
+  .sb-op-indicador { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .sb-op-vazio { padding: 12px; text-align: center; font-size: 11px; color: var(--texto3); }
+
 /* ══ MAPA FILTROS ══ */
 .mapa-filtro-btn {
   display: flex; align-items: center; gap: 7px;
@@ -714,6 +757,15 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       </button>
     </div>
     <div class="sb-atrasados" id="sbLista"></div>
+
+    <!-- ══ PAINEL OPERADORES (só supervisor) ══ -->
+    <div class="sb-operadores" id="sbOperadores" style="display:none">
+      <div class="sb-op-header">
+        <span class="sb-op-titulo">Equipe ao vivo</span>
+        <span class="sb-op-dot-live" title="Atualiza a cada 2 min"></span>
+      </div>
+      <div id="sbOpLista"><div class="sb-op-vazio">Nenhum operador online</div></div>
+    </div>
   </aside>
 
   <!-- ══ TABLET CENTRO ══ -->
@@ -1020,8 +1072,8 @@ function _preencherDetalhe(p){
   footer.classList.add("show");
   if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";}
   else if(outraExecucao){footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
-  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";}
-  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";}
+  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
+  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"");}
 }
 function cancelarMinhaExecucaoPainel(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
 
@@ -1037,6 +1089,7 @@ function enviarConclusao(){if(!_protocoloConcluindo)return;var btn=document.getE
 /* ══ RENDER MOBILE ══ */
 function renderCard(p,idx){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=!concluido&&lock&&lock.sessionId===SESSION_ID,outraExecucao=!concluido&&lock&&lock.sessionId!==SESSION_ID,tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
+  var prioridade = !!p.prioridade && !concluido;
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
   var obs=_mm?"<span class='meta-item'><a href='"+_mm[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Maps</a></span>":(p.obs&&p.obs!=="—"?"<span class='meta-item'>📝 "+safeText(p.obs)+"</span>":"");
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>":"";
@@ -1058,12 +1111,12 @@ function renderCard(p,idx){
   var prazoLabel=concluido?"100% concluído":pct+"% do prazo";
   var prazoExtra=(!concluido&&t.horaVence)?" <span class='prazo-hora'>· vence às "+t.horaVence+"</span>":"";
   var badgeTxt={urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado",concluido:"✅ Concluído"}[tipoCard]||"";
-  return "<div class='card t-"+tipoCard+" card-animar' style='--delay:"+delay+"ms' "+isoAttr+">"+
+  return "<div class='card t-"+tipoCard+(prioridade?" t-prioridade":"")+" card-animar' style='--delay:"+delay+"ms' "+isoAttr+">"+
     "<div class='card-inner'><div class='card-stripe'></div>"+
     "<div class='card-body'>"+
       "<div class='card-top'>"+
-        "<div class='card-top-left'><span class='prot-num'>"+safeText(p.protocolo)+"</span>"+(tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt+"</span>":"")+"</div>"+
-        "<div class='card-top-right'>"+execBadge+"</div>"+
+        "<div class='card-top-left'><span class='prot-num'>"+safeText(p.protocolo)+"</span>"+(prioridade?"<span class='badge-prioridade'>⚡ Prioridade máxima</span>":(tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt+"</span>":""))+"</div>"+
+        "<div class='card-top-right'>"+execBadge+_btnPrioridade(p.protocolo,prioridade)+"</div>"+
       "</div>"+
       "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>"+
       "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'>👷 "+safeText(p.registradoPor||"—")+"</span>"+obs+dist+"</div>"+
@@ -1076,9 +1129,11 @@ function renderCard(p,idx){
 /* ══ RENDER CARD TABLET ══ */
 function renderCardTablet(p,idx){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=!concluido&&lock&&lock.sessionId===SESSION_ID,outraExecucao=!concluido&&lock&&lock.sessionId!==SESSION_ID,tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
+  var prioridade = !!p.prioridade && !concluido;
   var idSafe=p.protocolo.replace(/[^a-z0-9]/gi,"_"),selecionado=_protocoloSelecionado===p.protocolo?" selected":"";
   var badgeHtml;
-  if(concluido)badgeHtml="<span class='badge-sm t-concluido'>✅ Concluído</span>";
+  if(prioridade) badgeHtml="<span class='badge-prioridade'>⚡ Máxima</span>";
+  else if(concluido)badgeHtml="<span class='badge-sm t-concluido'>✅ Concluído</span>";
   else if(outraExecucao||minhaExecucao)badgeHtml="<span class='badge-sm t-execucao'><span class='exec-dot'></span>Execução</span>";
   else{var labels={urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};badgeHtml="<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";}
   var execSub="";
@@ -1090,7 +1145,7 @@ function renderCardTablet(p,idx){
   var thumbHtml="",srcThumb=fotoSrc(p.fotoId);
   if(srcThumb)thumbHtml="<div class='card-t-thumb'><div class='card-t-thumb-sk'></div><img class='card-t-thumb-img' src='"+srcThumb+"' loading='lazy' onload='this.classList.add(\"loaded\");var sk=this.previousElementSibling;if(sk)sk.style.display=\"none\";' onerror='this.closest(\".card-t-thumb\").style.display=\"none\";' alt='Foto'></div>";
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
-  return "<div class='card-t t-"+tipoCard+selecionado+" card-animar' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
+  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+" card-animar' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
     thumbHtml+
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
@@ -1138,7 +1193,7 @@ function renderTablet(lista){
     else if(ftFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
   }
   if(_modoPerto&&_posAtual){filtrados.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
-  else{filtrados.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 5;if(p.lock&&p.lock.sessionId===SESSION_ID)return 0;if(p.lock)return 1;if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado"))return 2;if(p._t&&p._t.r<=4)return 3;return 4;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
+  else{filtrados.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado"))return 3;if(p._t&&p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
   var gt=document.getElementById("gridTablet");
   if(!filtrados.length){gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'>✅</div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";return;}
   var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=filtrados.filter(function(p){return isConcluido(p);});
@@ -1170,7 +1225,7 @@ function renderFiltrado(lista){
   if(termoBusca&&!filtrados.length){g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou protocolo.</div></div>";return;}
   var gridList=termoBusca?filtrados:ativos.slice();
   if(_modoPerto&&_posAtual){gridList.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
-  else{gridList.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 5;if(p.lock&&p.lock.sessionId===SESSION_ID)return 0;if(p.lock)return 1;if(p._t.r<=0||p._t.tipo==="atrasado")return 2;if(p._t.r<=4)return 3;return 4;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
+  else{gridList.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t.r<=0||p._t.tipo==="atrasado")return 3;if(p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
   var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=gridList.filter(function(p){return isConcluido(p);});
   var novoHashes={};gridList.forEach(function(p){novoHashes[p.protocolo]=hashProtocolo(p);});
   var secaoAtual=[execL.length,urgL.length,norL.length,concL.length].join("|"),precisaReconstruir=secaoAtual!==(_prevHashes.__secoes__||"");
@@ -1210,7 +1265,136 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
-/* ══ MAPA INTEGRADO ══ */
+/* ══ PRIORIDADE MANUAL ══ */
+function togglePrioridade(protocolo, ativaAtual) {
+  if (!isSupervisor()) return;
+  var novaAtiva = !ativaAtual;
+  fetch(API_BASE + "?acao=prioridade&protocolo=" + encodeURIComponent(protocolo) + "&ativa=" + (novaAtiva ? "1" : "0") + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res.ok) {
+        toast(novaAtiva ? "⚡ Prioridade máxima ativada!" : "Prioridade removida", novaAtiva ? "exec" : "");
+        carregarDados();
+      }
+    })
+    .catch(function(){ toast("❌ Erro ao alterar prioridade","erro"); });
+}
+
+function _btnPrioridade(protocolo, prioridade) {
+  if (!isSupervisor()) return "";
+  return "<button class='btn-prioridade-card" + (prioridade?" ativa":"") + "' onclick='event.stopPropagation();togglePrioridade(\"" + esc(protocolo) + "\"," + (prioridade?"true":"false") + ")'>" +
+    (prioridade ? "⚡ Prioritário" : "⚡ Priorizar") +
+  "</button>";
+}
+
+function _btnPrioridadeDetalhe(protocolo, prioridade) {
+  if (!isSupervisor()) return "";
+  return "<button class='btn-prioridade" + (prioridade?" ativa":"") + "' onclick='togglePrioridade(\"" + esc(protocolo) + "\"," + (prioridade?"true":"false") + ")'>" +
+    (prioridade ? "⚡ Remover prioridade máxima" : "⚡ Marcar como prioridade máxima") +
+  "</button>";
+}
+
+/* ══ PAINEL OPERADORES AO VIVO ══ */
+var _opPingInterval = null;
+var _opListaInterval = null;
+var _CORES_OP = ["#1469C7","#15803D","#7C3AED","#A16207","#B91C1C","#0F6E56","#993556"];
+
+function hashColorOp(str) {
+  var hash = 0;
+  for (var i = 0; i < str.length; i++) hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  return _CORES_OP[Math.abs(hash) % _CORES_OP.length];
+}
+
+function iniciaisOp(nome) {
+  return nome.split(" ").map(function(w){ return w[0]; }).join("").slice(0,2).toUpperCase();
+}
+
+function formatarTempoOp(iso) {
+  var min = Math.round((new Date() - new Date(iso)) / 60000);
+  if (min < 1) return "agora";
+  if (min < 60) return "há " + min + "min";
+  return "há " + Math.round(min/60) + "h";
+}
+
+function enviarPingPresenca() {
+  var operador = getOperador();
+  if (!operador) return;
+  fetch(API_BASE + "?acao=ping&operador=" + encodeURIComponent(operador) + "&sessionId=" + encodeURIComponent(SESSION_ID) + "&t=" + Date.now(), { redirect: "follow" })
+    .catch(function(){});
+}
+
+function carregarOperadoresOnline() {
+  if (!isSupervisor()) return;
+  fetch(API_BASE + "?acao=presencas&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res.ok) renderOperadoresOnline(res.presencas || []);
+    })
+    .catch(function(){});
+}
+
+function renderOperadoresOnline(presencas) {
+  var locks = {};
+  _ultimaLista.forEach(function(p) {
+    if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco };
+  });
+
+  var html = "";
+  if (!presencas.length) {
+    html = '<div class="sb-op-vazio">Nenhum operador online</div>';
+  } else {
+    presencas.forEach(function(p) {
+      var cor = hashColorOp(p.operador);
+      var lock = locks[p.sessionId];
+      var statusTxt = lock
+        ? p.protocolo || lock.protocolo
+        : "online · " + formatarTempoOp(p.timestamp);
+      var statusClass = lock ? "executando" : "online";
+      var indicadorCor = lock ? "var(--exec)" : "var(--verde)";
+      html +=
+        '<div class="sb-op-item">' +
+          '<div class="sb-op-avatar" style="background:' + cor + '">' + iniciaisOp(p.operador) + '</div>' +
+          '<div class="sb-op-info">' +
+            '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
+            '<div class="sb-op-status ' + statusClass + '">' +
+              (lock ? '● executando ' + safeText(lock.protocolo) : '● ' + formatarTempoOp(p.timestamp)) +
+            '</div>' +
+          '</div>' +
+          '<div class="sb-op-indicador" style="background:' + indicadorCor + '"></div>' +
+        '</div>';
+    });
+  }
+
+  document.getElementById("sbOpLista").innerHTML = html;
+}
+
+function iniciarPresenca() {
+  /* Todos os operadores enviam ping */
+  enviarPingPresenca();
+  if (_opPingInterval) clearInterval(_opPingInterval);
+  _opPingInterval = setInterval(enviarPingPresenca, 120000); /* a cada 2 min */
+
+  /* Só supervisor vê o painel */
+  if (isSupervisor()) {
+    document.getElementById("sbOperadores").style.display = "";
+    carregarOperadoresOnline();
+    if (_opListaInterval) clearInterval(_opListaInterval);
+    _opListaInterval = setInterval(carregarOperadoresOnline, 30000); /* atualiza a cada 30s */
+  }
+}
+
+/* Inicia presença quando operador é identificado */
+var _origConfirmarOperador = confirmarOperador;
+confirmarOperador = function() {
+  _origConfirmarOperador();
+  setTimeout(iniciarPresenca, 300);
+};
+
+/* Inicia presença se já estava logado */
+window.addEventListener("DOMContentLoaded", function() {
+  if (getOperador()) setTimeout(iniciarPresenca, 500);
+});
+
 var _mapaObj = null, _mapaIniciado = false, _mapaMarcadores = [], _mapaFiltro = "todos", _mapaInfoAberta = null;
 var MAPS_KEY = "AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc";
 var _CORES_MAPA = { atrasado:"#7F1D1D", urgente:"#B91C1C", pendente:"#A16207", execucao:"#7C3AED", concluido:"#15803D" };
