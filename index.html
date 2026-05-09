@@ -637,6 +637,35 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   .sb-op-indicador { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .sb-op-vazio { padding: 12px; text-align: center; font-size: 11px; color: var(--texto3); }
 
+/* ══ MENU SUPERVISOR ══ */
+  .sup-menu-wrap { position: relative; }
+  .sup-menu-btn {
+    width: 30px; height: 30px; border-radius: var(--radius-xs);
+    background: var(--cinza-md); border: 1px solid var(--borda);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; font-size: 15px; color: var(--texto2);
+    transition: background .15s;
+  }
+  .sup-menu-btn:hover { background: var(--borda); }
+  .sup-menu-dropdown {
+    display: none; position: absolute; top: 34px; right: 0; z-index: 200;
+    background: var(--branco); border: 1px solid var(--borda);
+    border-radius: var(--radius-sm); box-shadow: var(--sombra-lg);
+    min-width: 200px; overflow: hidden;
+  }
+  .sup-menu-dropdown.open { display: block; }
+  .sup-menu-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .12s;
+    border: none; background: none; width: 100%; text-align: left;
+    font-family: "DM Sans",sans-serif; color: var(--texto);
+  }
+  .sup-menu-item:hover { background: var(--cinza-md); }
+  .sup-menu-item.danger { color: var(--vermelho); }
+  .sup-menu-item.danger:hover { background: var(--vermelho-bg); }
+  .sup-menu-divider { height: 1px; background: var(--borda); margin: 2px 0; }
+
 /* ══ MAPA FILTROS ══ */
 .mapa-filtro-btn {
   display: flex; align-items: center; gap: 7px;
@@ -1135,7 +1164,10 @@ function _preencherDetalhe(p){
   if(concluido){var fotoConcHtml="",_fcId=p.fotoConcId||p.fotoConclusaoId||"",_fcUrl=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcId){var srcC=fotoSrc(_fcId);fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(_fcUrl)+"\",\""+esc(_fcId)+"\")' alt='Foto conclusão'></div>";}else if(_fcUrl){fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+esc(_fcUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl)+"\")' alt='Foto conclusão'></div>";}conclusaoHtml="<div class='detail-conclusao-section'><div class='detail-conclusao-header'>✅ Dados de conclusão</div>"+(p.operadorConclusao?"<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>":"")+"<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>"+(fotoConcHtml?"<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConcHtml+"</div>":"")+"</div>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso-detalhe='"+esc(p.dataHora)+"' data-concluido-detalhe='"+(concluido?"1":"0")+"'":"";
   content.innerHTML=
-    "<div><div class='detail-prot'>"+safeText(p.protocolo)+"</div><div class='detail-end'>📍 "+safeText(p.endereco)+"</div><div style='margin-top:6px'>"+badgeMap[tipoCard]+"</div></div>"+
+    "<div style='display:flex;align-items:flex-start;justify-content:space-between;gap:8px'>"+
+      "<div style='flex:1;min-width:0'><div class='detail-prot'>"+safeText(p.protocolo)+"</div><div class='detail-end'>📍 "+safeText(p.endereco)+"</div><div style='margin-top:6px'>"+badgeMap[tipoCard]+"</div></div>"+
+      (isSupervisor() ? _renderMenuSupervisor(p, lock, concluido, outraExecucao) : "")+
+    "</div>"+
     "<div class='detail-mini-cards "+tipoCard+"' "+isoAttr+">"+
       "<div class='mini-card'><div class='mini-card-val t-"+tipoCard+" detail-delta-val'>"+deltaVal+"</div><div class='mini-card-lbl'>"+deltaLbl+"</div></div>"+
       "<div class='mini-card'><div class='mini-card-val'>"+abertura+"</div><div class='mini-card-lbl'>Abertura</div></div>"+
@@ -1150,15 +1182,14 @@ function _preencherDetalhe(p){
       obsHtml+
     "</div>"+
     fotoHtml+conclusaoHtml;
-  var _btnRemDet = isSupervisor() ? "<button class='btn-remover-detalhe' onclick='abrirModalRemover(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>🗑️ Remover protocolo</button>" : "";
+  var _btnRemDet = "";
   footer.classList.add("show");
-  if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>"+_btnRemDet;}
+  if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";}
   else if(outraExecucao){
-    footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>"+
-      (isSupervisor()?"<button class='btn-prioridade' style='margin-top:6px' onclick='abrirModalRedistribuir(\""+esc(p.protocolo)+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\")'>↔ Redistribuir para outro operador</button>":"")+_btnRemDet;
+    footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   }
-  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"")+_btnRemDet;}
-  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>"+(isSupervisor()?"<button class='btn-prioridade"+(p.prioridade?" ativa":"")+"' onclick='togglePrioridade(\""+esc(p.protocolo)+"\"," +(p.prioridade?"true":"false")+")'>⚡ "+(p.prioridade?"Remover prioridade":"Marcar como prioridade máxima")+"</button>":"")+_btnRemDet;}
+  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";}
+  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";}
 }
 function cancelarMinhaExecucaoPainel(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
 
@@ -1357,6 +1388,63 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+/* ══ MENU SUPERVISOR ══ */
+function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
+  var prot = esc(p.protocolo), end = esc(p.endereco);
+  var menuId = "supMenu_" + p.protocolo.replace(/[^a-z0-9]/gi,"_");
+  var items = "";
+
+  /* Prioridade */
+  var prioridade = !!p.prioridade && !concluido;
+  if (!concluido) {
+    items += "<button class='sup-menu-item' onclick='togglePrioridade(\""+prot+"\","+(prioridade?"true":"false")+");fecharMenuSupervisor()'>"+
+      (prioridade ? "⚡ Remover prioridade" : "⚡ Marcar como prioridade máxima")+
+    "</button>";
+  }
+
+  /* Redistribuir — só se estiver em execução por outro */
+  if (outraExecucao && lock) {
+    items += "<button class='sup-menu-item' onclick='abrirModalRedistribuir(\""+prot+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\");fecharMenuSupervisor()'>↔ Redistribuir protocolo</button>";
+  }
+
+  /* Remover */
+  items += "<div class='sup-menu-divider'></div>";
+  items += "<button class='sup-menu-item danger' onclick='abrirModalRemover(\""+prot+"\",\""+end+"\");fecharMenuSupervisor()'>🗑️ Remover protocolo</button>";
+
+  return "<div class='sup-menu-wrap' id='"+menuId+"'>"+
+    "<button class='sup-menu-btn' onclick='toggleMenuSupervisor(\""+menuId+"\")' title='Opções de supervisor'>⚙️</button>"+
+    "<div class='sup-menu-dropdown' id='"+menuId+"_dd'>"+items+"</div>"+
+  "</div>";
+}
+
+var _menuAberto = null;
+
+function toggleMenuSupervisor(id) {
+  var dd = document.getElementById(id + "_dd");
+  if (!dd) return;
+  var estaAberto = dd.classList.contains("open");
+  fecharMenuSupervisor();
+  if (!estaAberto) {
+    dd.classList.add("open");
+    _menuAberto = id;
+  }
+}
+
+function fecharMenuSupervisor() {
+  if (_menuAberto) {
+    var dd = document.getElementById(_menuAberto + "_dd");
+    if (dd) dd.classList.remove("open");
+    _menuAberto = null;
+  }
+}
+
+/* Fecha menu ao clicar fora */
+document.addEventListener("click", function(e) {
+  if (_menuAberto && !e.target.closest(".sup-menu-wrap")) {
+    fecharMenuSupervisor();
+  }
+});
+
 /* ══ REMOVER PROTOCOLO ══ */
 var _removerProtocolo = null;
 
