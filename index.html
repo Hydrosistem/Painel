@@ -901,6 +901,34 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 </div>
 
+<!-- ══ MODAL EDITAR ENDEREÇO ══ -->
+<div class="modal-overlay" id="modalEditarEndereco">
+  <div class="modal">
+    <div class="modal-icon">✏️</div>
+    <div class="modal-title">Editar endereço</div>
+    <div class="modal-sub" id="modalEditarEnderecoSub"></div>
+    <input class="modal-op-input" id="inputNovoEndereco" type="text" maxlength="200" autocomplete="off" spellcheck="false" placeholder="Endereço completo">
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalEditarEndereco()">Cancelar</button>
+      <button class="btn-confirmar" id="btnConfirmarEndereco" disabled onclick="confirmarEditarEndereco()">✏️ Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL OBSERVAÇÃO ══ -->
+<div class="modal-overlay" id="modalObs">
+  <div class="modal">
+    <div class="modal-icon">📝</div>
+    <div class="modal-title">Observação</div>
+    <div class="modal-sub" id="modalObsSub"></div>
+    <textarea id="inputObs" rows="4" style="width:100%;padding:11px 14px;border:1.5px solid var(--borda);border-radius:var(--radius-sm);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;resize:vertical;color:var(--texto);margin-bottom:14px;" placeholder="Digite a observação…" maxlength="500"></textarea>
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalObs()">Cancelar</button>
+      <button class="btn-confirmar" id="btnConfirmarObs" onclick="confirmarObs()">📝 Salvar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL REMOVER PROTOCOLO ══ -->
 <div class="modal-overlay" id="modalRemover">
   <div class="modal">
@@ -1388,11 +1416,41 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+/* ══ FORÇAR CONCLUSÃO (supervisor) ══ */
+function forcarConclusaoSupervisor(protocolo) {
+  if (!isSupervisor()) return;
+  var operador = getOperador() || "Supervisor";
+  if (!confirm("Marcar " + protocolo + " como concluído sem foto?\n\nRegistrado por: " + operador)) return;
+  fetch(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(res){
+      if (res.ok) {
+        pararHeartbeat(protocolo);
+        toast("✅ Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
+        carregarDados();
+      } else {
+        toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+      }
+    })
+    .catch(function(){ toast("❌ Erro ao forçar conclusão", "erro"); });
+}
+
 /* ══ MENU SUPERVISOR ══ */
 function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   var prot = esc(p.protocolo), end = esc(p.endereco);
   var menuId = "supMenu_" + p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var items = "";
+
+  /* Editar endereço */
+  items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'>✏️ Editar endereço</button>";
+
+  /* Adicionar observação */
+  items += "<button class='sup-menu-item' onclick='abrirModalObs(\""+prot+"\",\""+esc(p.obs&&p.obs!=\"—\"?p.obs:\"\")+"\");fecharMenuSupervisor()'>📝 Editar observação</button>";
+
+  /* Forçar conclusão — só se não estiver concluído */
+  if (!concluido) {
+    items += "<button class='sup-menu-item' onclick='forcarConclusaoSupervisor(\""+prot+"\");fecharMenuSupervisor()'>✅ Forçar conclusão sem foto</button>";
+  }
 
   /* Prioridade */
   var prioridade = !!p.prioridade && !concluido;
