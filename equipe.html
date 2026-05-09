@@ -238,7 +238,7 @@ header {
 }
 .det-mapa-titulo { font-size: 12px; font-weight: 700; color: var(--texto); display: flex; align-items: center; gap: 6px; }
 .det-mapa-atualizado { font-size: 11px; color: var(--texto3); }
-#mapaOperador { height: 300px; width: 100%; }
+#mapaOperador { height: 300px; width: 100%; display: block; }
 .det-mapa-vazio {
   height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 6px; color: var(--texto3); font-size: 13px;
@@ -272,6 +272,17 @@ header {
 </style>
 </head>
 <body>
+<script>
+/* Callback global chamado quando Maps API carrega */
+function _mapaCarregado() {
+  window._mapsCarregado = true;
+  if (window._opParaMapa) {
+    _renderMapaOp(window._opParaMapa);
+    window._opParaMapa = null;
+  }
+}
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc&callback=_mapaCarregado&language=pt-BR&region=BR" async defer></script>
 
 <header>
   <div class="h-brand">
@@ -586,33 +597,31 @@ function renderDetalhe() {
     mapaHtml +
     infoHtml;
 
-  /* Inicializa mapa se GPS disponível */
+  /* Inicializa mapa se GPS disponível — setTimeout garante que o innerHTML já está no DOM */
   if (op._temGps) {
-    _iniciarMapaOp(op);
+    setTimeout(function() { _iniciarMapaOp(op); }, 50);
   } else {
-    _mapaIniciado = false;
     _mapaObj = null;
   }
 }
 
 /* ══ MAPA DO OPERADOR ══ */
 function _iniciarMapaOp(op) {
-  if (!window.google || !window.google.maps) {
-    var script = document.createElement("script");
-    script.src = "https://maps.googleapis.com/maps/api/js?key=" + MAPS_KEY + "&callback=_mapaCarregado&language=pt-BR&region=BR";
-    script.async = true; script.defer = true;
-    window._opParaMapa = op;
-    document.head.appendChild(script);
-  } else {
+  if (window._mapsCarregado) {
     _renderMapaOp(op);
+  } else {
+    /* Maps ainda carregando — callback vai pegar */
+    window._opParaMapa = op;
   }
 }
 
 window._mapaCarregado = function() {
-  _mapaIniciado = true;
+  window._mapsCarregado = true;
   if (window._opParaMapa) {
-    _renderMapaOp(window._opParaMapa);
-    window._opParaMapa = null;
+    setTimeout(function() {
+      _renderMapaOp(window._opParaMapa);
+      window._opParaMapa = null;
+    }, 50);
   }
 };
 
@@ -622,18 +631,15 @@ function _renderMapaOp(op) {
 
   var pos = { lat: parseFloat(op.lat), lng: parseFloat(op.lng) };
 
-  if (!_mapaObj || !document.getElementById("mapaOperador")) {
-    _mapaObj = new google.maps.Map(el, {
-      center: pos, zoom: 15,
-      mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
-      styles: [
-        { featureType:"poi", elementType:"labels", stylers:[{visibility:"off"}] },
-        { featureType:"transit", elementType:"labels", stylers:[{visibility:"off"}] }
-      ]
-    });
-  } else {
-    _mapaObj.panTo(pos);
-  }
+  /* Sempre cria nova instância — o elemento foi recriado via innerHTML */
+  _mapaObj = new google.maps.Map(el, {
+    center: pos, zoom: 15,
+    mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
+    styles: [
+      { featureType:"poi", elementType:"labels", stylers:[{visibility:"off"}] },
+      { featureType:"transit", elementType:"labels", stylers:[{visibility:"off"}] }
+    ]
+  });
 
   /* Remove marcadores antigos */
   if (_marcadorOp)      { _marcadorOp.setMap(null); _marcadorOp = null; }
