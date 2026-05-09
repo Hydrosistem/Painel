@@ -185,25 +185,13 @@ header {
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <span class="h-badge" id="badgeSupervisor" style="display:none">🔐 Supervisor</span>
-    <button class="btn-sair" id="btnSair" style="display:none" onclick="sair()">✕ Sair</button>
+    <a href="/Hydrosistem/" class="btn-sair" style="text-decoration:none">← Painel</a>
+    <span class="h-badge">🔐 Supervisor</span>
   </div>
 </header>
 
-<!-- ══ TELA LOGIN ══ -->
-<div id="telaLogin">
-  <div class="login-card">
-    <div class="login-icon">🔐</div>
-    <div class="login-title">Acesso restrito</div>
-    <div class="login-sub">Este relatório é exclusivo para o supervisor. Digite a senha para continuar.</div>
-    <input class="login-input" id="inputSenha" type="password" placeholder="••••" maxlength="8" autocomplete="off" inputmode="numeric">
-    <button class="btn-entrar" onclick="verificarSenha()">Entrar</button>
-    <div class="login-erro" id="loginErro"></div>
-  </div>
-</div>
-
 <!-- ══ PAINEL RELATÓRIO ══ -->
-<div id="painelRelatorio">
+<div id="painelRelatorio" style="display:block">
   <div class="relatorio-wrap">
 
     <div class="toolbar">
@@ -297,47 +285,12 @@ header {
 
 <script>
 /* ══ CONFIG ══ */
-var SENHA = "2309";
 var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
 var API = API_BASE + "?acao=dados";
 var PRAZO = 24;
-var SESSION_KEY = "hyd_relatorio_auth";
 
-/* ══ AUTH ══ */
-function verificarSenha() {
-  var val = document.getElementById("inputSenha").value.trim();
-  if (val === SENHA) {
-    try { sessionStorage.setItem(SESSION_KEY, "1"); } catch(e) {}
-    entrar();
-  } else {
-    var inp = document.getElementById("inputSenha");
-    inp.classList.add("erro");
-    document.getElementById("loginErro").textContent = "Senha incorreta. Tente novamente.";
-    inp.value = "";
-    setTimeout(function() { inp.classList.remove("erro"); }, 600);
-  }
-}
-function entrar() {
-  document.getElementById("telaLogin").style.display = "none";
-  document.getElementById("painelRelatorio").style.display = "block";
-  document.getElementById("badgeSupervisor").style.display = "";
-  document.getElementById("btnSair").style.display = "";
-  carregarRelatorio();
-}
-function sair() {
-  try { sessionStorage.removeItem(SESSION_KEY); } catch(e) {}
-  document.getElementById("telaLogin").style.display = "flex";
-  document.getElementById("painelRelatorio").style.display = "none";
-  document.getElementById("badgeSupervisor").style.display = "none";
-  document.getElementById("btnSair").style.display = "none";
-  document.getElementById("inputSenha").value = "";
-  document.getElementById("loginErro").textContent = "";
-}
-document.getElementById("inputSenha").addEventListener("keydown", function(e) {
-  if (e.key === "Enter") verificarSenha();
-});
 window.addEventListener("DOMContentLoaded", function() {
-  try { if (sessionStorage.getItem(SESSION_KEY) === "1") { entrar(); return; } } catch(e) {}
+  carregarRelatorio();
 });
 
 /* ══ DATA ATUAL ══ */
