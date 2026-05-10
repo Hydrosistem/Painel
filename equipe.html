@@ -479,8 +479,9 @@ function renderLista() {
     var statusCls = op._executando ? "exec" : op._online ? "online" : "offline";
     var statusTxt = op._executando
       ? "<span class='dot-exec'></span>Executando " + safeText(op._protocolo.protocolo)
-      : op._online ? "● Online há " + formatarTempo(minutosDesde(op.timestamp))
-                   : "● Offline há " + formatarTempo(minutosDesde(op.timestamp));
+      : op._online
+        ? (minutosDesde(op.timestamp) < 1 ? "online agora" : "há " + formatarTempo(minutosDesde(op.timestamp)))
+        : "offline há " + formatarTempo(minutosDesde(op.timestamp));
     var gpsIcon = op._temGps ? "📍" : "📵";
     var selecionadoCls = (_selecionado && _selecionado.sessionId === op.sessionId) ? " selected" + (op._executando?" exec":"") : "";
 
