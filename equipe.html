@@ -435,7 +435,12 @@ function renderLista() {
     if (p.lock) lockMap[p.lock.sessionId] = p;
   });
 
-  _operadores.forEach(function(op) {
+  /* Filtra supervisores */
+  var operadoresFiltrados = _operadores.filter(function(op) {
+    return !op.supervisor;
+  });
+
+  operadoresFiltrados.forEach(function(op) {
     op._online = minutosDesde(op.timestamp) < ONLINE_TTL_MIN;
     op._temGps = op.lat != null && op.lng != null && minutosDesde(op.gpsTs) < GPS_TTL_MIN;
     op._protocolo = lockMap[op.sessionId] || null;
@@ -443,15 +448,15 @@ function renderLista() {
   });
 
   /* Ordena: executando > online > offline */
-  _operadores.sort(function(a,b) {
+  operadoresFiltrados.sort(function(a,b) {
     var ra = a._executando ? 0 : a._online ? 1 : 2;
     var rb = b._executando ? 0 : b._online ? 1 : 2;
     return ra - rb;
   });
 
-  var online = _operadores.filter(function(o){ return o._online; }).length;
-  var exec   = _operadores.filter(function(o){ return o._executando; }).length;
-  var gps    = _operadores.filter(function(o){ return o._temGps; }).length;
+  var online = operadoresFiltrados.filter(function(o){ return o._online; }).length;
+  var exec   = operadoresFiltrados.filter(function(o){ return o._executando; }).length;
+  var gps    = operadoresFiltrados.filter(function(o){ return o._temGps; }).length;
 
   /* Stats */
   document.getElementById("statOnline").textContent = online;
@@ -463,13 +468,13 @@ function renderLista() {
 
   /* Lista */
   var lista = document.getElementById("sbLista");
-  if (!_operadores.length) {
-    lista.innerHTML = "<div class='sb-vazio'>Nenhum operador registrado ainda.<br>Aguardando pings do painel…</div>";
+  if (!operadoresFiltrados.length) {
+    lista.innerHTML = "<div class='sb-vazio'>Nenhum operador online no momento.</div>";
     return;
   }
 
   var html = "";
-  _operadores.forEach(function(op, idx) {
+  operadoresFiltrados.forEach(function(op, idx) {
     var cor = corOp(op.operador);
     var statusCls = op._executando ? "exec" : op._online ? "online" : "offline";
     var statusTxt = op._executando
@@ -494,9 +499,12 @@ function renderLista() {
 
   lista.innerHTML = html;
 
+  /* Salva lista filtrada para seleção por índice */
+  window._operadoresFiltrados = operadoresFiltrados;
+
   /* Re-renderiza detalhe se selecionado */
   if (_selecionado) {
-    var atualizado = _operadores.find(function(o){ return o.sessionId === _selecionado.sessionId; });
+    var atualizado = operadoresFiltrados.find(function(o){ return o.sessionId === _selecionado.sessionId; });
     if (atualizado) {
       _selecionado = atualizado;
       renderDetalhe();
@@ -506,8 +514,8 @@ function renderLista() {
 
 /* ══ SELECIONAR OPERADOR ══ */
 function selecionarOp(idx) {
-  _selecionado = _operadores[idx];
-  /* Re-renderiza lista para destacar selecionado */
+  var lista = window._operadoresFiltrados || [];
+  _selecionado = lista[idx];
   renderLista();
   renderDetalhe();
 }
