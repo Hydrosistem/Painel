@@ -442,7 +442,7 @@ function renderLista() {
 
   operadoresFiltrados.forEach(function(op) {
     op._online = minutosDesde(op.timestamp) < ONLINE_TTL_MIN;
-    op._temGps = op.lat != null && op.lng != null && minutosDesde(op.gpsTs) < GPS_TTL_MIN;
+    op._temGps = op.lat != null && op.lng != null && minutosDesde(op.gpsTs) < GPS_TTL_MIN && (op.accuracy == null || op.accuracy < 150);
     op._protocolo = lockMap[op.sessionId] || null;
     op._executando = !!op._protocolo;
   });
