@@ -1788,6 +1788,7 @@ function enviarPingPresenca() {
 function _enviarPingComGps(operador, lat, lng, accuracy) {
   var params = "acao=ping&operador=" + encodeURIComponent(operador) + "&sessionId=" + encodeURIComponent(SESSION_ID) + "&t=" + Date.now();
   if (lat != null) params += "&lat=" + lat + "&lng=" + lng + "&accuracy=" + (accuracy || 0);
+  if (isSupervisor()) params += "&supervisor=1";
   fetch(API_BASE + "?" + params, { redirect: "follow" }).catch(function(){});
 }
 
