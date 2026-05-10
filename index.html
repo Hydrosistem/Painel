@@ -810,7 +810,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <!-- ══ PAINEL OPERADORES (só supervisor) ══ -->
     <div class="sb-operadores" id="sbOperadores" style="display:none">
       <div class="sb-op-header">
-        <span class="sb-op-titulo">Equipe ao vivo</span>
+        <span class="sb-op-titulo">Equipes online</span>
         <span class="sb-op-dot-live" title="Atualiza a cada 2 min"></span>
       </div>
       <div id="sbOpLista"><div class="sb-op-vazio">Nenhum operador online</div></div>
@@ -1808,16 +1808,16 @@ function renderOperadoresOnline(presencas) {
     if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco };
   });
 
+  /* Filtra supervisores */
+  var equipe = presencas.filter(function(p) { return !p.supervisor; });
+
   var html = "";
-  if (!presencas.length) {
-    html = '<div class="sb-op-vazio">Nenhum operador online</div>';
+  if (!equipe.length) {
+    html = '<div class="sb-op-vazio">Nenhuma equipe online</div>';
   } else {
-    presencas.forEach(function(p) {
+    equipe.forEach(function(p) {
       var cor = hashColorOp(p.operador);
       var lock = locks[p.sessionId];
-      var statusTxt = lock
-        ? p.protocolo || lock.protocolo
-        : "online · " + formatarTempoOp(p.timestamp);
       var statusClass = lock ? "executando" : "online";
       var indicadorCor = lock ? "var(--exec)" : "var(--verde)";
       html +=
@@ -1826,7 +1826,7 @@ function renderOperadoresOnline(presencas) {
           '<div class="sb-op-info">' +
             '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
             '<div class="sb-op-status ' + statusClass + '">' +
-              (lock ? '● executando ' + safeText(lock.protocolo) : '● ' + formatarTempoOp(p.timestamp)) +
+              (lock ? '● executando ' + safeText(lock.protocolo) : formatarTempoOp(p.timestamp)) +
             '</div>' +
           '</div>' +
           '<div class="sb-op-indicador" style="background:' + indicadorCor + '"></div>' +
