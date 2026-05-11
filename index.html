@@ -1065,9 +1065,22 @@ window.addEventListener("offline",function(){mostrarBannerOffline("offline");});
 
 /* ══ BUSCA ══ */
 var termoBusca="", termoBuscaSb="", _ultimaLista=[];
-document.getElementById("buscaInput").addEventListener("input",function(){termoBusca=this.value.trim().toLowerCase();document.getElementById("buscaClear").classList.toggle("show",termoBusca.length>0);renderFiltrado(_ultimaLista);});
+var _debounceSearch=null, _debounceSbSearch=null;
+document.getElementById("buscaInput").addEventListener("input",function(){
+  var v=this.value.trim().toLowerCase();
+  document.getElementById("buscaClear").classList.toggle("show",v.length>0);
+  termoBusca=v;
+  clearTimeout(_debounceSearch);
+  _debounceSearch=setTimeout(function(){renderFiltrado(_ultimaLista);},120);
+});
 function limparBusca(){document.getElementById("buscaInput").value="";termoBusca="";document.getElementById("buscaClear").classList.remove("show");renderFiltrado(_ultimaLista);}
-document.getElementById("sbBuscaInput").addEventListener("input",function(){termoBuscaSb=this.value.trim().toLowerCase();document.getElementById("sbBuscaClear").classList.toggle("show",termoBuscaSb.length>0);renderTablet(_ultimaLista);});
+document.getElementById("sbBuscaInput").addEventListener("input",function(){
+  var v=this.value.trim().toLowerCase();
+  document.getElementById("sbBuscaClear").classList.toggle("show",v.length>0);
+  termoBuscaSb=v;
+  clearTimeout(_debounceSbSearch);
+  _debounceSbSearch=setTimeout(function(){renderTablet(_ultimaLista);},120);
+});
 function limparBuscaSb(){document.getElementById("sbBuscaInput").value="";termoBuscaSb="";document.getElementById("sbBuscaClear").classList.remove("show");renderTablet(_ultimaLista);}
 
 /* ══ FILTROS ══ */
@@ -1189,7 +1202,11 @@ function pararHeartbeat(protocolo){if(meusLocks[protocolo]){clearInterval(meusLo
 function abrirModal(protocolo,endereco){protocoloPendente=protocolo;enderecoPendente=endereco;document.getElementById("modalTitulo").textContent="Iniciar execução?";document.getElementById("modalSub").textContent="Protocolo "+protocolo+"\n📍 "+endereco+"\n\nOperador: "+(getOperador()||"não identificado")+"\n\nO serviço ficará marcado como Em Execução.";document.getElementById("modalOverlay").classList.add("open");}
 function fecharModal(){document.getElementById("modalOverlay").classList.remove("open");protocoloPendente=null;}
 function confirmarExecucao(){var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;if(!protocolo)return;if(navigator.vibrate)navigator.vibrate(50);var locksAtivos=Object.keys(meusLocks);if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}fecharModal();toast("⏳ Registrando execução…","exec");var operador=getOperador()||"Operador";postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){if(!res.ok){toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");carregarDados();return;}iniciarHeartbeat(protocolo);toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");carregarDados();}).catch(function(err){console.error("[confirmarExecucao]",err);toast("❌ Erro ao iniciar execução","erro");});}
-function cancelarMinhaExecucao(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
+function cancelarMinhaExecucao(protocolo){
+  pararHeartbeat(protocolo);
+  toast("🔓 Execução cancelada.","");
+  liberarLockApi(protocolo).then(function(){ carregarDados(); });
+}
 
 /* ══ HELPER: verifica se lock pertence a este dispositivo ══
    Cobre dois casos:
@@ -1209,7 +1226,7 @@ function isMinhaExecucao(lock, concluido) {
 
 /* ══ PAINEL DETALHE ══ */
 var _detailFadeTimer=null;
-function selecionarProtocolo(p){var content=document.getElementById("detailContent");if(content.classList.contains("show")){content.classList.add("fading");clearTimeout(_detailFadeTimer);_detailFadeTimer=setTimeout(function(){content.classList.remove("fading");_preencherDetalhe(p);},150);}else{_preencherDetalhe(p);}}
+function selecionarProtocolo(p){var content=document.getElementById("detailContent");if(content.classList.contains("show")){_preencherDetalhe(p);}else{_preencherDetalhe(p);}}
 function _preencherDetalhe(p){
   _protocoloSelecionado=p.protocolo;
   document.querySelectorAll(".card-t").forEach(function(c){c.classList.remove("selected");});
@@ -1264,7 +1281,11 @@ function _preencherDetalhe(p){
   else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";}
   else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";}
 }
-function cancelarMinhaExecucaoPainel(protocolo){liberarLockApi(protocolo).then(function(){pararHeartbeat(protocolo);toast("🔓 Execução cancelada.","");carregarDados();});}
+function cancelarMinhaExecucaoPainel(protocolo){
+  pararHeartbeat(protocolo);
+  toast("🔓 Execução cancelada.","");
+  liberarLockApi(protocolo).then(function(){ carregarDados(); });
+}
 
 /* ══ MODAL CONCLUSÃO ══ */
 var _protocoloConcluindo=null,_fotoConclBase64=null;
@@ -1407,7 +1428,8 @@ function renderTablet(lista){
 
 /* ══ RENDER MOBILE ══ */
 var _prevStats={},_prevHashes={};
-function hashProtocolo(p){return JSON.stringify({protocolo:p.protocolo,status:p.status,lock:p.lock?p.lock.sessionId:null,lockUser:p.lock?p.lock.usuario:null,lockTs:p.lock?p.lock.timestamp:null,obs:p.obs,fotoId:p.fotoId});}
+function hashProtocolo(p){return (p.protocolo||"")+"_"+(p.status||"")+"_"+(p.lock?p.lock.sessionId+p.lock.timestamp:"")+"_"+(p.obs||"")+"_"+(p.fotoId||"");}
+var _renderPendingMobile=false, _renderPendingTablet=false;
 function render(lista){_ultimaLista=lista;renderFiltrado(lista);renderTablet(lista);}
 function renderFiltrado(lista){
   var pen=0,exec=0,urg=0,ok=0,ativos=[],concluidosHoje=[],hoje=new Date().toDateString();
