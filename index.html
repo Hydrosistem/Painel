@@ -296,6 +296,18 @@ header {
   .sec-label-tablet { grid-column: 1/-1; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto3); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .sec-label-tablet::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
+  /* MODO COMPACTO TABLET */
+  body.modo-compacto-tablet .card-t-thumb { display: none; }
+  body.modo-compacto-tablet .card-t-body { padding: 8px 10px; gap: 3px; }
+  body.modo-compacto-tablet .card-t-prot { font-size: 9px; }
+  body.modo-compacto-tablet .card-t-end  { font-size: 11px; }
+  body.modo-compacto-tablet .card-t-meta { font-size: 10px; }
+  body.modo-compacto-tablet .card-t-prazo-row { font-size: 9px; margin-bottom: 2px; }
+  body.modo-compacto-tablet .grid-tablet { gap: 6px; }
+  body.modo-compacto-tablet .card-t { border-radius: var(--radius-sm); }
+  body.modo-compacto-tablet .grid-tablet { grid-template-columns: repeat(3, 1fr); }
+  @media (min-width: 1280px) { body.modo-compacto-tablet .grid-tablet { grid-template-columns: repeat(4, 1fr); } }
+
   /* DETAIL PANEL */
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .detail-vazio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--texto2); gap: 8px; padding: 24px; text-align: center; }
@@ -825,6 +837,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
       <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
       <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
+      <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
@@ -1085,6 +1098,35 @@ function iniciarEsperaPrompt(){if(estaInstalado()||deferredPrompt)return;clearTi
 window.addEventListener("load",function(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){ativarBotaoFallback();return;}if("serviceWorker"in navigator){var ok=false,ini=function(){if(!ok){ok=true;iniciarEsperaPrompt();}};navigator.serviceWorker.ready.then(ini).catch(ini);setTimeout(ini,1000);}else iniciarEsperaPrompt();});
 if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){swReg=reg;reg.addEventListener("updatefound",function(){var nw=reg.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage({type:"SKIP_WAITING"});mostrarBotaoAtualizar(reg);}});});}).catch(function(err){console.warn("[SW]",err);});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});});}
 function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("↺ Nova versão disponível — toque em Atualizar","");}
+
+/* ══ MODO COMPACTO TABLET ══ */
+var _modoCompactoTablet = false;
+(function(){
+  try {
+    _modoCompactoTablet = localStorage.getItem("hyd_compacto_tablet") === "1";
+    if (_modoCompactoTablet) document.body.classList.add("modo-compacto-tablet");
+  } catch(e) {}
+})();
+function toggleCompactoTablet() {
+  _modoCompactoTablet = !_modoCompactoTablet;
+  document.body.classList.toggle("modo-compacto-tablet", _modoCompactoTablet);
+  var btn = document.getElementById("btnCompactoTablet");
+  if (btn) {
+    btn.style.background  = _modoCompactoTablet ? "var(--azul-bg)"    : "";
+    btn.style.borderColor = _modoCompactoTablet ? "var(--azul-borda)" : "";
+    btn.style.color       = _modoCompactoTablet ? "var(--azul)"       : "";
+  }
+  try { localStorage.setItem("hyd_compacto_tablet", _modoCompactoTablet ? "1" : "0"); } catch(e) {}
+  toast(_modoCompactoTablet ? "☰ Modo compacto ativado" : "☷ Modo normal", "");
+}
+window.addEventListener("DOMContentLoaded", function() {
+  var btn = document.getElementById("btnCompactoTablet");
+  if (btn && _modoCompactoTablet) {
+    btn.style.background  = "var(--azul-bg)";
+    btn.style.borderColor = "var(--azul-borda)";
+    btn.style.color       = "var(--azul)";
+  }
+});
 
 /* ══ MODO PERTO DE MIM ══ */
 var _modoPerto=false,_posAtual=null,RAIO_KM=7;
@@ -1841,7 +1883,7 @@ function iniciarPresenca() {
   /* Todos os operadores enviam ping */
   enviarPingPresenca();
   if (_opPingInterval) clearInterval(_opPingInterval);
-  _opPingInterval = setInterval(enviarPingPresenca, 120000); /* a cada 2 min */
+  _opPingInterval = setInterval(enviarPingPresenca, 90000); /* a cada 90s */
 
   /* Só supervisor vê o painel */
   if (isSupervisor()) {
