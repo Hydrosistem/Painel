@@ -1916,16 +1916,43 @@ function iniciarPresenca() {
   }
 }
 
+/* ══ WAKE LOCK — mantém tela acesa para operadores em campo ══ */
+var _wakeLock = null;
+
+async function ativarWakeLock() {
+  if (isSupervisor()) return; /* supervisor não precisa */
+  if (!('wakeLock' in navigator)) return; /* browser não suporta */
+  try {
+    _wakeLock = await navigator.wakeLock.request('screen');
+    _wakeLock.addEventListener('release', function() {
+      _wakeLock = null;
+    });
+  } catch(e) {
+    /* usuário negou ou dispositivo com bateria muito baixa — silencioso */
+  }
+}
+
+/* Re-ativa Wake Lock quando a aba volta ao foco (iOS/Android soltam ao minimizar) */
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'visible' && !_wakeLock && getOperador() && !isSupervisor()) {
+    ativarWakeLock();
+  }
+});
+
 /* Inicia presença quando operador é identificado */
 var _origConfirmarOperador = confirmarOperador;
 confirmarOperador = function() {
   _origConfirmarOperador();
   setTimeout(iniciarPresenca, 300);
+  setTimeout(ativarWakeLock, 500);
 };
 
 /* Inicia presença se já estava logado */
 window.addEventListener("DOMContentLoaded", function() {
-  if (getOperador()) setTimeout(iniciarPresenca, 500);
+  if (getOperador()) {
+    setTimeout(iniciarPresenca, 500);
+    setTimeout(ativarWakeLock, 600);
+  }
   /* Pede permissão de GPS logo ao abrir para já ter localização no primeiro ping */
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(){}, function(){}, {enableHighAccuracy:true,timeout:10000,maximumAge:0});
