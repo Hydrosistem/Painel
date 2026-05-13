@@ -1538,7 +1538,7 @@ function renderCard(p,idx,isNovo){
   if(concluido){btnHtml="<div class='btn-concluido-info'>✅ Concluído em "+fdt(p.dataConclusao)+"</div>";}
   else if(outraExecucao){btnHtml="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
   else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
-  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";
+  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
   var delay=isNovo?Math.min(idx*50,380):0;
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>";
