@@ -220,6 +220,7 @@ header {
 
 /* ══ TABLET/DESKTOP ══ */
 @media (min-width: 768px) {
+  .btnPerto    { display: none; }
   .search-wrap { display: none; }
   .stats       { display: none; }
   .main        { display: none; }
@@ -891,6 +892,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
       <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
       <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
+      <button class="btn-perto" id="btnPertoTablet" onclick="togglePerto()">📍 Perto de mim</button>
       <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
@@ -1314,6 +1316,11 @@ window.addEventListener("DOMContentLoaded", function() {
 /* ══ MODO PERTO DE MIM ══ */
 var _modoPerto=false,_posAtual=null,RAIO_KM=7;
 function _haversine(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
+function _getBtnPerto() {
+  return window.innerWidth >= 768
+    ? document.getElementById("btnPertoTablet")
+    : document.getElementById("btnPerto");
+}  
 function togglePerto(){var btn=document.getElementById("btnPerto");if(_modoPerto){_modoPerto=false;_posAtual=null;btn.classList.remove("ativo");btn.textContent="📍 Perto de mim";toast("📍 Modo proximidade desativado","");renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);return;}btn.textContent="⏳ Buscando GPS...";if(!navigator.geolocation){toast("❌ GPS não disponível","erro");btn.textContent="📍 Perto de mim";return;}navigator.geolocation.getCurrentPosition(function(pos){_posAtual={lat:pos.coords.latitude,lng:pos.coords.longitude};_modoPerto=true;btn.classList.add("ativo");btn.textContent="📍 Perto de mim ✓";toast("✅ GPS ativo — até "+RAIO_KM+"km","ok");renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);},function(err){btn.textContent="📍 Perto de mim";toast(err.code===1?"❌ Permissão de GPS negada":"❌ Localização indisponível","erro");},{enableHighAccuracy:true,timeout:10000,maximumAge:30000});}
 function _aplicarProximidade(lista){if(!_modoPerto||!_posAtual) return lista;var cd=[];lista.forEach(function(p){var st=(p.status||"").toUpperCase().trim();if(st==="CONCLUÍDO"||st==="CONCLUIDO") return;if(p.lat==null||p.lng==null){p._distKm=null;cd.push(p);return;}var d=_haversine(_posAtual.lat,_posAtual.lng,p.lat,p.lng);if(d<=RAIO_KM){p._distKm=d;cd.push(p);}});cd.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});return cd;}
 function _formatarDist(km){if(km==null)return "";if(km<1)return Math.round(km*1000)+"m";return km.toFixed(1)+"km";}
