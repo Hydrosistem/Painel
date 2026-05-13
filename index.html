@@ -638,8 +638,9 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .btn-prioridade-card.ativa { background: var(--prioridade); color: #fff; }
 
 /* ══ PAINEL OPERADORES ══ */
-  .sb-operadores { border-top: 1px solid var(--borda); flex-shrink: 0; }
-  .sb-op-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 4px; }
+  .sb-operadores-main { border-top: 1px solid var(--borda); display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+  .sb-operadores { display: none; }
+  .sb-op-header { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px 4px; flex-shrink: 0; }
   .sb-op-titulo { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: var(--texto3); }
   .sb-op-dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--verde); flex-shrink: 0; animation: pulseOnline 2s ease-in-out infinite; }
   .sb-op-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--borda); }
@@ -652,6 +653,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   .sb-op-status.online { color: var(--verde); }
   .sb-op-indicador { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .sb-op-vazio { padding: 12px; text-align: center; font-size: 11px; color: var(--texto3); }
+  .sb-resumo { border-bottom: 1px solid var(--borda); flex-shrink: 0; }
 
 /* ══ MENU SUPERVISOR ══ */
   .sup-menu-wrap { position: relative; }
@@ -799,38 +801,42 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <input class="sb-search-input" id="sbBuscaInput" type="search" placeholder="Buscar…" autocomplete="off" spellcheck="false">
       <button class="sb-search-clear" id="sbBuscaClear" onclick="limparBuscaSb()">×</button>
     </div>
-    <div class="sb-filters">
-      <button class="sb-filter-btn active" onclick="setSbFiltro('todos',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--borda-md)"></span>Todos</span>
-        <span class="sb-filter-count" id="sbN-todos">—</span>
-      </button>
-      <button class="sb-filter-btn s-atrasado" onclick="setSbFiltro('atrasado',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--atrasado)"></span>Atrasados</span>
-        <span class="sb-filter-count" id="sbN-atrasado">—</span>
-      </button>
-      <button class="sb-filter-btn s-urgente" onclick="setSbFiltro('urgente',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--vermelho)"></span>Urgentes</span>
-        <span class="sb-filter-count" id="sbN-urgente">—</span>
-      </button>
-      <button class="sb-filter-btn s-exec" onclick="setSbFiltro('execucao',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--exec)"></span>Em execução</span>
-        <span class="sb-filter-count" id="sbN-execucao">—</span>
-      </button>
-      <button class="sb-filter-btn s-ok" onclick="setSbFiltro('concluido',this)">
-        <span class="sb-filter-left"><span class="sb-filter-dot" style="background:var(--verde)"></span>Concluídos hoje</span>
-        <span class="sb-filter-count" id="sbN-concluido">—</span>
-      </button>
-    </div>
-    <div class="sb-atrasados" id="sbLista"></div>
 
-    <!-- ══ PAINEL OPERADORES (só supervisor) ══ -->
-    <div class="sb-operadores" id="sbOperadores" style="display:none">
-      <div class="sb-op-header">
-        <span class="sb-op-titulo">Equipes online</span>
-        <span class="sb-op-dot-live" title="Atualiza a cada 2 min"></span>
+    <!-- Resumo em 4 cards -->
+    <div class="sb-resumo" id="sbResumo">
+      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Resumo do dia</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px 10px;">
+        <div style="background:var(--amarelo-bg);border:1px solid var(--amarelo-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+          <div id="sbResumoPen" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--amarelo);line-height:1;">—</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
+        </div>
+        <div style="background:var(--atrasado-bg);border:1px solid var(--atrasado-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+          <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--atrasado);line-height:1;">—</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--atrasado);margin-top:2px;">Atrasados</div>
+        </div>
+        <div style="background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+          <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;">—</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--exec);margin-top:2px;">Execução</div>
+        </div>
+        <div style="background:var(--verde-bg);border:1px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+          <div id="sbResumoOk" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--verde);line-height:1;">—</div>
+          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
+        </div>
       </div>
-      <div id="sbOpLista"><div class="sb-op-vazio">Nenhum operador online</div></div>
     </div>
+
+    <!-- Equipes online -->
+    <div class="sb-operadores-main" id="sbOperadoresMain">
+      <div class="sb-op-header" style="padding:10px 12px 6px;">
+        <span class="sb-op-titulo">Equipes online</span>
+        <span class="sb-op-dot-live" title="Ao vivo"></span>
+      </div>
+      <div id="sbOpLista" style="overflow-y:auto;flex:1;"><div class="sb-op-vazio">Nenhuma equipe online</div></div>
+    </div>
+
+    <!-- Legado mantido para compatibilidade JS -->
+    <div id="sbOperadores" style="display:none"></div>
+    <div id="sbLista" style="display:none"></div>
   </aside>
 
   <!-- ══ TABLET CENTRO ══ -->
@@ -1086,6 +1092,79 @@ document.getElementById("sbBuscaInput").addEventListener("input",function(){
   _debounceSbSearch=setTimeout(function(){renderTablet(_ultimaLista);},120);
 });
 function limparBuscaSb(){document.getElementById("sbBuscaInput").value="";termoBuscaSb="";document.getElementById("sbBuscaClear").classList.remove("show");renderTablet(_ultimaLista);}
+
+/* ══ FILTRO BAIRROS ══ */
+var _bairroSelecionado = "todos";
+
+function _extrairBairro(endereco) {
+  if (!endereco) return "Outros";
+  /* Tenta extrair bairro do formato Maps: "Rua X, 123 – Bairro, CEP, Arapongas" */
+  var m = endereco.match(/–\s*([^,\-]+)/);
+  if (m) return m[1].trim();
+  /* Tenta pelo separador vírgula: "Rua X, 123, Bairro, ..." */
+  var partes = endereco.split(",");
+  if (partes.length >= 3) return partes[2].trim();
+  return "Outros";
+}
+
+function _corBairro(temAtrasado, temUrgente) {
+  if (temAtrasado) return "var(--atrasado)";
+  if (temUrgente)  return "var(--vermelho)";
+  return "var(--amarelo)";
+}
+
+function renderBairros(lista) {
+  var hoje = new Date().toDateString();
+  var bairroMap = {};
+
+  lista.forEach(function(p) {
+    var concluido = isConcluido(p);
+    if (concluido && !(p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje)) return;
+    var bairro = _extrairBairro(p.endereco);
+    if (!bairroMap[bairro]) bairroMap[bairro] = { total: 0, atrasado: false, urgente: false };
+    bairroMap[bairro].total++;
+    if (!concluido) {
+      var t = p._t || tempo(p.dataHora);
+      if (t.tipo === "atrasado") bairroMap[bairro].atrasado = true;
+      else if (t.tipo === "urgente") bairroMap[bairro].urgente = true;
+    }
+  });
+
+  var bairros = Object.keys(bairroMap).sort(function(a, b) {
+    /* Ordena: atrasados primeiro, depois urgentes, depois por total */
+    var va = bairroMap[a], vb = bairroMap[b];
+    if (va.atrasado !== vb.atrasado) return va.atrasado ? -1 : 1;
+    if (va.urgente !== vb.urgente) return va.urgente ? -1 : 1;
+    return vb.total - va.total;
+  });
+
+  var totalGeral = lista.filter(function(p) {
+    var concluido = isConcluido(p);
+    return !concluido || (p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje);
+  }).length;
+
+  var html = "<button class='sb-bairro-item" + (_bairroSelecionado === "todos" ? " selected" : "") + "' onclick='setBairroFiltro(\"todos\")'>" +
+    "<span class='sb-bairro-dot' style='background:var(--borda-md)'></span>" +
+    "<span class='sb-bairro-nome'>Todos os bairros</span>" +
+    "<span class='sb-bairro-count'>" + totalGeral + "</span></button>";
+
+  bairros.forEach(function(bairro) {
+    var info = bairroMap[bairro];
+    var cor = _corBairro(info.atrasado, info.urgente);
+    var sel = _bairroSelecionado === bairro ? " selected" : "";
+    html += "<button class='sb-bairro-item" + sel + "' onclick='setBairroFiltro(\"" + bairro.replace(/"/g, "&quot;") + "\")'>" +
+      "<span class='sb-bairro-dot' style='background:" + cor + "'></span>" +
+      "<span class='sb-bairro-nome'>" + safeText(bairro) + "</span>" +
+      "<span class='sb-bairro-count'>" + info.total + "</span></button>";
+  });
+
+  document.getElementById("sbBairroLista").innerHTML = html;
+}
+
+function setBairroFiltro(bairro) {
+  _bairroSelecionado = bairro;
+  renderTablet(_ultimaLista);
+}
 
 /* ══ FILTROS ══ */
 var sbFiltro="todos", ftFiltro="todos";
@@ -1397,25 +1476,25 @@ function renderTablet(lista){
   var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length};
   Object.keys(ftCounts).forEach(function(ft){var badge=document.getElementById("ftb-"+ft);if(!badge)return;var count=ftCounts[ft];badge.textContent=count;badge.classList.toggle("zero",count===0);});
   var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}),sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}),sbExec=ativos.filter(function(p){return !!p.lock;});
-  var sbEl=document.getElementById("sbLista");
-  if(sbEl){
-    var sbHtml="";
-    if(sbAtrasados.length){sbHtml+="<div class='sb-sec'>🔴 Atenção imediata</div>";sbAtrasados.forEach(function(p){var minAtraso=Math.round((new Date()-(new Date(p.dataHora).getTime()+PRAZO*36e5))/60000),tempoTxt=minAtraso<60?"venceu há "+minAtraso+"min":"venceu há "+Math.round(minAtraso/60)+"h";sbHtml+="<div class='sb-item t-atrasado"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--atrasado)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-atrasado'>"+tempoTxt+"</div></div></div>";});}
-    if(sbUrgentes.length){sbHtml+="<div class='sb-sec'>⚠️ Urgentes</div>";sbUrgentes.forEach(function(p){sbHtml+="<div class='sb-item t-urgente"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--vermelho)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub t-urgente'>"+p._t.txt+"</div></div></div>";});}
-    if(sbExec.length){sbHtml+="<div class='sb-sec'>🟣 Em execução</div>";sbExec.forEach(function(p){var minEx=Math.round((new Date()-new Date(p.lock.timestamp))/60000),tempoEx=(p.lock.usuario?safeText(p.lock.usuario.split(" ")[0])+" · ":"")+"há "+(minEx<1?"<1":minEx)+"min";sbHtml+="<div class='sb-item t-exec"+(p.protocolo===_protocoloSelecionado?" selected":"")+"'><div class='sb-mini-stripe' style='background:var(--exec)'></div><div class='sb-mini-body'><div class='sb-item-end'>"+safeText(p.endereco.split(",")[0])+"</div><div class='sb-item-sub' style='color:var(--exec)'>"+tempoEx+"</div></div></div>";});}
-    if(!sbHtml)sbHtml="<div style='padding:24px;text-align:center;color:var(--texto3);font-size:13px;line-height:1.6;'>✅ Tudo em dia!</div>";
-    sbEl.innerHTML=sbHtml;
-    var allSb=sbAtrasados.concat(sbUrgentes).concat(sbExec);
-    sbEl.querySelectorAll(".sb-item").forEach(function(el,idx){var p=allSb[idx];if(p)el.onclick=function(){selecionarProtocolo(p);};});
-  }
+  /* Preenche resumo em 4 cards */
+  var rPen  = document.getElementById("sbResumoPen");
+  var rUrg  = document.getElementById("sbResumoUrg");
+  var rExec = document.getElementById("sbResumoExec");
+  var rOk   = document.getElementById("sbResumoOk");
+  if (rPen)  rPen.textContent  = pen;
+  if (rUrg)  rUrg.textContent  = urg;
+  if (rExec) rExec.textContent = exec;
+  if (rOk)   rOk.textContent   = ok;
   var todosParaBuscaSb=ativos.concat(concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;}));
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
+
+  /* Filtro de bairro */
   var filtrados=termoBuscaSb?todosParaBuscaSb.filter(function(p){return(p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0;}):ativos.slice();
+  if(_bairroSelecionado !== "todos" && !termoBuscaSb) {
+    filtrados = filtrados.filter(function(p){ return _extrairBairro(p.endereco) === _bairroSelecionado; });
+    concluidosHoje = concluidosHoje.filter(function(p){ return _extrairBairro(p.endereco) === _bairroSelecionado; });
+  }
   if(!termoBuscaSb){
-    if(sbFiltro==="atrasado")filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";});
-    else if(sbFiltro==="urgente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t.tipo==="urgente";});
-    else if(sbFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
-    else if(sbFiltro==="concluido")filtrados=concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;});
     if(ftFiltro==="atrasado")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
     else if(ftFiltro==="urgente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
     else if(ftFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
@@ -1913,18 +1992,14 @@ function renderOperadoresOnline(presencas) {
 }
 
 function iniciarPresenca() {
-  /* Todos os operadores enviam ping */
   enviarPingPresenca();
   if (_opPingInterval) clearInterval(_opPingInterval);
-  _opPingInterval = setInterval(enviarPingPresenca, 90000); /* a cada 90s */
+  _opPingInterval = setInterval(enviarPingPresenca, 90000);
 
-  /* Só supervisor vê o painel */
-  if (isSupervisor()) {
-    document.getElementById("sbOperadores").style.display = "";
-    carregarOperadoresOnline();
-    if (_opListaInterval) clearInterval(_opListaInterval);
-    _opListaInterval = setInterval(carregarOperadoresOnline, 30000); /* atualiza a cada 30s */
-  }
+  /* Equipes online aparecem para todos */
+  carregarOperadoresOnline();
+  if (_opListaInterval) clearInterval(_opListaInterval);
+  _opListaInterval = setInterval(carregarOperadoresOnline, 30000);
 }
 
 /* ══ WAKE LOCK — mantém tela acesa para operadores em campo ══ */
