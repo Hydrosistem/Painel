@@ -837,13 +837,17 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <aside class="sidebar" id="sidebarEl">
 
     <!-- ══ MENU PRINCIPAL (supervisor) ══ -->
-    <div id="sbMenuPrincipal" style="display:none;border-bottom:1px solid var(--borda);flex-shrink:0;">
-      <div style="padding:10px 12px 6px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Menu principal</div>
-      <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:9px 12px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        📊 Relatório
+    <div id="sbMenuPrincipal" style="display:none;border-bottom:1px solid var(--borda);flex-shrink:0;padding:6px 0 4px;">
+      <div style="padding:8px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Menu principal</div>
+      <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
+        <span style="width:28px;height:28px;border-radius:7px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">📊</span>
+        Relatório
+        <span id="sbBadgeRelatorio" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--azul-bg);color:var(--azul);display:none;">Hoje</span>
       </a>
-      <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:9px 12px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        👷 Equipes
+      <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
+        <span style="width:28px;height:28px;border-radius:7px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;">👷</span>
+        Equipes
+        <span id="sbBadgeEquipe" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--verde-bg);color:var(--verde);display:none;">0 online</span>
       </a>
     </div>
   
@@ -2075,10 +2079,28 @@ function carregarOperadoresOnline() {
 function renderOperadoresOnline(presencas) {
   var locks = {};
   _ultimaLista.forEach(function(p) {
-    if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco };
+    if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco, timestamp: p.lock.timestamp };
   });
 
   var equipe = presencas.filter(function(p) { return !p.supervisor; });
+
+  /* Atualiza badge do menu Equipes */
+  var badgeEquipe = document.getElementById("sbBadgeEquipe");
+  if (badgeEquipe) {
+    if (equipe.length > 0) {
+      badgeEquipe.textContent = equipe.length + " online";
+      badgeEquipe.style.display = "";
+    } else {
+      badgeEquipe.style.display = "none";
+    }
+  }
+
+  /* Atualiza badge do menu Relatório com data de hoje */
+  var badgeRel = document.getElementById("sbBadgeRelatorio");
+  if (badgeRel) {
+    badgeRel.textContent = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+    badgeRel.style.display = "";
+  }
 
   var html = "";
   if (!equipe.length) {
@@ -2089,6 +2111,19 @@ function renderOperadoresOnline(presencas) {
       var lock = locks[p.sessionId];
       var statusClass = lock ? "executando" : "online";
       var indicadorCor = lock ? "var(--exec)" : "var(--verde)";
+
+      /* Timer de execução */
+      var timerHtml = "";
+      if (lock && lock.timestamp) {
+        var minExec = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+        var timerTxt = minExec < 1 ? "<1min" : minExec + "min";
+        timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
+          '<span style="width:6px;height:6px;border-radius:50%;background:var(--exec);display:inline-block;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0;"></span>' +
+          timerTxt + '</div>';
+      } else {
+        timerHtml = '<div class="sb-op-indicador" style="background:' + indicadorCor + '"></div>';
+      }
+
       html +=
         '<div class="sb-op-item">' +
           '<div class="sb-op-avatar" style="background:' + cor + '">' + iniciaisOp(p.operador) + '</div>' +
@@ -2098,7 +2133,7 @@ function renderOperadoresOnline(presencas) {
               (lock ? '● executando ' + safeText(lock.protocolo) : formatarTempoOp(p.timestamp)) +
             '</div>' +
           '</div>' +
-          '<div class="sb-op-indicador" style="background:' + indicadorCor + '"></div>' +
+          timerHtml +
         '</div>';
     });
   }
