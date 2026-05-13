@@ -115,6 +115,10 @@ header {
   font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
   transition: background .15s, border-color .15s;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto;
+  overflow: visible;
 }
 .btn-perto:hover { background: rgba(255,255,255,.14); }
 .btn-perto.ativo { background: rgba(74,222,128,.18); border-color: rgba(74,222,128,.4); color: #86EFAC; }
@@ -221,7 +225,13 @@ header {
 
 /* ══ TABLET/DESKTOP ══ */
 @media (min-width: 768px) {
-  #btnPertoDesktop { white-space: nowrap; flex-shrink: 0; overflow: visible; }
+  #btnPertoDesktop {
+  white-space: nowrap; flex-shrink: 0; overflow: visible;
+  background: none; border: 1.5px solid var(--borda);
+  color: var(--texto2); height: 34px;
+}
+  #btnPertoDesktop:hover { background: var(--cinza-md); border-color: var(--borda-md); }
+  #btnPertoDesktop.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
   #btnPerto    { display: none; }
   .search-wrap { display: none; }
   .stats       { display: none; }
