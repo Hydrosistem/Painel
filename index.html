@@ -226,10 +226,14 @@ header {
 /* ══ TABLET/DESKTOP ══ */
 @media (min-width: 768px) {
   #btnPertoDesktop {
-  white-space: nowrap; flex-shrink: 0; overflow: visible;
-  background: none; border: 1.5px solid var(--borda);
-  color: var(--texto2); height: 34px;
+  padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--borda); background: none; cursor: pointer;
+  font-family: "DM Sans",sans-serif; color: var(--texto2);
+  display: flex; align-items: center; gap: 5px; white-space: nowrap;
+  flex-shrink: 0; transition: all .15s;
 }
+#btnPertoDesktop:hover { background: var(--cinza-md); border-color: var(--borda-md); }
+#btnPertoDesktop.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
   #btnPertoDesktop:hover { background: var(--cinza-md); border-color: var(--borda-md); }
   #btnPertoDesktop.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
   #btnPerto    { display: none; }
