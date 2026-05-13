@@ -835,12 +835,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
   <!-- ══ TABLET SIDEBAR (supervisor only) ══ -->
   <aside class="sidebar" id="sidebarEl">
-    <div class="sb-search">
-      <svg class="sb-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="sb-search-input" id="sbBuscaInput" type="search" placeholder="Buscar…" autocomplete="off" spellcheck="false">
-      <button class="sb-search-clear" id="sbBuscaClear" onclick="limparBuscaSb()">×</button>
-    </div>
-
+  
     <!-- Resumo em 4 cards -->
     <div class="sb-resumo" id="sbResumo">
       <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Resumo do dia</div>
@@ -1198,14 +1193,7 @@ document.getElementById("buscaInput").addEventListener("input",function(){
   _debounceSearch=setTimeout(function(){renderFiltrado(_ultimaLista);},120);
 });
 function limparBusca(){document.getElementById("buscaInput").value="";termoBusca="";document.getElementById("buscaClear").classList.remove("show");renderFiltrado(_ultimaLista);}
-document.getElementById("sbBuscaInput").addEventListener("input",function(){
-  var v=this.value.trim().toLowerCase();
-  document.getElementById("sbBuscaClear").classList.toggle("show",v.length>0);
-  termoBuscaSb=v;
-  clearTimeout(_debounceSbSearch);
-  _debounceSbSearch=setTimeout(function(){renderTablet(_ultimaLista);},120);
-});
-function limparBuscaSb(){document.getElementById("sbBuscaInput").value="";termoBuscaSb="";document.getElementById("sbBuscaClear").classList.remove("show");renderTablet(_ultimaLista);}
+function limparBuscaSb(){termoBuscaSb="";renderTablet(_ultimaLista);}
 
 /* ══ FILTRO BAIRROS ══ */
 var _bairroSelecionado = "todos";
