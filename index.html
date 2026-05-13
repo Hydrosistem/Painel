@@ -225,6 +225,13 @@ header {
   .main        { display: none; }
   .layout-root { flex-direction: row; align-items: stretch; height: calc(100vh - var(--header-h) - 2px); overflow: hidden; }
 
+  .filtro-tab.ativo {
+    background: rgba(74,222,128,.15);
+    border-color: rgba(74,222,128,.5);
+    color: #166534;
+  }
+}
+
   /* ══ BUSCA NO CENTRO (tablet/desktop) — acima dos filtros ══ */
   .centro-busca {
     display: flex; align-items: center; gap: 8px;
@@ -789,7 +796,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none">📊 Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none">👷 Equipe</a>
-    <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
 
@@ -890,7 +896,8 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
       <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
       <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-      <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
+      <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)">📍 Mapa</button>
+      <button class="filtro-tab" id="btnPerto" onclick="togglePerto()" style="margin-left:0">📍 Perto de mim</button>
       <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
