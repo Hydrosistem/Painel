@@ -109,18 +109,15 @@ header {
 .btn-header.spin svg { animation: rot .9s linear infinite; }
 
 .btn-perto {
-  background: none;
-  border: 1.5px solid var(--borda);
-  border-radius: var(--radius-sm);
-  color: var(--texto2);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.85); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
   font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600;
-  height: 34px; padding: 0 12px;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
-  transition: background .15s, border-color .15s, color .15s;
-  white-space: nowrap;
+  transition: background .15s, border-color .15s;
 }
-.btn-perto:hover { background: var(--cinza-md); border-color: var(--borda-md); }
-.btn-perto.ativo { background: var(--azul-bg); border-color: var(--azul-borda); color: var(--azul); }
+.btn-perto:hover { background: rgba(255,255,255,.14); }
+.btn-perto.ativo { background: rgba(74,222,128,.18); border-color: rgba(74,222,128,.4); color: #86EFAC; }
 
 .chip-operador {
   display: flex; align-items: center; gap: 7px;
@@ -756,7 +753,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   .h-logo { width: 32px; height: 32px; border-radius: 8px; }
   .h-nome { font-size: 13px; }
   .h-sub  { font-size: 9px; }
-  .btn-header, .chip-operador { height: 30px; font-size: 11px; padding: 0 10px; border-radius: 6px; }
+  .btn-header, .btn-perto, .chip-operador { height: 30px; font-size: 11px; padding: 0 10px; border-radius: 6px; }
   #refreshBar { top: 52px; }
   .search-wrap { top: 54px; }
 }
@@ -792,6 +789,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none">📊 Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none">👷 Equipe</a>
+    <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
   </div>
 </header>
 
@@ -893,8 +891,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
       <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
       <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
-      <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button> title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
-      <button class="btn-compacto" id="btnCompactoTablet"
+      <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
