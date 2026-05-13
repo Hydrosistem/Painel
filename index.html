@@ -835,6 +835,11 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
   <!-- ══ TABLET SIDEBAR (supervisor only) ══ -->
   <aside class="sidebar" id="sidebarEl">
+    <div class="sb-search">
+      <svg class="sb-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="sb-search-input" id="sbBuscaInput" type="search" placeholder="Buscar…" autocomplete="off" spellcheck="false">
+      <button class="sb-search-clear" id="sbBuscaClear" onclick="limparBuscaSb()">×</button>
+    </div>
 
     <!-- Resumo em 4 cards -->
     <div class="sb-resumo" id="sbResumo">
