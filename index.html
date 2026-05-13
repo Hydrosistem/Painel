@@ -137,18 +137,6 @@ header {
 @keyframes pulseOnline { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.5); } 60% { box-shadow: 0 0 0 4px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 @keyframes rot { to { transform: rotate(360deg); } }
 
-/* ══ PROGRESS BAR ══ */
-#refreshBar { height: 2px; background: rgba(0,0,0,.06); width: 100%; overflow: hidden; position: sticky; top: var(--header-h); z-index: 101; }
-#refreshBarFill {
-  height: 100%; width: 0%;
-  background: linear-gradient(90deg, var(--azul-md), #60A5FA, var(--azul-md));
-  background-size: 200% 100%;
-  transition: width .5s linear;
-  animation: barShimmer 2s linear infinite;
-}
-@keyframes barShimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-#refreshBar.paused #refreshBarFill { background: var(--verde); animation: none; }
-
 /* ══ BANNERS ══ */
 #bannerOffline { display: none; background: var(--atrasado); color: #fff; font-size: 11px; font-weight: 600; text-align: center; padding: 6px 16px; letter-spacing: .4px; }
 #bannerOffline.show { display: block; }
@@ -810,7 +798,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 </header>
 
-<div id="refreshBar"><div id="refreshBarFill"></div></div>
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
@@ -1512,7 +1499,7 @@ function enviarConclusao(){if(!_protocoloConcluindo)return;var btn=document.getE
   fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"}).then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});}).then(function(res){if(res.ok!==false){fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("✅ Protocolo concluído com sucesso!","ok");setTimeout(carregarDados,1200);}else{btn.disabled=false;btn.textContent="✅ Concluir";toast("❌ "+(res.erro||"Erro ao concluir"),"erro");}}).catch(function(){try{fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});}catch(e2){}fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("✅ Conclusão enviada! Aguarde a atualização.","ok");setTimeout(carregarDados,3000);});}
 
 /* ══ RENDER MOBILE ══ */
-function renderCard(p,idx){
+function renderCard(p,idx,isNovo){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
@@ -1530,14 +1517,14 @@ function renderCard(p,idx){
   if(concluido){btnHtml="<div class='btn-concluido-info'>✅ Concluído em "+fdt(p.dataConclusao)+"</div>";}
   else if(outraExecucao){btnHtml="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
   else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
-  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";}
+  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\"'+endEsc+'\")'>▶ Iniciar execução</button>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
-  var delay=Math.min(idx*50,380);
+  var delay=isNovo?Math.min(idx*50,380):0;
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>";
   var prazoLabel=concluido?"100% concluído":pct+"% do prazo";
   var prazoExtra=(!concluido&&t.horaVence)?" <span class='prazo-hora'>· vence às "+t.horaVence+"</span>":"";
   var badgeTxt={urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado",concluido:"✅ Concluído"}[tipoCard]||"";
-  return "<div class='card t-"+tipoCard+(prioridade?" t-prioridade":"")+" card-animar' style='--delay:"+delay+"ms' "+isoAttr+">"+
+  return "<div class='card t-"+tipoCard+(prioridade?" t-prioridade":"")+(isNovo?" card-animar":"")+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
     "<div class='card-inner'><div class='card-stripe'></div>"+
     "<div class='card-body'>"+
       "<div class='card-top'>"+
@@ -1553,7 +1540,7 @@ function renderCard(p,idx){
 }
 
 /* ══ RENDER CARD TABLET ══ */
-function renderCardTablet(p,idx){
+function renderCardTablet(p,idx,isNovo){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
   var idSafe=p.protocolo.replace(/[^a-z0-9]/gi,"_"),selecionado=_protocoloSelecionado===p.protocolo?" selected":"";
@@ -1567,11 +1554,11 @@ function renderCardTablet(p,idx){
   else if(outraExecucao){var min=Math.round((new Date()-new Date(lock.timestamp))/60000),quem=lock.usuario?" · "+safeText(lock.usuario):"";execSub="<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";}
   else if(minhaExecucao)execSub="<span style='color:#166534'>Você executando</span>";
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>",prazoLabel=concluido?"100%":pct+"%";
-  var delay=Math.min((idx||0)*45,320);
+  var delay=isNovo?Math.min((idx||0)*45,320):0;
   var thumbHtml="",srcThumb=fotoSrc(p.fotoId);
   if(srcThumb)thumbHtml="<div class='card-t-thumb'><div class='card-t-thumb-sk'></div><img class='card-t-thumb-img' src='"+srcThumb+"' loading='lazy' onload='this.classList.add(\"loaded\");var sk=this.previousElementSibling;if(sk)sk.style.display=\"none\";' onerror='this.closest(\".card-t-thumb\").style.display=\"none\";' alt='Foto'></div>";
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
-  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+" card-animar' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
+  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+(isNovo?" card-animar":"")+"' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
     thumbHtml+
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
@@ -1623,11 +1610,14 @@ function renderTablet(lista){
   if(!filtrados.length){gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'>✅</div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";return;}
   var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=filtrados.filter(function(p){return isConcluido(p);});
   var h="",gIdx=0;
-  if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++);});}
-  if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++);});}
-  if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++);});}
-  if(concL.length){h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++);});}
+  if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(concL.length){h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   h+="<div class='ts-tablet'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
+  var novosHashesTablet={};
+execL.concat(urgL).concat(norL).concat(concL).forEach(function(p){ novosHashesTablet[p.protocolo]=hashProtocolo(p); });
+_prevHashesTablet=novosHashesTablet;
   gt.innerHTML=h;
   var allCards=execL.concat(urgL).concat(norL).concat(concL);
   gt.querySelectorAll(".card-t").forEach(function(el,idx){if(allCards[idx])el.onclick=(function(p){return function(){selecionarProtocolo(p);};})(allCards[idx]);});
@@ -1636,6 +1626,7 @@ function renderTablet(lista){
 
 /* ══ RENDER MOBILE ══ */
 var _prevStats={},_prevHashes={};
+var _prevHashesTablet = {};
 function hashProtocolo(p){return (p.protocolo||"")+"_"+(p.status||"")+"_"+(p.lock?p.lock.sessionId+p.lock.timestamp:"")+"_"+(p.obs||"")+"_"+(p.fotoId||"");}
 var _renderPendingMobile=false, _renderPendingTablet=false;
 function render(lista){_ultimaLista=lista;renderFiltrado(lista);renderTablet(lista);}
@@ -1659,10 +1650,10 @@ function renderFiltrado(lista){
   if(!precisaReconstruir)gridList.forEach(function(p){if(_prevHashes[p.protocolo]!==novoHashes[p.protocolo])precisaReconstruir=true;});
   if(precisaReconstruir){
     var h="",gIdx=0;
-    if(execL.length){h+="<div class='sec-label'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCard(p,gIdx++);});}
-    if(urgL.length){h+="<div class='sec-label'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++);});}
-    if(norL.length){h+="<div class='sec-label'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++);});}
-    if(concL.length){h+="<div class='sec-label'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCard(p,gIdx++);});}
+    if(execL.length){h+="<div class='sec-label'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(urgL.length){h+="<div class='sec-label'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(norL.length){h+="<div class='sec-label'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(concL.length){h+="<div class='sec-label'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     if(!h)h="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo ativo.</div></div>";
     h+="<div class='ts'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
     g.innerHTML=h;
@@ -1672,9 +1663,9 @@ function renderFiltrado(lista){
 
 /* ══ PROGRESS BAR ══ */
 var _barEl=null,_wrapEl=null;
-function startBar(){if(!_barEl)return;_barEl.style.transition="none";_barEl.style.width="0%";_wrapEl.classList.remove("paused");void _barEl.offsetWidth;_barEl.style.transition="width "+REFRESH_INTERVAL+"ms linear";_barEl.style.width="95%";}
-function flashBar(){if(!_barEl)return;_barEl.style.transition="width .2s ease";_barEl.style.width="100%";_wrapEl.classList.add("paused");setTimeout(function(){_barEl.style.transition="width .3s ease";_barEl.style.width="0%";setTimeout(function(){_wrapEl.classList.remove("paused");startBar();},350);},500);}
-function initProgressBar(){_barEl=document.getElementById("refreshBarFill");_wrapEl=document.getElementById("refreshBar");if(!_barEl)return;var _orig=carregarDados;carregarDados=function(){startBar();return _orig.apply(this,arguments);};startBar();}
+function startBar(){}
+function flashBar(){}
+function initProgressBar(){}
 
 /* ══ CARREGAR DADOS ══ */
 function carregarDados(){
