@@ -274,7 +274,13 @@ header {
 
   /* CENTRO */
   .centro { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-  .centro-top { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
+  .centro-top { display: flex; flex-direction: column; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
+  .centro-search { display: none; padding: 10px 14px 0; }
+  .centro-search input { width: 100%; padding: 8px 14px 8px 36px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-md); outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; }
+  .centro-search input:focus { border-color: var(--azul); background: var(--branco); box-shadow: 0 0 0 3px rgba(20,105,199,.1); }
+  .centro-search-wrap { position: relative; }
+  .centro-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
+  .centro-filtros { display: flex; align-items: center; gap: 6px; padding: 10px 14px; flex-wrap: wrap; }
   .filtro-tab {
     padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
     border: 1.5px solid var(--borda); background: none; cursor: pointer;
@@ -302,15 +308,8 @@ header {
   .sec-label-tablet { grid-column: 1/-1; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto3); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .sec-label-tablet::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-  /* MODO COMPACTO TABLET */
-  body.modo-compacto-tablet .card-t-thumb { display: none; }
-  body.modo-compacto-tablet .grid-tablet { grid-template-columns: 1fr; gap: 4px; }
-  body.modo-compacto-tablet .card-t-body { padding: 7px 10px; gap: 3px; }
-  body.modo-compacto-tablet .card-t-prot { font-size: 9px; }
-  body.modo-compacto-tablet .card-t-end { font-size: 11px; }
-  body.modo-compacto-tablet .card-t-meta { font-size: 10px; }
-  body.modo-compacto-tablet .card-t-prazo-row { font-size: 9px; margin-bottom: 1px; }
-  body.modo-compacto-tablet .card-t-prazo-bar { height: 2px; }
+  /* SIDEBAR — só supervisor */
+  body:not(.is-supervisor) .sidebar { display: none !important; }
 
   /* DETAIL PANEL */
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
@@ -842,13 +841,21 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <!-- ══ TABLET CENTRO ══ -->
   <div class="centro">
     <div class="centro-top">
-      <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
-      <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
-      <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
-      <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
-      <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-      <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
-      <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
+      <!-- Busca — só aparece para operadores (sem sidebar) -->
+      <div class="centro-search" id="centroSearch">
+        <div class="centro-search-wrap">
+          <svg class="centro-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="centroSearchInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+      <div class="centro-filtros">
+        <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
+        <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
+        <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
+        <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
+        <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
+        <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
+      </div>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
@@ -1041,7 +1048,28 @@ function atualizarBotaoRelatorio() {
   btn.style.display = isSupervisor() ? "" : "none";
   var btnE = document.getElementById("btnEquipe");
   if (btnE) btnE.style.display = isSupervisor() ? "" : "none";
+
+  if (isSupervisor()) {
+    document.body.classList.add("is-supervisor");
+    var cs = document.getElementById("centroSearch");
+    if (cs) cs.style.display = "none";
+  } else {
+    document.body.classList.remove("is-supervisor");
+    var cs = document.getElementById("centroSearch");
+    if (cs) cs.style.display = "";
+  }
 }
+
+/* Busca no centro (para operadores sem sidebar) */
+window.addEventListener("DOMContentLoaded", function() {
+  var inp = document.getElementById("centroSearchInput");
+  if (!inp) return;
+  inp.addEventListener("input", function() {
+    termoBuscaSb = this.value.trim().toLowerCase();
+    clearTimeout(_debounceSbSearch);
+    _debounceSbSearch = setTimeout(function(){ renderTablet(_ultimaLista); }, 120);
+  });
+});
 
 function atualizarChipOperador() {
   var nome=getOperador(), btn=document.getElementById("btnOperador"); if(!btn) return;
@@ -1195,35 +1223,6 @@ function iniciarEsperaPrompt(){if(estaInstalado()||deferredPrompt)return;clearTi
 window.addEventListener("load",function(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){ativarBotaoFallback();return;}if("serviceWorker"in navigator){var ok=false,ini=function(){if(!ok){ok=true;iniciarEsperaPrompt();}};navigator.serviceWorker.ready.then(ini).catch(ini);setTimeout(ini,1000);}else iniciarEsperaPrompt();});
 if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){swReg=reg;reg.addEventListener("updatefound",function(){var nw=reg.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage({type:"SKIP_WAITING"});mostrarBotaoAtualizar(reg);}});});}).catch(function(err){console.warn("[SW]",err);});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});});}
 function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("↺ Nova versão disponível — toque em Atualizar","");}
-
-/* ══ MODO COMPACTO TABLET ══ */
-var _modoCompactoTablet = false;
-(function(){
-  try {
-    _modoCompactoTablet = localStorage.getItem("hyd_compacto_tablet") === "1";
-    if (_modoCompactoTablet) document.body.classList.add("modo-compacto-tablet");
-  } catch(e) {}
-})();
-function toggleCompactoTablet() {
-  _modoCompactoTablet = !_modoCompactoTablet;
-  document.body.classList.toggle("modo-compacto-tablet", _modoCompactoTablet);
-  var btn = document.getElementById("btnCompactoTablet");
-  if (btn) {
-    btn.style.background  = _modoCompactoTablet ? "var(--azul-bg)"    : "";
-    btn.style.borderColor = _modoCompactoTablet ? "var(--azul-borda)" : "";
-    btn.style.color       = _modoCompactoTablet ? "var(--azul)"       : "";
-  }
-  try { localStorage.setItem("hyd_compacto_tablet", _modoCompactoTablet ? "1" : "0"); } catch(e) {}
-  toast(_modoCompactoTablet ? "☰ Modo compacto ativado" : "☷ Modo normal", "");
-}
-window.addEventListener("DOMContentLoaded", function() {
-  var btn = document.getElementById("btnCompactoTablet");
-  if (btn && _modoCompactoTablet) {
-    btn.style.background  = "var(--azul-bg)";
-    btn.style.borderColor = "var(--azul-borda)";
-    btn.style.color       = "var(--azul)";
-  }
-});
 
 /* ══ MODO PERTO DE MIM ══ */
 var _modoPerto=false,_posAtual=null,RAIO_KM=7;
