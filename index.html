@@ -304,15 +304,19 @@ header {
 
   /* MODO COMPACTO TABLET */
   body.modo-compacto-tablet .card-t-thumb { display: none; }
-  body.modo-compacto-tablet .card-t-body { padding: 8px 10px; gap: 3px; }
-  body.modo-compacto-tablet .card-t-prot { font-size: 9px; }
-  body.modo-compacto-tablet .card-t-end  { font-size: 11px; }
-  body.modo-compacto-tablet .card-t-meta { font-size: 10px; }
-  body.modo-compacto-tablet .card-t-prazo-row { font-size: 9px; margin-bottom: 2px; }
-  body.modo-compacto-tablet .grid-tablet { gap: 6px; }
-  body.modo-compacto-tablet .card-t { border-radius: var(--radius-sm); }
-  body.modo-compacto-tablet .grid-tablet { grid-template-columns: repeat(3, 1fr); }
-  @media (min-width: 1280px) { body.modo-compacto-tablet .grid-tablet { grid-template-columns: repeat(4, 1fr); } }
+  body.modo-compacto-tablet .grid-tablet { grid-template-columns: 1fr; gap: 3px; }
+  body.modo-compacto-tablet .card-t { border-radius: var(--radius-xs); flex-direction: row; }
+  body.modo-compacto-tablet .card-t-stripe { width: 4px; flex-shrink: 0; }
+  body.modo-compacto-tablet .card-t-inner { flex: 1; }
+  body.modo-compacto-tablet .card-t-body { padding: 9px 12px; gap: 2px; flex-direction: row; align-items: center; flex-wrap: wrap; }
+  body.modo-compacto-tablet .card-t-top { flex: 1; min-width: 0; margin-bottom: 0; }
+  body.modo-compacto-tablet .card-t-prot { font-size: 9px; letter-spacing: 1px; }
+  body.modo-compacto-tablet .card-t-end { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.modo-compacto-tablet .card-t-meta { font-size: 10px; color: var(--texto2); flex-shrink: 0; margin-left: 12px; white-space: nowrap; }
+  body.modo-compacto-tablet .card-t-prazo-row { display: none !important; }
+  body.modo-compacto-tablet .card-t-prazo-bar { display: none !important; }
+  body.modo-compacto-tablet .badge-sm { flex-shrink: 0; margin-left: 8px; }
+  body.modo-compacto-tablet .sec-label-tablet { margin-top: 10px; margin-bottom: 2px; }
 
   /* DETAIL PANEL */
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
@@ -1253,7 +1257,13 @@ function _preencherDetalhe(p){
   else if(minhaExecucao){execInfoHtml="<div class='exec-info-box meu'>✔ Você está executando — vá ao local e conclua aqui</div>";}
   var fotoHtml="",src=fotoSrc(p.fotoId);
   if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
-  function _renderObs(obs){if(!obs||obs==="—")return "";var m=obs.match(/https:\/\/maps\.google\.[^\s]+/);if(m)return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'><a href='"+m[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Ver no Google Maps</a></div></div>";return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(obs)+"</div></div>";}
+  function _renderObs(obs){
+    if(!obs||obs==="—")return "";
+    /* Remove o link do Maps da exibição — fica só "Via Bot Telegram" */
+    var textoLimpo = obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim();
+    if(!textoLimpo||textoLimpo==="—")return "";
+    return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(textoLimpo)+"</div></div>";
+  }
   var obsHtml=_renderObs(p.obs);
   var badgeMap={urgente:"<span class='badge t-urgente'>⚠️ Urgente</span>",pendente:"<span class='badge t-pendente'>🟡 Pendente</span>",atrasado:"<span class='badge t-atrasado'>🔴 Atrasado</span>",execucao:"<span class='badge-exec'><span class='dot'></span>Em execução</span>",concluido:"<span class='badge t-concluido'>✅ Concluído</span>"};
   var conclusaoHtml="";
@@ -1314,7 +1324,8 @@ function renderCard(p,idx){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
-  var obs=_mm?"<span class='meta-item'><a href='"+_mm[0]+"' target='_blank' rel='noopener' style='color:var(--azul);font-weight:600;text-decoration:none;'>📍 Maps</a></span>":(p.obs&&p.obs!=="—"?"<span class='meta-item'>📝 "+safeText(p.obs)+"</span>":"");
+  var _obsTexto = p.obs ? p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim() : "";
+  var obs=(_obsTexto&&_obsTexto!=="—")?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",src=fotoSrc(p.fotoId);
   if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
