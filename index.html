@@ -846,6 +846,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
       <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
       <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
+      <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
       <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
       <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
@@ -1473,7 +1474,7 @@ function renderTablet(lista){
   setN("sbN-todos",ativos.length);setN("sbN-atrasado",urg);setN("sbN-urgente",ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length);setN("sbN-execucao",exec);setN("sbN-concluido",ok);
   function setStat(id,val){var el=document.getElementById(id);if(!el)return;var prev=_prevStats[id];el.textContent=val;if(prev!==undefined&&prev!==val)bump(id);_prevStats[id]=val;}
   setStat("nPen",pen);setStat("nExec",exec);setStat("nUrg",urg);setStat("nOk",ok);
-  var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length};
+  var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length,concluido:concluidosHoje.length};
   Object.keys(ftCounts).forEach(function(ft){var badge=document.getElementById("ftb-"+ft);if(!badge)return;var count=ftCounts[ft];badge.textContent=count;badge.classList.toggle("zero",count===0);});
   var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}),sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}),sbExec=ativos.filter(function(p){return !!p.lock;});
   /* Preenche resumo em 4 cards */
@@ -1498,6 +1499,7 @@ function renderTablet(lista){
     if(ftFiltro==="atrasado")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
     else if(ftFiltro==="urgente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
     else if(ftFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
+    else if(ftFiltro==="concluido"){filtrados=concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;});}
   }
   if(_modoPerto&&_posAtual){filtrados.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
   else{filtrados.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado"))return 3;if(p._t&&p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
