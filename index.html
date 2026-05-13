@@ -1446,7 +1446,7 @@ function _preencherDetalhe(p){
     if(m) mapsUrl = m[0];
     var textoLimpo = obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim();
     var html = "";
-    if(textoLimpo&&textoLimpo!=="—"){
+    if(textoLimpo&&textoLimpo!=="—"&&!mapsUrl){
       html += "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(textoLimpo)+"</div></div>";
     }
     if(mapsUrl){
