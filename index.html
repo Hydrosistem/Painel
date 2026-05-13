@@ -225,7 +225,40 @@ header {
   .main        { display: none; }
   .layout-root { flex-direction: row; align-items: stretch; height: calc(100vh - var(--header-h) - 2px); overflow: hidden; }
 
-  /* SIDEBAR */
+  /* ══ BUSCA NO CENTRO (tablet/desktop) — acima dos filtros ══ */
+  .centro-busca {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; background: var(--branco);
+    border-bottom: 1px solid var(--borda); flex-shrink: 0;
+    position: relative;
+  }
+  .centro-busca-icon {
+    position: absolute; left: 26px; top: 50%; transform: translateY(-50%);
+    color: var(--texto3); pointer-events: none;
+  }
+  .centro-busca-input {
+    flex: 1; padding: 8px 34px 8px 34px;
+    border: 1.5px solid var(--borda); border-radius: var(--radius-sm);
+    font-family: "DM Sans",sans-serif; font-size: 13px;
+    background: var(--cinza-md); outline: none; color: var(--texto);
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .centro-busca-input:focus {
+    border-color: var(--azul); background: var(--branco);
+    box-shadow: 0 0 0 3px rgba(20,105,199,.1);
+  }
+  .centro-busca-clear {
+    position: absolute; right: 18px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; color: var(--texto3);
+    font-size: 15px; padding: 4px; display: none;
+  }
+  .centro-busca-clear.show { display: block; }
+
+  /* ══ ROLE-BASED LAYOUT ══ */
+  /* Operador: sem sidebar, centro ocupa tudo */
+  body.operador-view .sidebar { display: none !important; }
+
+  /* Sidebar padrão (supervisor) */
   .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--branco); border-right: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .sb-search { padding: 10px; border-bottom: 1px solid var(--borda); position: relative; }
   .sb-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
@@ -274,13 +307,7 @@ header {
 
   /* CENTRO */
   .centro { flex: 1; display: flex; flex-direction: column; overflow: hidden; min-width: 0; }
-  .centro-top { display: flex; flex-direction: column; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
-  .centro-search { display: none; padding: 10px 14px 0; }
-  .centro-search input { width: 100%; padding: 8px 14px 8px 36px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-md); outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; }
-  .centro-search input:focus { border-color: var(--azul); background: var(--branco); box-shadow: 0 0 0 3px rgba(20,105,199,.1); }
-  .centro-search-wrap { position: relative; }
-  .centro-search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
-  .centro-filtros { display: flex; align-items: center; gap: 6px; padding: 10px 14px; flex-wrap: wrap; }
+  .centro-top { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: var(--branco); border-bottom: 1px solid var(--borda); flex-shrink: 0; flex-wrap: wrap; }
   .filtro-tab {
     padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
     border: 1.5px solid var(--borda); background: none; cursor: pointer;
@@ -308,8 +335,15 @@ header {
   .sec-label-tablet { grid-column: 1/-1; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto3); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
   .sec-label-tablet::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-  /* SIDEBAR — só supervisor */
-  body:not(.is-supervisor) .sidebar { display: none !important; }
+  /* MODO COMPACTO TABLET */
+  body.modo-compacto-tablet .card-t-thumb { display: none; }
+  body.modo-compacto-tablet .grid-tablet { grid-template-columns: 1fr; gap: 4px; }
+  body.modo-compacto-tablet .card-t-body { padding: 7px 10px; gap: 3px; }
+  body.modo-compacto-tablet .card-t-prot { font-size: 9px; }
+  body.modo-compacto-tablet .card-t-end { font-size: 11px; }
+  body.modo-compacto-tablet .card-t-meta { font-size: 10px; }
+  body.modo-compacto-tablet .card-t-prazo-row { font-size: 9px; margin-bottom: 1px; }
+  body.modo-compacto-tablet .card-t-prazo-bar { height: 2px; }
 
   /* DETAIL PANEL */
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
@@ -689,7 +723,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   padding: 5px 8px; border-radius: var(--radius-xs);
   border: none; background: none; cursor: pointer;
   font-family: "DM Sans",sans-serif; font-size: 12px; font-weight: 600;
-  color: var(--texto2); transition: background .12s; width: 100%; text-align: left;
+  color: var(--texto2); transition: background .12px; width: 100%; text-align: left;
 }
 .mapa-filtro-btn:hover { background: var(--cinza-md); }
 .mapa-filtro-btn.mf-active { background: var(--cinza-md); color: var(--texto); }
@@ -704,7 +738,9 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
 /* ══ SIDEBAR/CENTRO/DETAIL ocultos no MOBILE ══ */
 .sidebar, .centro, .detail-panel { display: none; }
-@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } }
+/* centro-busca oculto por padrão no mobile (só desktop) */
+.centro-busca { display: none; }
+@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } .centro-busca { display: flex; } }
 
 /* ══ EXEC INFO ══ */
 .exec-info-box { font-size: 11px; padding: 7px 10px; border-radius: var(--radius-xs); border: 1px solid; }
@@ -793,8 +829,8 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     </div>
   </div>
 
-  <!-- ══ TABLET SIDEBAR ══ -->
-  <aside class="sidebar">
+  <!-- ══ TABLET SIDEBAR (supervisor only) ══ -->
+  <aside class="sidebar" id="sidebarEl">
     <div class="sb-search">
       <svg class="sb-search-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="sb-search-input" id="sbBuscaInput" type="search" placeholder="Buscar…" autocomplete="off" spellcheck="false">
@@ -840,22 +876,22 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 
   <!-- ══ TABLET CENTRO ══ -->
   <div class="centro">
+
+    <!-- ══ BUSCA TABLET — acima dos filtros, visível para todos ══ -->
+    <div class="centro-busca" id="centroBusca">
+      <svg class="centro-busca-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="centro-busca-input" id="centroBuscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false">
+      <button class="centro-busca-clear" id="centroBuscaClear" onclick="limparCentroBusca()">×</button>
+    </div>
+
     <div class="centro-top">
-      <!-- Busca — só aparece para operadores (sem sidebar) -->
-      <div class="centro-search" id="centroSearch">
-        <div class="centro-search-wrap">
-          <svg class="centro-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input id="centroSearchInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false">
-        </div>
-      </div>
-      <div class="centro-filtros">
-        <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
-        <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
-        <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
-        <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
-        <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-        <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
-      </div>
+      <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
+      <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
+      <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
+      <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
+      <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
+      <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTab('mapa',this)">📍 Mapa</button>
+      <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
     </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
@@ -1027,7 +1063,6 @@ function setOperador(n) {
   var nomeLimpo = n.trim();
   var ehSupervisor = false;
 
-  /* Detecta palavra-chave: qualquer nome que termine com #2309 */
   if (nomeLimpo.indexOf("#"+SUPERVISOR_SENHA) >= 0) {
     nomeLimpo = nomeLimpo.replace("#"+SUPERVISOR_SENHA, "").trim();
     ehSupervisor = true;
@@ -1040,6 +1075,23 @@ function setOperador(n) {
 
   atualizarChipOperador();
   atualizarBotaoRelatorio();
+  aplicarVisualizacaoRole();
+}
+
+/* ══ APLICAR LAYOUT POR ROLE ══ */
+function aplicarVisualizacaoRole() {
+  var sup = isSupervisor();
+  document.body.classList.toggle("supervisor-view", sup);
+  document.body.classList.toggle("operador-view", !sup);
+
+  /* Sidebar: apenas supervisor vê */
+  var sidebar = document.getElementById("sidebarEl");
+  if (sidebar) {
+    sidebar.style.display = sup ? "" : "none";
+  }
+
+  /* Busca da sidebar do supervisor também usa termoBuscaSb — operadores usam centroBuscaInput */
+  /* Nada mais a fazer: o CSS já cuida do layout */
 }
 
 function atualizarBotaoRelatorio() {
@@ -1048,28 +1100,7 @@ function atualizarBotaoRelatorio() {
   btn.style.display = isSupervisor() ? "" : "none";
   var btnE = document.getElementById("btnEquipe");
   if (btnE) btnE.style.display = isSupervisor() ? "" : "none";
-
-  if (isSupervisor()) {
-    document.body.classList.add("is-supervisor");
-    var cs = document.getElementById("centroSearch");
-    if (cs) cs.style.display = "none";
-  } else {
-    document.body.classList.remove("is-supervisor");
-    var cs = document.getElementById("centroSearch");
-    if (cs) cs.style.display = "";
-  }
 }
-
-/* Busca no centro (para operadores sem sidebar) */
-window.addEventListener("DOMContentLoaded", function() {
-  var inp = document.getElementById("centroSearchInput");
-  if (!inp) return;
-  inp.addEventListener("input", function() {
-    termoBuscaSb = this.value.trim().toLowerCase();
-    clearTimeout(_debounceSbSearch);
-    _debounceSbSearch = setTimeout(function(){ renderTablet(_ultimaLista); }, 120);
-  });
-});
 
 function atualizarChipOperador() {
   var nome=getOperador(), btn=document.getElementById("btnOperador"); if(!btn) return;
@@ -1087,7 +1118,36 @@ document.getElementById("inputOperador").addEventListener("input",validarInputOp
 document.getElementById("inputOperador").addEventListener("keydown",function(e){if(e.key==="Enter") confirmarOperador();});
 document.getElementById("btnConfirmarOperador").onclick=confirmarOperador;
 document.getElementById("btnOperador").onclick=abrirModalOperador;
-window.addEventListener("DOMContentLoaded",function(){ if(!getOperador()) abrirModalOperador(); else { atualizarChipOperador(); atualizarBotaoRelatorio(); } });
+window.addEventListener("DOMContentLoaded",function(){
+  if(!getOperador()) abrirModalOperador();
+  else { atualizarChipOperador(); atualizarBotaoRelatorio(); aplicarVisualizacaoRole(); }
+});
+
+/* ══ BUSCA TABLET NO CENTRO ══ */
+document.addEventListener("DOMContentLoaded", function() {
+  var inp = document.getElementById("centroBuscaInput");
+  var clr = document.getElementById("centroBuscaClear");
+  if (inp) {
+    inp.addEventListener("input", function() {
+      var v = this.value.trim().toLowerCase();
+      if (clr) clr.classList.toggle("show", v.length > 0);
+      termoBuscaSb = v;
+      clearTimeout(_debounceSbSearch);
+      _debounceSbSearch = setTimeout(function(){ renderTablet(_ultimaLista); }, 120);
+    });
+    inp.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") limparCentroBusca();
+    });
+  }
+});
+function limparCentroBusca() {
+  var inp = document.getElementById("centroBuscaInput");
+  var clr = document.getElementById("centroBuscaClear");
+  if (inp) inp.value = "";
+  if (clr) clr.classList.remove("show");
+  termoBuscaSb = "";
+  renderTablet(_ultimaLista);
+}
 
 /* ══ OFFLINE / CACHE ══ */
 function estaOnline(){return navigator.onLine;}
@@ -1127,10 +1187,8 @@ var _bairroSelecionado = "todos";
 
 function _extrairBairro(endereco) {
   if (!endereco) return "Outros";
-  /* Tenta extrair bairro do formato Maps: "Rua X, 123 – Bairro, CEP, Arapongas" */
   var m = endereco.match(/–\s*([^,\-]+)/);
   if (m) return m[1].trim();
-  /* Tenta pelo separador vírgula: "Rua X, 123, Bairro, ..." */
   var partes = endereco.split(",");
   if (partes.length >= 3) return partes[2].trim();
   return "Outros";
@@ -1160,7 +1218,6 @@ function renderBairros(lista) {
   });
 
   var bairros = Object.keys(bairroMap).sort(function(a, b) {
-    /* Ordena: atrasados primeiro, depois urgentes, depois por total */
     var va = bairroMap[a], vb = bairroMap[b];
     if (va.atrasado !== vb.atrasado) return va.atrasado ? -1 : 1;
     if (va.urgente !== vb.urgente) return va.urgente ? -1 : 1;
@@ -1187,7 +1244,8 @@ function renderBairros(lista) {
       "<span class='sb-bairro-count'>" + info.total + "</span></button>";
   });
 
-  document.getElementById("sbBairroLista").innerHTML = html;
+  var el = document.getElementById("sbBairroLista");
+  if (el) el.innerHTML = html;
 }
 
 function setBairroFiltro(bairro) {
@@ -1224,6 +1282,35 @@ window.addEventListener("load",function(){if(estaInstalado()){ocultarBtnInstall(
 if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){swReg=reg;reg.addEventListener("updatefound",function(){var nw=reg.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage({type:"SKIP_WAITING"});mostrarBotaoAtualizar(reg);}});});}).catch(function(err){console.warn("[SW]",err);});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});});}
 function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("↺ Nova versão disponível — toque em Atualizar","");}
 
+/* ══ MODO COMPACTO TABLET ══ */
+var _modoCompactoTablet = false;
+(function(){
+  try {
+    _modoCompactoTablet = localStorage.getItem("hyd_compacto_tablet") === "1";
+    if (_modoCompactoTablet) document.body.classList.add("modo-compacto-tablet");
+  } catch(e) {}
+})();
+function toggleCompactoTablet() {
+  _modoCompactoTablet = !_modoCompactoTablet;
+  document.body.classList.toggle("modo-compacto-tablet", _modoCompactoTablet);
+  var btn = document.getElementById("btnCompactoTablet");
+  if (btn) {
+    btn.style.background  = _modoCompactoTablet ? "var(--azul-bg)"    : "";
+    btn.style.borderColor = _modoCompactoTablet ? "var(--azul-borda)" : "";
+    btn.style.color       = _modoCompactoTablet ? "var(--azul)"       : "";
+  }
+  try { localStorage.setItem("hyd_compacto_tablet", _modoCompactoTablet ? "1" : "0"); } catch(e) {}
+  toast(_modoCompactoTablet ? "☰ Modo compacto ativado" : "☷ Modo normal", "");
+}
+window.addEventListener("DOMContentLoaded", function() {
+  var btn = document.getElementById("btnCompactoTablet");
+  if (btn && _modoCompactoTablet) {
+    btn.style.background  = "var(--azul-bg)";
+    btn.style.borderColor = "var(--azul-borda)";
+    btn.style.color       = "var(--azul)";
+  }
+});
+
 /* ══ MODO PERTO DE MIM ══ */
 var _modoPerto=false,_posAtual=null,RAIO_KM=7;
 function _haversine(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180,dLng=(lng2-lng1)*Math.PI/180,a=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)*Math.sin(dLng/2);return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));}
@@ -1259,8 +1346,6 @@ function iniciarTimerAoVivo(){if(_liveTimerInterval)clearInterval(_liveTimerInte
 /* ══ LOCK API ══ */
 function postLock(payload){var params=Object.keys(payload).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]);}).join("&");return fetch(API_BASE+"?"+params,{redirect:"follow"}).then(function(r){return r.json();}).catch(function(err){console.error("[postLock]",err);return{ok:false};});}
 function liberarLockApi(protocolo){
-  /* Se o lock foi redistribuído para mim, precisa usar o sessionId do lock,
-     não o SESSION_ID deste dispositivo */
   var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
   var sidParaLiberar = SESSION_ID;
   if (p && p.lock && p.lock.sessionId && p.lock.sessionId.indexOf("redist_") === 0) {
@@ -1284,18 +1369,13 @@ function pararHeartbeat(protocolo){if(meusLocks[protocolo]){clearInterval(meusLo
 /* ══ MODAL INICIAR ══ */
 function abrirModal(protocolo,endereco){protocoloPendente=protocolo;enderecoPendente=endereco;document.getElementById("modalTitulo").textContent="Iniciar execução?";document.getElementById("modalSub").textContent="Protocolo "+protocolo+"\n📍 "+endereco+"\n\nOperador: "+(getOperador()||"não identificado")+"\n\nO serviço ficará marcado como Em Execução.";document.getElementById("modalOverlay").classList.add("open");}
 function fecharModal(){document.getElementById("modalOverlay").classList.remove("open");protocoloPendente=null;}
-function confirmarExecucao(){var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;if(!protocolo)return;if(navigator.vibrate)navigator.vibrate(50);var locksAtivos=Object.keys(meusLocks);if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}fecharModal();toast("⏳ Registrando execução…","exec");var operador=getOperador()||"Operador";postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){if(!res.ok){toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");carregarDados();return;}iniciarHeartbeat(protocolo);toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");carregarDados();}).catch(function(err){console.error("[confirmarExecucao]",err);toast("❌ Erro ao iniciar execução","erro");});}
+function confirmarExecucao(){var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;if(!protocolo)return;if(navigator.vibrate)navigator.vibrate(50);var locksAtivos=Object.keys(meusLocks);if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}fecharModal();toast("⏳ Registrando execução…","exec");var operador=getOperador()||"Operador";postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){if(!res.ok){toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");carregarDados();return;}iniciarHeartbeat(protocolo);toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");carregarDados();}).catch(function(err){console.error("[confirmarExecucao]",err);toast("❌ Erro ao iniciar execução","erro");}); }
 function cancelarMinhaExecucao(protocolo){
   pararHeartbeat(protocolo);
   toast("🔓 Execução cancelada.","");
   liberarLockApi(protocolo).then(function(){ carregarDados(); });
 }
 
-/* ══ HELPER: verifica se lock pertence a este dispositivo ══
-   Cobre dois casos:
-   1. sessionId bate exatamente (execução normal)
-   2. lock foi redistribuído para este operador (sessionId começa com "redist_"
-      e lock.usuario bate com o nome do operador logado neste dispositivo) */
 function isMinhaExecucao(lock, concluido) {
   if (concluido || !lock) return false;
   if (lock.sessionId === SESSION_ID) return true;
@@ -1332,7 +1412,6 @@ function _preencherDetalhe(p){
   if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
   function _renderObs(obs){
     if(!obs||obs==="—")return "";
-    /* Remove o link do Maps da exibição — fica só "Via Bot Telegram" */
     var textoLimpo = obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim();
     if(!textoLimpo||textoLimpo==="—")return "";
     return "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(textoLimpo)+"</div></div>";
@@ -1361,7 +1440,6 @@ function _preencherDetalhe(p){
       obsHtml+
     "</div>"+
     fotoHtml+conclusaoHtml;
-  var _btnRemDet = "";
   footer.classList.add("show");
   if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'>✅ Serviço concluído</div>";}
   else if(outraExecucao){
@@ -1384,7 +1462,6 @@ function _comprimirImagem(file,callback){var tipo=file.type;if(!tipo||tipo==="im
 function onFotoConclChange(input){var file=input.files[0];if(!file)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="⏳ Processando…";_comprimirImagem(file,function(base64){if(!base64){toast("❌ Não foi possível carregar a foto","erro");btn.disabled=true;btn.textContent="✅ Concluir";return;}_fotoConclBase64=base64;document.getElementById("fotoConclImg").src=base64;document.getElementById("fotoConclPreview").classList.add("show");document.getElementById("btnFotoConcl").classList.add("oculto");btn.disabled=false;btn.textContent="✅ Concluir";});}
 function removerFotoConcl(){_fotoConclBase64=null;document.getElementById("fotoConclImg").src="";document.getElementById("fotoConclPreview").classList.remove("show");document.getElementById("btnFotoConcl").classList.remove("oculto");document.getElementById("inputFotoConcl").value="";var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="✅ Concluir";}
 function enviarConclusao(){if(!_protocoloConcluindo)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="⏳ Enviando…";var operador=getOperador()||"Operador",protocolo=_protocoloConcluindo,fotoBase64=_fotoConclBase64||"";
-  /* Resolve sessionId correto para liberar lock redistribuído */
   var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
   var sid = SESSION_ID;
   if (p && p.lock && p.lock.sessionId && p.lock.sessionId.indexOf("redist_") === 0) {
@@ -1476,7 +1553,6 @@ function renderTablet(lista){
   var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length,concluido:concluidosHoje.length};
   Object.keys(ftCounts).forEach(function(ft){var badge=document.getElementById("ftb-"+ft);if(!badge)return;var count=ftCounts[ft];badge.textContent=count;badge.classList.toggle("zero",count===0);});
   var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}),sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}),sbExec=ativos.filter(function(p){return !!p.lock;});
-  /* Preenche resumo em 4 cards */
   var rPen  = document.getElementById("sbResumoPen");
   var rUrg  = document.getElementById("sbResumoUrg");
   var rExec = document.getElementById("sbResumoExec");
@@ -1488,7 +1564,6 @@ function renderTablet(lista){
   var todosParaBuscaSb=ativos.concat(concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;}));
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
 
-  /* Filtro de bairro */
   var filtrados=termoBuscaSb?todosParaBuscaSb.filter(function(p){return(p.endereco||"").toLowerCase().indexOf(termoBuscaSb)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBuscaSb)>=0;}):ativos.slice();
   if(_bairroSelecionado !== "todos" && !termoBuscaSb) {
     filtrados = filtrados.filter(function(p){ return _extrairBairro(p.endereco) === _bairroSelecionado; });
@@ -1574,6 +1649,7 @@ carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
 document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){carregarDados();Object.keys(meusLocks).forEach(function(prot){postLock({acao:'heartbeat',protocolo:prot,sessionId:SESSION_ID});});}});
+
 /* ══ EDITAR ENDEREÇO ══ */
 var _editEndProtocolo = null;
 
@@ -1684,19 +1760,15 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   var menuId = "supMenu_" + p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var items = "";
 
-  /* Editar endereço */
   items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'>✏️ Editar endereço</button>";
 
-  /* Adicionar observação */
   var _obsVal = (p.obs && p.obs !== "—") ? p.obs : "";
   items += "<button class='sup-menu-item' onclick='abrirModalObs(\""+prot+"\",\""+esc(_obsVal)+"\");fecharMenuSupervisor()'>📝 Editar observação</button>";
 
-  /* Forçar conclusão — só se não estiver concluído */
   if (!concluido) {
     items += "<button class='sup-menu-item' onclick='forcarConclusaoSupervisor(\""+prot+"\");fecharMenuSupervisor()'>✅ Forçar conclusão sem foto</button>";
   }
 
-  /* Prioridade */
   var prioridade = !!p.prioridade && !concluido;
   if (!concluido) {
     items += "<button class='sup-menu-item' onclick='togglePrioridade(\""+prot+"\","+(prioridade?"true":"false")+");fecharMenuSupervisor()'>"+
@@ -1704,12 +1776,10 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
     "</button>";
   }
 
-  /* Redistribuir — só se estiver em execução por outro */
   if (outraExecucao && lock) {
     items += "<button class='sup-menu-item' onclick='abrirModalRedistribuir(\""+prot+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\");fecharMenuSupervisor()'>↔ Redistribuir protocolo</button>";
   }
 
-  /* Remover */
   items += "<div class='sup-menu-divider'></div>";
   items += "<button class='sup-menu-item danger' onclick='abrirModalRemover(\""+prot+"\",\""+end+"\");fecharMenuSupervisor()'>🗑️ Remover protocolo</button>";
 
@@ -1740,7 +1810,6 @@ function fecharMenuSupervisor() {
   }
 }
 
-/* Fecha menu ao clicar fora */
 document.addEventListener("click", function(e) {
   if (_menuAberto && !e.target.closest(".sup-menu-wrap")) {
     fecharMenuSupervisor();
@@ -1777,7 +1846,6 @@ function confirmarRemover() {
       btn.disabled = false;
       btn.textContent = "🗑️ Remover";
       if (res.ok) {
-        /* Limpa seleção do painel de detalhe se era esse protocolo */
         if (_protocoloSelecionado === protocolo) {
           _protocoloSelecionado = null;
           document.getElementById("detailVazio").style.display = "";
@@ -1848,10 +1916,8 @@ function confirmarRedistribuir() {
   var protocolo = _redistProtocolo;
   var sessionAtual = _redistSessionAtual;
 
-  /* 1. Libera lock atual */
   postLock({ acao: "liberar", protocolo: protocolo, sessionId: sessionAtual || SESSION_ID })
     .then(function() {
-      /* 2. Cria novo lock com sessionId único para o novo operador */
       var novaSession = "redist_" + Date.now() + "_" + Math.random().toString(36).slice(2);
       return postLock({ acao: "adquirir", protocolo: protocolo, sessionId: novaSession, usuario: novoOperador });
     })
@@ -1928,7 +1994,6 @@ function formatarTempoOp(iso) {
 function enviarPingPresenca() {
   var operador = getOperador();
   if (!operador) return;
-  /* Tenta obter GPS — sem bloquear */
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(pos) {
       _enviarPingComGps(operador, pos.coords.latitude, pos.coords.longitude, pos.coords.accuracy);
@@ -1963,7 +2028,6 @@ function renderOperadoresOnline(presencas) {
     if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco };
   });
 
-  /* Filtra supervisores */
   var equipe = presencas.filter(function(p) { return !p.supervisor; });
 
   var html = "";
@@ -1997,36 +2061,29 @@ function iniciarPresenca() {
   if (_opPingInterval) clearInterval(_opPingInterval);
   _opPingInterval = setInterval(enviarPingPresenca, 90000);
 
-  /* Equipes online aparecem para todos */
   carregarOperadoresOnline();
   if (_opListaInterval) clearInterval(_opListaInterval);
   _opListaInterval = setInterval(carregarOperadoresOnline, 30000);
 }
 
-/* ══ WAKE LOCK — mantém tela acesa para operadores em campo ══ */
+/* ══ WAKE LOCK ══ */
 var _wakeLock = null;
 
 async function ativarWakeLock() {
-  if (isSupervisor()) return; /* supervisor não precisa */
-  if (!('wakeLock' in navigator)) return; /* browser não suporta */
+  if (isSupervisor()) return;
+  if (!('wakeLock' in navigator)) return;
   try {
     _wakeLock = await navigator.wakeLock.request('screen');
-    _wakeLock.addEventListener('release', function() {
-      _wakeLock = null;
-    });
-  } catch(e) {
-    /* usuário negou ou dispositivo com bateria muito baixa — silencioso */
-  }
+    _wakeLock.addEventListener('release', function() { _wakeLock = null; });
+  } catch(e) {}
 }
 
-/* Re-ativa Wake Lock quando a aba volta ao foco (iOS/Android soltam ao minimizar) */
 document.addEventListener('visibilitychange', function() {
   if (document.visibilityState === 'visible' && !_wakeLock && getOperador() && !isSupervisor()) {
     ativarWakeLock();
   }
 });
 
-/* Inicia presença quando operador é identificado */
 var _origConfirmarOperador = confirmarOperador;
 confirmarOperador = function() {
   _origConfirmarOperador();
@@ -2034,18 +2091,17 @@ confirmarOperador = function() {
   setTimeout(ativarWakeLock, 500);
 };
 
-/* Inicia presença se já estava logado */
 window.addEventListener("DOMContentLoaded", function() {
   if (getOperador()) {
     setTimeout(iniciarPresenca, 500);
     setTimeout(ativarWakeLock, 600);
   }
-  /* Pede permissão de GPS logo ao abrir para já ter localização no primeiro ping */
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(function(){}, function(){}, {enableHighAccuracy:true,timeout:10000,maximumAge:0});
   }
 });
 
+/* ══ MAPA ══ */
 var _mapaObj = null, _mapaIniciado = false, _mapaMarcadores = [], _mapaFiltro = "todos", _mapaInfoAberta = null;
 var MAPS_KEY = "AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc";
 var _CORES_MAPA = { atrasado:"#7F1D1D", urgente:"#B91C1C", pendente:"#A16207", execucao:"#7C3AED", concluido:"#15803D" };
@@ -2140,7 +2196,6 @@ function _renderMapaMarcadores(lista) {
     _mapaMarcadores.push(marcador);
   });
 
-  /* Atualiza contadores dos filtros */
   ["todos","atrasado","urgente","execucao","pendente","concluido"].forEach(function(t) {
     var el = document.getElementById("mfc-"+t);
     if (!el) return;
@@ -2163,14 +2218,12 @@ function centralizarLocalizacao() {
   }, function() { toast("❌ Não foi possível obter localização","erro"); }, {enableHighAccuracy:true,timeout:10000});
 }
 
-/* Atualiza mapa quando dados chegam */
 var _origRender = render;
 render = function(lista) {
   _origRender(lista);
   if (_mapaIniciado) _renderMapaMarcadores(lista);
 };
 
-/* Redireciona cliques da aba mapa */
 document.addEventListener("DOMContentLoaded", function() {
   document.querySelectorAll(".filtro-tab").forEach(function(btn) {
     var orig = btn.getAttribute("onclick");
