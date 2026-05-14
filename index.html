@@ -353,15 +353,6 @@ header {
   .card-t-prazo-row { font-size: 9px; margin-bottom: 1px; }
   .card-t-prazo-bar { height: 2px; }
 
-  body.modo-compacto-tablet .card-t-thumb { display: none; }
-  body.modo-compacto-tablet .grid-tablet { grid-template-columns: 1fr; gap: 4px; }
-  body.modo-compacto-tablet .card-t-body { padding: 7px 10px; gap: 3px; }
-  body.modo-compacto-tablet .card-t-prot { font-size: 9px; }
-  body.modo-compacto-tablet .card-t-end { font-size: 11px; }
-  body.modo-compacto-tablet .card-t-meta { font-size: 10px; }
-  body.modo-compacto-tablet .card-t-prazo-row { font-size: 9px; margin-bottom: 1px; }
-  body.modo-compacto-tablet .card-t-prazo-bar { height: 2px; }
-
   /* DETAIL PANEL */
   .detail-panel { width: var(--detail-w); flex-shrink: 0; background: var(--branco); border-left: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .detail-vazio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--texto2); gap: 8px; padding: 24px; text-align: center; }
@@ -982,7 +973,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
-  <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
   <button onclick="exportarCSV()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:11px;font-weight:700;height:34px;padding:0 10px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;" onmouseover="this.style.background='var(--azul-bg)';this.style.borderColor='var(--azul-borda)';this.style.color='var(--azul)'" onmouseout="this.style.background='';this.style.borderColor='';this.style.color=''">
   <i class="fa-solid fa-download"></i> CSV
 </button>   
