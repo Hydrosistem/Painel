@@ -693,7 +693,10 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   .sb-op-status.online { color: var(--verde); }
   .sb-op-indicador { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
   .sb-op-vazio { padding: 12px; text-align: center; font-size: 11px; color: var(--texto3); }
-  .sb-resumo { border-bottom: 1px solid var(--borda); flex-shrink: 0; }
+  .sb-resumo { border-bottom: 1px solid var(--borda); flex-shrink: 0; padding-top: 4px; }
+  [data-resumo-tipo] { cursor: pointer; transition: transform .12s, box-shadow .12s; }
+  [data-resumo-tipo]:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.1); }
+  [data-resumo-tipo].ativo-resumo { box-shadow: 0 0 0 2px currentColor; }
 
 /* ══ MENU SUPERVISOR ══ */
   .sup-menu-wrap { position: relative; }
@@ -863,27 +866,26 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   
     <!-- Resumo em 4 cards -->
     <div class="sb-resumo" id="sbResumo">
-      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Resumo do dia</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px 10px;">
-        <div style="background:var(--amarelo-bg);border:1px solid var(--amarelo-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
-          <div id="sbResumoPen" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--amarelo);line-height:1;">—</div>
-          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
-        </div>
-        <div style="background:var(--atrasado-bg);border:1px solid var(--atrasado-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
-          <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--atrasado);line-height:1;">—</div>
-          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--atrasado);margin-top:2px;">Atrasados</div>
-        </div>
-        <div style="background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
-          <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;">—</div>
-          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--exec);margin-top:2px;">Execução</div>
-        </div>
-        <div style="background:var(--verde-bg);border:1px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
-          <div id="sbResumoOk" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--verde);line-height:1;">—</div>
-          <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
-        </div>
-      </div>
+  <div style="padding:12px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);display:flex;align-items:center;gap:6px;">Resumo do dia <span style="flex:1;height:1px;background:var(--borda);display:block;"></span></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px 10px;">
+    <div data-resumo-tipo="pendente" onclick="filtrarResumo('pendente',this)" style="background:var(--amarelo-bg);border:1px solid var(--amarelo-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+      <div id="sbResumoPen" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--amarelo);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
     </div>
-
+    <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)" style="background:var(--atrasado-bg);border:1px solid var(--atrasado-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--atrasado);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--atrasado);margin-top:2px;">Atrasados</div>
+    </div>
+    <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)" style="background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+      <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--exec);margin-top:2px;">Execução</div>
+    </div>
+    <div data-resumo-tipo="concluido" onclick="filtrarResumo('concluido',this)" style="background:var(--verde-bg);border:1px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+      <div id="sbResumoOk" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--verde);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
+    </div>
+  </div>
+</div>
     <!-- Equipes online -->
     <div class="sb-operadores-main" id="sbOperadoresMain">
       <div class="sb-op-header" style="padding:10px 12px 6px;">
@@ -910,15 +912,15 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     </div>
 
     <div class="centro-top">
-      <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
-      <button class="filtro-tab t-atrasado" onclick="setFiltroTab('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
-      <button class="filtro-tab t-urgente" onclick="setFiltroTab('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
-      <button class="filtro-tab t-exec" onclick="setFiltroTab('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
-      <button class="filtro-tab" onclick="setFiltroTab('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-      <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)">📍 Mapa</button>
-      <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()">📍 Perto de mim</button>
-      <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
-    </div>
+  <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
+  <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
+  <button class="filtro-tab t-urgente" data-ft="urgente" onclick="setFiltroTabComMapa('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
+  <button class="filtro-tab t-exec" data-ft="execucao" onclick="setFiltroTabComMapa('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
+  <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
+  <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)">📍 Mapa</button>
+  <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()">📍 Perto de mim</button>
+  <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
+</div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
       <div id="googleMapInterno" style="width:100%;height:100%"></div>
@@ -1631,6 +1633,7 @@ function renderTablet(lista){
   if (rUrg)  rUrg.textContent  = urg;
   if (rExec) rExec.textContent = exec;
   if (rOk)   rOk.textContent   = ok;
+  _atualizarResumoClicavel(pen, urg, exec, ok);
   var todosParaBuscaSb=ativos.concat(concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;}));
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
 
@@ -2172,6 +2175,44 @@ function renderOperadoresOnline(presencas) {
   }
 
   document.getElementById("sbOpLista").innerHTML = html;
+  
+}
+
+var _filtroResumo = "todos";
+function _atualizarResumoClicavel(pen, urg, exec, ok) {
+  var valores = { pendente: pen, atrasado: urg, execucao: exec, concluido: ok };
+  var els = {
+    pendente:  document.getElementById("sbResumoPen"),
+    atrasado:  document.getElementById("sbResumoUrg"),
+    execucao:  document.getElementById("sbResumoExec"),
+    concluido: document.getElementById("sbResumoOk")
+  };
+  Object.keys(els).forEach(function(tipo) {
+    var el = els[tipo];
+    if (!el) return;
+    var card = el.closest("[data-resumo-tipo]");
+    if (!card) return;
+    var zero = valores[tipo] === 0;
+    el.style.opacity = zero ? "0.35" : "1";
+    el.style.fontSize = zero ? "16px" : "22px";
+    el.textContent = zero ? "—" : valores[tipo];
+  });
+}
+
+function filtrarResumo(tipo, el) {
+  if (_filtroResumo === tipo) {
+    _filtroResumo = "todos";
+    document.querySelectorAll("[data-resumo-tipo]").forEach(function(c){ c.classList.remove("ativo-resumo"); });
+  } else {
+    _filtroResumo = tipo;
+    document.querySelectorAll("[data-resumo-tipo]").forEach(function(c){ c.classList.remove("ativo-resumo"); });
+    el.classList.add("ativo-resumo");
+  }
+  ftFiltro = _filtroResumo;
+  document.querySelectorAll(".filtro-tab").forEach(function(b){ b.classList.remove("active"); });
+  var tabEl = document.querySelector(".filtro-tab[data-ft='" + tipo + "']");
+  if (tabEl) tabEl.classList.add("active");
+  renderTablet(_ultimaLista);
 }
 
 function iniciarPresenca() {
