@@ -2226,16 +2226,16 @@ function renderOperadoresOnline(presencas) {
       }
 
       html +=
-        '<div class="sb-op-item">' +
+        '<div class="sb-op-item" onclick="window.location.href=\'./equipe.html\'" style="cursor:pointer;" onmouseover="this.style.background=\'var(--cinza-md)\'" onmouseout="this.style.background=\'\'">' +
           '<div class="sb-op-avatar" style="background:' + cor + '"><i class="fa-solid fa-user"></i></div>' +
           '<div class="sb-op-info">' +
             '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
             '<div class="sb-op-status ' + statusClass + '">' +
               (lock ? '● executando ' + safeText(lock.protocolo) : formatarTempoOp(p.timestamp)) +
             '</div>' +
-          '</div>' +
-          timerHtml +
-        '</div>';
+         '</div>' +
+         timerHtml +
+       '</div>';
     });
   }
 
