@@ -1760,7 +1760,7 @@ function renderFiltrado(lista){
   var gridList=termoBusca?filtrados:ativos.slice();
   if(_modoPerto&&_posAtual){gridList.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
   else{gridList.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t.r<=0||p._t.tipo==="atrasado")return 3;if(p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
-  var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=gridList.filter(function(p){return isConcluido(p);});
+  var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=gridList.filter(function(p){return isConcluido(p)&&p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje;});
   var novoHashes={};gridList.forEach(function(p){novoHashes[p.protocolo]=hashProtocolo(p);});
   var secaoAtual=[execL.length,urgL.length,norL.length,concL.length].join("|"),precisaReconstruir=secaoAtual!==(_prevHashes.__secoes__||"");
   if(!precisaReconstruir&&gridList.map(function(p){return p.protocolo;}).join(",")!==(_prevHashes.__ordem__||""))precisaReconstruir=true;
@@ -1771,6 +1771,7 @@ function renderFiltrado(lista){
     if(urgL.length){h+="<div class='sec-label'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     if(norL.length){h+="<div class='sec-label'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     if(concL.length){h+="<div class='sec-label'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
     if(!h)h="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo ativo.</div></div>";
     h+="<div class='ts'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
     g.innerHTML=h;
