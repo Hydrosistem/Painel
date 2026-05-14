@@ -973,9 +973,9 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
-  <button onclick="exportarCSV()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:11px;font-weight:700;height:34px;padding:0 10px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;" onmouseover="this.style.background='var(--azul-bg)';this.style.borderColor='var(--azul-borda)';this.style.color='var(--azul)'" onmouseout="this.style.background='';this.style.borderColor='';this.style.color=''">
+  <button onclick="exportarCSV()" id="btnExportarCSV" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);...">
   <i class="fa-solid fa-download"></i> CSV
-</button>   
+</button>  
 </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
@@ -1174,6 +1174,9 @@ function aplicarVisualizacaoRole() {
   if (sidebar) {
     sidebar.style.display = sup ? "" : "none";
   }
+
+  var btnCSV = document.getElementById("btnExportarCSV");
+  if (btnCSV) btnCSV.style.display = sup ? "" : "none";
 
   /* Busca da sidebar do supervisor também usa termoBuscaSb — operadores usam centroBuscaInput */
   /* Nada mais a fazer: o CSS já cuida do layout */
