@@ -933,9 +933,9 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <div class="sb-stat-card-lbl">Taxa de atraso</div>
     </div>
     <div class="sb-stat-card">
-      <div class="sb-stat-card-val exec" id="statEmExecucao">—</div>
-      <div class="sb-stat-card-lbl">Em execução</div>
-    </div>
+     <div class="sb-stat-card-val amarelo" id="statMaiorAtraso">—</div>
+     <div class="sb-stat-card-lbl">Maior atraso</div>
+  </div>
   </div>
   <div class="sb-stats-header" style="margin-top:2px">Por operador</div>
   <div class="sb-ops-lista" id="sbOpsLista"></div>
@@ -2559,7 +2559,18 @@ function _atualizarEstatisticas(lista) {
   if (sTot)  sTot.textContent  = concluidos.length;
   if (sTmp)  sTmp.textContent  = tempoStr;
   if (sTaxa) { sTaxa.textContent = taxaAtraso; sTaxa.className = "sb-stat-card-val " + taxaCor; }
-  if (sExec) sExec.textContent = emExecucao;
+  var sMaiorAtraso = document.getElementById("statMaiorAtraso");
+if (sMaiorAtraso) {
+  var atrasadosList = ativos.filter(function(p){ return p._t && p._t.tipo === "atrasado"; });
+  if (atrasadosList.length) {
+    var maxDelta = Math.max.apply(null, atrasadosList.map(function(p){ return p._t.delta; }));
+    sMaiorAtraso.textContent = ar(maxDelta);
+    sMaiorAtraso.className = "sb-stat-card-val vermelho";
+  } else {
+    sMaiorAtraso.textContent = "—";
+    sMaiorAtraso.className = "sb-stat-card-val verde";
+  }
+}
 
   /* Ranking por operador */
   var opMap = {};
