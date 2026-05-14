@@ -921,6 +921,9 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
+  <button onclick="exportarCSV()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:11px;font-weight:700;height:34px;padding:0 10px;display:flex;align-items:center;gap:5px;cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;" onmouseover="this.style.background='var(--azul-bg)';this.style.borderColor='var(--azul-borda)';this.style.color='var(--azul)'" onmouseout="this.style.background='';this.style.borderColor='';this.style.color=''">
+  <i class="fa-solid fa-download"></i> CSV
+</button>   
 </div>
     <!-- ══ MAPA INTEGRADO ══ -->
     <div id="mapaView" style="display:none;flex:1;position:relative;overflow:hidden;">
@@ -2394,6 +2397,59 @@ document.addEventListener("DOMContentLoaded", function() {
     }
   });
 });
+
+/* ══ EXPORTAR CSV ══ */
+function exportarCSV() {
+  var lista = _listaAtiva && _listaAtiva.length ? _listaAtiva : _ultimaLista;
+  if (!lista || !lista.length) { toast("Nenhum protocolo para exportar", ""); return; }
+
+  var hoje = new Date().toDateString();
+  var filtro = ftFiltro;
+
+  /* Aplica o mesmo filtro ativo do centro */
+  var dados = lista.filter(function(p) {
+    var concluido = isConcluido(p);
+    if (filtro === "atrasado") return !concluido && p._t && p._t.tipo === "atrasado";
+    if (filtro === "urgente")  return !concluido && p._t && p._t.tipo === "urgente";
+    if (filtro === "execucao") return !concluido && !!p.lock;
+    if (filtro === "concluido") return concluido && p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje;
+    return !concluido || (concluido && p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje);
+  });
+
+  if (!dados.length) { toast("Nenhum protocolo neste filtro", ""); return; }
+
+  var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Observação"];
+  var linhas = [cols.join(";")];
+
+  dados.forEach(function(p) {
+    var status = isConcluido(p) ? "Concluído" : p.lock ? "Em execução" : (p._t ? p._t.tipo : "pendente");
+    var obs = (p.obs || "—").replace(/;/g, ",").replace(/\n/g, " ");
+    var row = [
+      p.protocolo || "",
+      p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
+      (p.endereco || "").replace(/;/g, ","),
+      p.registradoPor || "—",
+      status,
+      p.operadorConclusao || (p.lock ? p.lock.usuario : "—") || "—",
+      p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
+      obs
+    ];
+    linhas.push(row.map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(";"));
+  });
+
+  var bom = "\uFEFF"; /* BOM para Excel reconhecer UTF-8 */
+  var blob = new Blob([bom + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a");
+  var dataHoje = new Date().toLocaleDateString("pt-BR").replace(/\//g,"-");
+  a.href = url;
+  a.download = "entulhos_" + (filtro === "todos" ? "todos" : filtro) + "_" + dataHoje + ".csv";
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+  toast("📥 CSV exportado — " + dados.length + " protocolos", "ok");
+}
+  
 </script>
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc&language=pt-BR&region=BR"></script>
 </body>
