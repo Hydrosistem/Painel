@@ -1717,6 +1717,7 @@ function renderTablet(lista){
   if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
   if(concL.length){h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   h+="<div class='ts-tablet'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
   var novosHashesTablet={};
