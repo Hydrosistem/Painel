@@ -1605,7 +1605,7 @@ function renderCard(p,idx,isNovo){
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
   var _mapsUrl = _mm ? _mm[0] : null;
   var _obsTexto = p.obs ? p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim() : "";
-  var obs=(_obsTexto&&_obsTexto!=="—")?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
+  var obs=(_obsTexto&&_obsTexto!=="—"&&!_mapsUrl)?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
   var obsMaps = _mapsUrl ? "<a href='"+_mapsUrl+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",src=fotoSrc(p.fotoId);
