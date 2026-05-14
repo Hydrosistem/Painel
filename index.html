@@ -2598,7 +2598,7 @@ function _renderTimeline(p) {
   if (lock && lock.iniciadoEm) iniciadoTs = lock.iniciadoEm;
   else if (p.iniciadoEm) iniciadoTs = p.iniciadoEm;
 
-  if (iniciadoTs) {
+  if (iniciadoTs && (concluido || lock)) {
     items.push({
       dot:   "execucao",
       icon:  "▶",
