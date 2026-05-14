@@ -768,6 +768,22 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   #refreshBar { top: 52px; }
   .search-wrap { top: 54px; }
 }
+/* ══ ESTATÍSTICAS SIDEBAR ══ */
+.sb-stats-section { border-bottom: 1px solid var(--borda); flex-shrink: 0; }
+.sb-stats-header { padding: 8px 12px 4px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.3px; color: var(--texto3); display: flex; align-items: center; gap: 6px; }
+.sb-stats-header::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
+.sb-stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 6px 10px 10px; }
+.sb-stat-card { background: var(--cinza-md); border: 1px solid var(--borda); border-radius: var(--radius-sm); padding: 8px 10px; }
+.sb-stat-card-val { font-size: 16px; font-weight: 700; font-family: "DM Mono", monospace; line-height: 1; color: var(--texto); }
+.sb-stat-card-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .7px; color: var(--texto3); margin-top: 3px; }
+.sb-stat-card-val.verde { color: var(--verde); }
+.sb-stat-card-val.amarelo { color: var(--amarelo); }
+.sb-stat-card-val.vermelho { color: var(--vermelho); }
+.sb-stat-card-val.exec { color: var(--exec); }
+.sb-ops-lista { display: flex; flex-direction: column; gap: 2px; padding: 0 10px 8px; }
+.sb-ops-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: var(--radius-xs); background: var(--branco); border: 1px solid var(--borda); }
+.sb-ops-nome { font-size: 11px; font-weight: 600; color: var(--texto); }
+.sb-ops-count { font-size: 11px; font-weight: 700; font-family: "DM Mono", monospace; color: var(--verde); }
 </style>
 </head>
 <body>
@@ -886,6 +902,30 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
     </div>
   </div>
+</div>
+    <!-- Estatísticas do dia -->
+<div class="sb-stats-section" id="sbEstatisticas" style="display:none">
+  <div class="sb-stats-header">Estatísticas do dia</div>
+  <div class="sb-stats-grid">
+    <div class="sb-stat-card">
+      <div class="sb-stat-card-val verde" id="statTotalConcluidos">—</div>
+      <div class="sb-stat-card-lbl">Concluídos hoje</div>
+    </div>
+    <div class="sb-stat-card">
+      <div class="sb-stat-card-val" id="statTempoMedio">—</div>
+      <div class="sb-stat-card-lbl">Tempo médio</div>
+    </div>
+    <div class="sb-stat-card">
+      <div class="sb-stat-card-val vermelho" id="statTaxaAtraso">—</div>
+      <div class="sb-stat-card-lbl">Taxa de atraso</div>
+    </div>
+    <div class="sb-stat-card">
+      <div class="sb-stat-card-val exec" id="statEmExecucao">—</div>
+      <div class="sb-stat-card-lbl">Em execução</div>
+    </div>
+  </div>
+  <div class="sb-stats-header" style="margin-top:2px">Por operador</div>
+  <div class="sb-ops-lista" id="sbOpsLista"></div>
 </div>
     <!-- Equipes online -->
     <div class="sb-operadores-main" id="sbOperadoresMain">
@@ -1638,6 +1678,7 @@ function renderTablet(lista){
   if (rExec) rExec.textContent = exec;
   if (rOk)   rOk.textContent   = ok;
   _atualizarResumoClicavel(pen, urg, exec, ok);
+  _atualizarEstatisticas(lista);
   var todosParaBuscaSb=ativos.concat(concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;}));
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
 
@@ -2448,6 +2489,80 @@ function exportarCSV() {
   a.click();
   setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
   toast("📥 CSV exportado — " + dados.length + " protocolos", "ok");
+}
+
+/* ══ ESTATÍSTICAS DO DIA ══ */
+function _atualizarEstatisticas(lista) {
+  if (!isSupervisor()) return;
+  var el = document.getElementById("sbEstatisticas");
+  if (el) el.style.display = "";
+
+  var hoje = new Date().toDateString();
+  var concluidos = lista.filter(function(p) {
+    return isConcluido(p) && p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje;
+  });
+  var ativos = lista.filter(function(p) { return !isConcluido(p); });
+  var emExecucao = ativos.filter(function(p) { return !!p.lock; }).length;
+  var atrasados = ativos.filter(function(p) { return p._t && p._t.tipo === "atrasado"; }).length;
+  var totalAtivos = ativos.length;
+
+  /* Tempo médio de conclusão em horas */
+  var tempos = concluidos.filter(function(p) {
+    return p.dataHora && p.dataConclusao;
+  }).map(function(p) {
+    return (new Date(p.dataConclusao) - new Date(p.dataHora)) / 36e5;
+  }).filter(function(h) { return h > 0 && h < 72; });
+
+  var tempoMedio = tempos.length
+    ? (tempos.reduce(function(a,b){ return a+b; }, 0) / tempos.length)
+    : null;
+
+  var tempoStr = tempoMedio == null ? "—"
+    : tempoMedio < 1
+      ? Math.round(tempoMedio * 60) + "min"
+      : tempoMedio.toFixed(1) + "h";
+
+  var taxaAtraso = totalAtivos > 0
+    ? Math.round(atrasados / totalAtivos * 100) + "%"
+    : "0%";
+
+  /* Cor da taxa */
+  var taxaVal = totalAtivos > 0 ? atrasados / totalAtivos : 0;
+  var taxaCor = taxaVal >= 0.3 ? "vermelho" : taxaVal >= 0.1 ? "amarelo" : "verde";
+
+  var sTot  = document.getElementById("statTotalConcluidos");
+  var sTmp  = document.getElementById("statTempoMedio");
+  var sTaxa = document.getElementById("statTaxaAtraso");
+  var sExec = document.getElementById("statEmExecucao");
+
+  if (sTot)  sTot.textContent  = concluidos.length;
+  if (sTmp)  sTmp.textContent  = tempoStr;
+  if (sTaxa) { sTaxa.textContent = taxaAtraso; sTaxa.className = "sb-stat-card-val " + taxaCor; }
+  if (sExec) sExec.textContent = emExecucao;
+
+  /* Ranking por operador */
+  var opMap = {};
+  concluidos.forEach(function(p) {
+    var op = p.operadorConclusao || p.registradoPor || "—";
+    if (!opMap[op]) opMap[op] = 0;
+    opMap[op]++;
+  });
+
+  var ops = Object.keys(opMap).sort(function(a,b){ return opMap[b] - opMap[a]; });
+  var opHtml = "";
+  if (!ops.length) {
+    opHtml = '<div style="font-size:11px;color:var(--texto3);text-align:center;padding:6px 0;">Nenhuma conclusão hoje</div>';
+  } else {
+    ops.forEach(function(op) {
+      opHtml += '<div class="sb-ops-item">' +
+        '<span class="sb-ops-nome">' + safeText(op) + '</span>' +
+        '<span class="sb-ops-count">✅ ' + opMap[op] + '</span>' +
+      '</div>';
+    });
+  }
+
+  var opLista = document.getElementById("sbOpsLista");
+  if (opLista) opLista.innerHTML = opHtml;
 }
   
 </script>
