@@ -800,7 +800,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
-    <button class="btn-perto" id="btnPerto" onclick="togglePerto()">📍 Perto de mim</button>
+    <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   </div>
 </header>
 
@@ -918,8 +918,8 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab t-urgente" data-ft="urgente" onclick="setFiltroTabComMapa('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
   <button class="filtro-tab t-exec" data-ft="execucao" onclick="setFiltroTabComMapa('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-  <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)">📍 Mapa</button>
-  <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()">📍 Perto de mim</button>
+  <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
+  <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button class="btn-compacto" id="btnCompactoTablet" title="Modo compacto" onclick="toggleCompactoTablet()" style="flex-shrink:0;background:none;border:1.5px solid var(--borda);border-radius:var(--radius-sm);color:var(--texto2);font-size:15px;width:34px;height:34px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,border-color .15s,color .15s;">☰</button>
 </div>
     <!-- ══ MAPA INTEGRADO ══ -->
@@ -935,7 +935,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
           <button class="mapa-filtro-btn" onclick="setMapaFiltro('pendente',this)"><span class="mf-dot" style="background:var(--amarelo)"></span>Pendentes <span id="mfc-pendente" class="mf-count">—</span></button>
           <button class="mapa-filtro-btn" onclick="setMapaFiltro('concluido',this)"><span class="mf-dot" style="background:var(--verde)"></span>Concluídos <span id="mfc-concluido" class="mf-count">—</span></button>
         </div>
-        <button onclick="centralizarLocalizacao()" style="background:var(--branco);border:1px solid var(--borda);border-radius:var(--radius);padding:9px 12px;box-shadow:0 4px 12px rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--azul);cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;">📍 Minha localização</button>
+        <button onclick="centralizarLocalizacao()" style="background:var(--branco);border:1px solid var(--borda);border-radius:var(--radius);padding:9px 12px;box-shadow:0 4px 12px rgba(0,0,0,.1);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--azul);cursor:pointer;display:flex;align-items:center;gap:7px;transition:background .15s;"><i class="fa-solid fa-map-pin"></i> Minha localização</button>
       </div>
     </div>
     <div class="centro-scroll" id="centroScroll">
@@ -1357,25 +1357,25 @@ function _haversine(lat1,lng1,lat2,lng2){var R=6371,dLat=(lat2-lat1)*Math.PI/180
 function togglePerto(){
   var btnM = document.getElementById("btnPerto");
   var btnD = document.getElementById("btnPertoDesktop");
-  function setTxt(txt){ if(btnM) btnM.textContent=txt; if(btnD) btnD.textContent=txt; }
+  function setTxt(txt){ if(btnM) btnM.innerHTML=txt; if(btnD) btnD.innerHTML=txt; }
   function setAtivo(v){ if(btnM) btnM.classList.toggle("ativo",v); if(btnD) btnD.classList.toggle("ativo",v); }
 
   if(_modoPerto){
     _modoPerto=false; _posAtual=null;
-    setAtivo(false); setTxt("📍 Perto de mim");
+    setAtivo(false); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim");
     toast("📍 Modo proximidade desativado","");
     renderFiltrado(_ultimaLista); renderTablet(_ultimaLista); return;
   }
   setTxt("⏳ Buscando GPS...");
-  if(!navigator.geolocation){ toast("❌ GPS não disponível","erro"); setTxt("📍 Perto de mim"); return; }
+  if(!navigator.geolocation){ toast("❌ GPS não disponível","erro"); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim"); return; }
   navigator.geolocation.getCurrentPosition(function(pos){
     _posAtual={lat:pos.coords.latitude,lng:pos.coords.longitude};
     _modoPerto=true;
-    setAtivo(true); setTxt("📍 Perto de mim ✓");
+    setAtivo(true); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim ✓");
     toast("✅ GPS ativo — até "+RAIO_KM+"km","ok");
     renderFiltrado(_ultimaLista); renderTablet(_ultimaLista);
   },function(err){
-    setTxt("📍 Perto de mim");
+    setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim");
     toast(err.code===1?"❌ Permissão de GPS negada":"❌ Localização indisponível","erro");
   },{enableHighAccuracy:true,timeout:10000,maximumAge:30000});
 }
@@ -1485,7 +1485,7 @@ function _preencherDetalhe(p){
       html += "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(textoLimpo)+"</div></div>";
     }
     if(mapsUrl){
-      html += "<a href='"+mapsUrl+"' target='_blank' rel='noopener' style='display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:var(--azul-bg);border:1.5px solid var(--azul-borda);border-radius:var(--radius-sm);color:var(--azul);font-size:12px;font-weight:700;text-decoration:none;'>📍 Ver no Maps</a>";
+      html += "<a href='"+mapsUrl+"' target='_blank' rel='noopener' style='display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:var(--azul-bg);border:1.5px solid var(--azul-borda);border-radius:var(--radius-sm);color:var(--azul);font-size:12px;font-weight:700;text-decoration:none;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";
     }
     return html;
   }
@@ -1496,7 +1496,7 @@ function _preencherDetalhe(p){
   var isoAttr=!concluido&&p.dataHora?"data-iso-detalhe='"+esc(p.dataHora)+"' data-concluido-detalhe='"+(concluido?"1":"0")+"'":"";
   content.innerHTML=
     "<div style='display:flex;align-items:flex-start;justify-content:space-between;gap:8px'>"+
-      "<div style='flex:1;min-width:0'><div class='detail-prot'>"+safeText(p.protocolo)+"</div><div class='detail-end'>📍 "+safeText(p.endereco)+"</div><div style='margin-top:6px'>"+badgeMap[tipoCard]+"</div></div>"+
+      "<div style='flex:1;min-width:0'><div class='detail-prot'>"+safeText(p.protocolo)+"</div><div class='detail-end'><i class='fa-solid fa-map-pin'></i> "+safeText(p.endereco)+"</div><div style='margin-top:6px'>"+badgeMap[tipoCard]+"</div></div>"+
       (isSupervisor() ? _renderMenuSupervisor(p, lock, concluido, outraExecucao) : "")+
     "</div>"+
     "<div class='detail-mini-cards "+tipoCard+"' "+isoAttr+">"+
@@ -1549,7 +1549,7 @@ function renderCard(p,idx,isNovo){
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
   var _obsTexto = p.obs ? p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim() : "";
   var obs=(_obsTexto&&_obsTexto!=="—")?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
-  var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>":"";
+  var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",src=fotoSrc(p.fotoId);
   if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
@@ -1575,7 +1575,7 @@ function renderCard(p,idx,isNovo){
         "<div class='card-top-left'><span class='prot-num'>"+safeText(p.protocolo)+"</span>"+(prioridade?"<span class='badge-prioridade'>⚡ Prioridade máxima</span>":(tipoCard!=="execucao"?"<span class='badge t-"+tipoCard+"'>"+badgeTxt+"</span>":""))+"</div>"+
         "<div class='card-top-right'>"+execBadge+_btnPrioridade(p.protocolo,prioridade)+_btnRemoverCard(p.protocolo,p.endereco)+"</div>"+
       "</div>"+
-      "<div class='endereco'>📍 "+safeText(p.endereco)+"</div>"+
+      "<div class='endereco'><i class='fa-solid fa-map-pin'></i> "+safeText(p.endereco)+"</div>"+
       "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+obs+dist+"</div>"+
       execInfoHtml+foto+
       "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>"+
@@ -1607,7 +1607,7 @@ function renderCardTablet(p,idx,isNovo){
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
       "<div class='card-t-top'><div><div class='card-t-prot'>"+safeText(p.protocolo)+"</div><div class='card-t-end'>"+safeText(p.endereco)+"</div></div>"+badgeHtml+"</div>"+
-      "<div class='card-t-meta'><span>🕐 "+fdt(p.dataHora)+"</span><span><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+(_modoPerto&&p._distKm!=null?"<span style='color:var(--azul);font-weight:600'>📍 "+_formatarDist(p._distKm)+"</span>":"")+(execSub?execSub:"")+"</div>"+
+      "<div class='card-t-meta'><span>🕐 "+fdt(p.dataHora)+"</span><span><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+(_modoPerto&&p._distKm!=null?"<span style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"")+(execSub?execSub:"")+"</div>"+
       "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto3)'>"+prazoLabel+"</span></div>"+
       "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>"+
     "</div></div></div>";
@@ -2344,7 +2344,7 @@ function _renderMapaMarcadores(lista) {
         '<div style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:'+cor+'22;color:'+cor+';border:1px solid '+cor+'44;margin-bottom:8px">'+_LABELS_MAPA[tipo]+'</div>' +
         '<div style="font-size:11px;color:#64748B;margin-bottom:2px"><i class="fa-regular fa-circle-user" style="font-size:11px"></i> '+safeText(p.registradoPor||"—")+'</div>' +
         (t ? '<div style="font-size:11px;color:'+cor+';font-weight:600;margin-bottom:8px">⏱ '+t.txt+'</div>' : '') +
-        '<a href="https://maps.google.com/?q='+p.lat+','+p.lng+'" target="_blank" rel="noopener" style="display:block;text-align:center;padding:6px 10px;background:#EBF3FD;border:1.5px solid #1469C7;border-radius:6px;color:#1469C7;font-size:12px;font-weight:700;text-decoration:none;">📍 Abrir no Google Maps</a>' +
+        '<a href="https://maps.google.com/?q='+p.lat+','+p.lng+'" target="_blank" rel="noopener" style="display:block;text-align:center;padding:6px 10px;background:#EBF3FD;border:1.5px solid #1469C7;border-radius:6px;color:#1469C7;font-size:12px;font-weight:700;text-decoration:none;"><i class="fa-solid fa-map-pin"></i> Abrir no Google Maps</a>' +
       '</div>';
     var iw = new google.maps.InfoWindow({ content: infoHtml });
     marcador.addListener("click", function() {
