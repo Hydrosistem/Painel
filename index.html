@@ -2383,7 +2383,8 @@ function _renderMapaMarcadores(lista) {
   _mapaMarcadores = [];
   if (_mapaInfoAberta) { _mapaInfoAberta.close(); _mapaInfoAberta = null; }
 
-  var filtrados = _mapaFiltro === "todos" ? lista : lista.filter(function(p){ return _getTipoMapa(p) === _mapaFiltro; });
+  var _mapaAtivos = lista.filter(function(p){ return !isConcluido(p); });
+  var filtrados = _mapaFiltro === "todos" ? _mapaAtivos : _mapaAtivos.filter(function(p){ return _getTipoMapa(p) === _mapaFiltro; });
 
   var temCoord = 0;
   filtrados.forEach(function(p) {
