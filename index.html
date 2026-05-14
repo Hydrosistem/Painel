@@ -1709,6 +1709,7 @@ function renderTablet(lista){
     if(ftFiltro==="atrasado")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
     else if(ftFiltro==="urgente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
     else if(ftFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
+    else if(ftFiltro==="pendente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="pendente";});
     else if(ftFiltro==="concluido"){filtrados=concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;});}
   }
   if(_modoPerto&&_posAtual){filtrados.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
