@@ -187,6 +187,8 @@ header {
 .stat.s-exec .stat-n { color: var(--exec); }
 .stat.s-urg  .stat-n { color: var(--vermelho); }
 .stat.s-ok   .stat-n { color: var(--verde); }
+.stat.ativo { background: var(--cinza-md); }
+.stat.ativo .stat-t { color: var(--texto2); }
 
 /* ══ MOBILE: grid ══ */
 .main { padding: 16px; }
@@ -814,10 +816,18 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   </div>
 
   <div class="stats">
-    <div class="stat s-pen"><div class="stat-n" id="nPen">—</div><div class="stat-t">Pendente</div></div>
-    <div class="stat s-exec"><div class="stat-n" id="nExec">—</div><div class="stat-t">Em execução</div></div>
-    <div class="stat s-urg"><div class="stat-n" id="nUrg">—</div><div class="stat-t">Atrasado</div></div>
-    <div class="stat s-ok"><div class="stat-n" id="nOk">—</div><div class="stat-t">Concluído</div></div>
+    <div class="stat s-pen" onclick="setFiltroMobile('pendente',this)" style="cursor:pointer">
+      <div class="stat-n" id="nPen">—</div><div class="stat-t">Pendente</div>
+    </div>
+    <div class="stat s-exec" onclick="setFiltroMobile('execucao',this)" style="cursor:pointer">
+      <div class="stat-n" id="nExec">—</div><div class="stat-t">Em execução</div>
+    </div>
+    <div class="stat s-urg" onclick="setFiltroMobile('atrasado',this)" style="cursor:pointer">
+      <div class="stat-n" id="nUrg">—</div><div class="stat-t">Atrasado</div>
+    </div>
+    <div class="stat s-ok" onclick="setFiltroMobile('concluido',this)" style="cursor:pointer">
+      <div class="stat-n" id="nOk">—</div><div class="stat-t">Concluído</div>
+    </div>
   </div>
 
   <div class="main">
@@ -1271,7 +1281,17 @@ function setBairroFiltro(bairro) {
 }
 
 /* ══ FILTROS ══ */
-var sbFiltro="todos", ftFiltro="todos";
+var sbFiltro="todos", ftFiltro="todos", _filtroMobile="todos";
+function setFiltroMobile(filtro, el) {
+  if (_filtroMobile === filtro) {
+    _filtroMobile = "todos";
+  } else {
+    _filtroMobile = filtro;
+  }
+  document.querySelectorAll(".stat").forEach(function(s) { s.classList.remove("ativo"); });
+  if (_filtroMobile !== "todos" && el) el.classList.add("ativo");
+  renderFiltrado(_ultimaLista);
+}
 function setSbFiltro(f,btn){sbFiltro=f;document.querySelectorAll(".sb-filter-btn").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");renderTablet(_ultimaLista);}
 function setFiltroTab(f,btn){ftFiltro=f;document.querySelectorAll(".filtro-tab").forEach(function(b){b.classList.remove("active");});btn.classList.add("active");renderTablet(_ultimaLista);}
 
@@ -1661,6 +1681,19 @@ function renderFiltrado(lista){
   var filtrados=!termoBusca?ativos:todosParaBusca.filter(function(p){return(p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||(p.obs||"").toLowerCase().indexOf(termoBusca)>=0;});
   if(!ativos.length&&!concluidosHoje.length){g.innerHTML="<div class='empty'><div class='empty-icon'>✅</div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";_prevHashes={};return;}
   if(termoBusca&&!filtrados.length){g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou protocolo.</div></div>";return;}
+  /* Filtro mobile por stat */
+  if (!termoBusca && _filtroMobile !== "todos") {
+    if (_filtroMobile === "pendente") {
+      ativos = ativos.filter(function(p){ return !p.lock && p._t.tipo === "pendente"; });
+    } else if (_filtroMobile === "execucao") {
+      ativos = ativos.filter(function(p){ return !!p.lock; });
+    } else if (_filtroMobile === "atrasado") {
+      ativos = ativos.filter(function(p){ return !p.lock && p._t.tipo === "atrasado"; });
+    } else if (_filtroMobile === "concluido") {
+      ativos = concluidosHoje.slice();
+      ativos.forEach(function(p){ p._t = p._t || {txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""}; });
+    }
+  }
   var gridList=termoBusca?filtrados:ativos.slice();
   if(_modoPerto&&_posAtual){gridList.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
   else{gridList.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t.r<=0||p._t.tipo==="atrasado")return 3;if(p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
