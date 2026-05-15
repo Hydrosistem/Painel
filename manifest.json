@@ -2,8 +2,8 @@
   "name": "Hydrosistem — Entulhos",
   "short_name": "Hydrosistem",
   "description": "Painel de controle de entulhos e protocolos de serviço",
-  "start_url": "./index.html?utm_source=pwa",
-  "scope": "./",
+  "start_url": "/Painel/index.html?utm_source=pwa",
+  "scope": "/Painel/",
   "display": "standalone",
   "orientation": "natural",
   "background_color": "#0A3F7F",
@@ -15,7 +15,7 @@
   "related_applications": [
     {
       "platform": "webapp",
-      "url": "https://necroblut.github.io/Hydrosistem/manifest.json"
+      "url": "https://hydrosistem.github.io/Painel/manifest.json"
     }
   ],
   "icons": [
@@ -35,7 +35,7 @@
       "name": "Atualizar Painel",
       "short_name": "Atualizar",
       "description": "Abre o painel e atualiza os dados",
-      "url": "./index.html?action=refresh",
+      "url": "/Painel/index.html?action=refresh",
       "icons": [
         { "src": "icons/icon-96.png", "sizes": "96x96", "type": "image/png" }
       ]
