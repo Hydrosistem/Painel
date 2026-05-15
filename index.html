@@ -921,8 +921,8 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <div class="sb-stats-header">Estatísticas do dia</div>
   <div class="sb-stats-grid">
     <div class="sb-stat-card">
-      <div class="sb-stat-card-val verde" id="statTotalConcluidos">—</div>
-      <div class="sb-stat-card-lbl">Concluídos hoje</div>
+       <div class="sb-stat-card-val verde" id="statNoPrazo">—</div>
+       <div class="sb-stat-card-lbl">No prazo</div>
     </div>
     <div class="sb-stat-card">
       <div class="sb-stat-card-val" id="statTempoMedio">—</div>
@@ -2550,12 +2550,19 @@ function _atualizarEstatisticas(lista) {
   var taxaVal = totalAtivos > 0 ? atrasados / totalAtivos : 0;
   var taxaCor = taxaVal >= 0.3 ? "vermelho" : taxaVal >= 0.1 ? "amarelo" : "verde";
 
-  var sTot  = document.getElementById("statTotalConcluidos");
   var sTmp  = document.getElementById("statTempoMedio");
   var sTaxa = document.getElementById("statTaxaAtraso");
   var sExec = document.getElementById("statEmExecucao");
 
-  if (sTot)  sTot.textContent  = concluidos.length;
+  var noPrazo = concluidos.filter(function(p) {
+  if (!p.dataHora || !p.dataConclusao) return false;
+  return (new Date(p.dataConclusao) - new Date(p.dataHora)) / 36e5 <= PRAZO;
+}).length;
+var pctNoPrazo = concluidos.length > 0
+  ? Math.round(noPrazo / concluidos.length * 100) + "%"
+  : "—";
+var sNoPrazo = document.getElementById("statNoPrazo");
+if (sNoPrazo) sNoPrazo.textContent = pctNoPrazo;
   if (sTmp)  sTmp.textContent  = tempoStr;
   if (sTaxa) { sTaxa.textContent = taxaAtraso; sTaxa.className = "sb-stat-card-val " + taxaCor; }
   var sMaiorAtraso = document.getElementById("statMaiorAtraso");
