@@ -2519,21 +2519,22 @@ function exportarCSV() {
     ];
 
     /* ── Logo ── */
-      if (logoBase64) {
-        var logoId = workbook.addImage({ base64: logoBase64, extension: "png" });
-        ws.addImage(logoId, {
-          tl: { col: 0, row: 0 },
-          ext: { width: 40, height: 40 }
-        });
-      }
+      var r1 = ws.addRow(["", "", "", "HYDROSISTEM — Painel de Entulhos", "", "", "", ""]);
+ws.mergeCells(1, 4, 1, 8);
+r1.height = 50;
+r1.getCell(4).font = { bold: true, size: 14, color: { argb: "FF0F172A" } };
+r1.getCell(4).fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FFFFFFFF" } };
+r1.getCell(4).alignment = { horizontal:"center", vertical:"middle" };
+[1,2,3].forEach(function(c){ r1.getCell(c).fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FFFFFFFF" } }; });
 
-    /* ── Linha 1: título ── */
-    var r1 = ws.addRow(["HYDROSISTEM — Painel de Entulhos"]);
-    ws.mergeCells(1, 1, 1, 8);
-    r1.height = 40;
-    r1.getCell(1).font = { bold: true, size: 14, color: { argb: "FF0F172A" } };
-    r1.getCell(1).fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FFFFFFFF" } };
-    r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
+if (logoBase64) {
+  var logoId = workbook.addImage({ base64: logoBase64, extension: "png" });
+  ws.addImage(logoId, {
+    tl: { col: 0, row: 0 },
+    br: { col: 3, row: 1 },
+    editAs: "oneCell"
+  });
+}
       
     /* ── Linha 2: data ── */
     var dataStr = "RELATÓRIO EXPORTADO — " + new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
