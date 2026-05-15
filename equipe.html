@@ -399,8 +399,8 @@ function _enriquecerOperadores() {
       var concl = (p.status||"").toUpperCase().trim();
       var ehConcluido = concl === "CONCLUÍDO" || concl === "CONCLUIDO";
       if (!ehConcluido) return false;
-      var nomeOp = (p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
-      var nomeAtual = (op.operador || "").trim().toLowerCase();
+      var nomeOp = String(p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
+      var nomeAtual = String(op.operador || "").trim().toLowerCase();
       var mesmoOp = nomeOp === nomeAtual;
       var hoje2 = p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje;
       return mesmoOp && hoje2;
@@ -415,8 +415,8 @@ function _enriquecerOperadores() {
 
     /* Taxa de conclusão */
     var totalOp = _protocolos.filter(function(p) {
-      var nomeOp = (p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
-      return nomeOp === (op.operador||"").trim().toLowerCase();
+        var nomeOp = String(p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
+        return nomeOp === String(op.operador||"").trim().toLowerCase();
     }).length;
     op._taxa = totalOp > 0 ? Math.round(op._conclHoje / totalOp * 100) : 0;
   });
