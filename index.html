@@ -968,6 +968,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <div class="centro-top">
   <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
   <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
+  <button class="filtro-tab" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
@@ -1680,7 +1681,7 @@ function renderTablet(lista){
   setN("sbN-todos",ativos.length);setN("sbN-atrasado",urg);setN("sbN-urgente",ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length);setN("sbN-execucao",exec);setN("sbN-concluido",ok);
   function setStat(id,val){var el=document.getElementById(id);if(!el)return;var prev=_prevStats[id];el.textContent=val;if(prev!==undefined&&prev!==val)bump(id);_prevStats[id]=val;}
   setStat("nPen",pen);setStat("nExec",exec);setStat("nUrg",urg);setStat("nOk",ok);
-  var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length,concluido:concluidosHoje.length};
+  var ftCounts={todos:ativos.length,atrasado:ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}).length,urgente:ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}).length,pendente:ativos.filter(function(p){return !p.lock&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}).length,execucao:ativos.filter(function(p){return !!p.lock;}).length,concluido:concluidosHoje.length};
   Object.keys(ftCounts).forEach(function(ft){var badge=document.getElementById("ftb-"+ft);if(!badge)return;var count=ftCounts[ft];badge.textContent=count;badge.classList.toggle("zero",count===0);});
   var sbAtrasados=ativos.filter(function(p){return !p.lock&&p._t.tipo==="atrasado";}),sbUrgentes=ativos.filter(function(p){return !p.lock&&p._t.tipo==="urgente";}),sbExec=ativos.filter(function(p){return !!p.lock;});
   var rPen  = document.getElementById("sbResumoPen");
@@ -1705,7 +1706,7 @@ function renderTablet(lista){
     if(ftFiltro==="atrasado")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="atrasado";});
     else if(ftFiltro==="urgente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="urgente";});
     else if(ftFiltro==="execucao")filtrados=filtrados.filter(function(p){return !!p.lock;});
-    else if(ftFiltro==="pendente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&p._t.tipo==="pendente";});
+    else if(ftFiltro==="pendente")filtrados=filtrados.filter(function(p){return !p.lock&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");});
     else if(ftFiltro==="concluido"){filtrados=concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;});}
   }
   if(_modoPerto&&_posAtual){filtrados.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
