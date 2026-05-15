@@ -1724,8 +1724,8 @@ function renderTablet(lista){
   if(concL.length){h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   h+="<div class='ts-tablet'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
   var novosHashesTablet={};
-execL.concat(urgL).concat(norL).concat(concL).forEach(function(p){ novosHashesTablet[p.protocolo]=hashProtocolo(p); });
-_prevHashesTablet=novosHashesTablet;
+  execL.concat(prioL).concat(urgL).concat(norL).concat(concL).forEach(function(p){ novosHashesTablet[p.protocolo]=hashProtocolo(p); });
+  _prevHashesTablet=novosHashesTablet;
   gt.innerHTML=h;
   var allCards=execL.concat(prioL).concat(urgL).concat(norL).concat(concL);
   gt.querySelectorAll(".card-t").forEach(function(el,idx){if(allCards[idx])el.onclick=(function(p){return function(){selecionarProtocolo(p);};})(allCards[idx]);});
