@@ -2480,54 +2480,89 @@ function exportarCSV() {
 
   /* Carrega SheetJS se necessário */
   function _gerarXlsx() {
-    var XLSX = window.XLSX;
-    var wb = XLSX.utils.book_new();
-    var ws = {};
-    var C = XLSX.utils.encode_col, R = function(r,c){ return XLSX.utils.encode_cell({r:r,c:c}); };
+    /* Carrega logo em base64 primeiro */
+    fetch("./icons/icon-192.png")
+      .then(function(r){ return r.blob(); })
+      .then(function(blob){
+        var reader = new FileReader();
+        reader.onload = function(e){ _gerarComLogo(e.target.result.split(",")[1]); };
+        reader.onerror = function(){ _gerarComLogo(null); };
+        reader.readAsDataURL(blob);
+      })
+      .catch(function(){ _gerarComLogo(null); });
 
-    /* ── Cabeçalho ── */
-    ws[R(0,0)] = { v: "HYDROSISTEM — Painel de Entulhos", t: "s",
-      s: { font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } },
-           fill: { fgColor: { rgb: "0A3F7F" } },
-           alignment: { horizontal: "center", vertical: "center" } } };
-    ws[R(1,0)] = { v: "RELATÓRIO EXPORTADO — " + new Date().toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),
-      t: "s",
-      s: { font: { italic: true, sz: 10, color: { rgb: "64748B" } },
-           alignment: { horizontal: "center" } } };
+    function _gerarComLogo(logoBase64) {
+    var workbook = new ExcelJS.Workbook();
+    var ws = workbook.addWorksheet("Entulhos");
 
-    /* ── Colunas ── */
+    var AZUL_ESC = "0A3F7F", AZUL = "1469C7", AZUL_BG = "EBF3FD";
+    var corStatus = {
+      "Concluído": "DCFCE7", "Em execução": "EDE9FE",
+      "Atrasado": "FECACA", "Urgente": "FEE2E2", "Pendente": "FEF9C3"
+    };
+
+    /* ── Larguras ── */
+    ws.columns = [
+      { key:"prot",  width: 12 },
+      { key:"data",  width: 18 },
+      { key:"end",   width: 44 },
+      { key:"reg",   width: 22 },
+      { key:"sts",   width: 14 },
+      { key:"resp",  width: 22 },
+      { key:"conc",  width: 18 },
+      { key:"obs",   width: 36 },
+    ];
+
+    /* ── Logo ── */
+      if (logoBase64) {
+        var logoId = workbook.addImage({ base64: logoBase64, extension: "png" });
+        ws.addImage(logoId, {
+          tl: { col: 0, row: 0 },
+          ext: { width: 40, height: 40 }
+        });
+      }
+
+    /* ── Linha 1: título ── */
+    var r1 = ws.addRow(["HYDROSISTEM — Painel de Entulhos"]);
+    ws.mergeCells(1, 1, 1, 8);
+    r1.height = 28;
+    r1.getCell(1).font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
+    r1.getCell(1).fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FF"+AZUL_ESC } };
+    r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
+
+    /* ── Linha 2: data ── */
+    var dataStr = "RELATÓRIO EXPORTADO — " + new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"});
+    var r2 = ws.addRow([dataStr]);
+    ws.mergeCells(2, 1, 2, 8);
+    r2.height = 16;
+    r2.getCell(1).font = { italic: true, size: 10, color: { argb: "FF64748B" } };
+    r2.getCell(1).alignment = { horizontal:"center" };
+
+    /* ── Linha 3: espaço ── */
+    ws.addRow([]);
+
+    /* ── Linha 4: cabeçalhos ── */
     var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Observação"];
-    var colWidths = [12, 16, 42, 20, 14, 20, 16, 36];
-    var HDR_ROW = 3;
-
-    cols.forEach(function(col, ci) {
-      ws[R(HDR_ROW, ci)] = { v: col, t: "s",
-        s: { font: { bold: true, sz: 10, color: { rgb: "FFFFFF" } },
-             fill: { fgColor: { rgb: "1469C7" } },
-             alignment: { horizontal: "center", vertical: "center" },
-             border: { bottom: { style: "thin", color: { rgb: "B8D4F4" } } } } };
+    var rH = ws.addRow(cols);
+    rH.height = 20;
+    rH.eachCell(function(cell) {
+      cell.font = { bold: true, size: 10, color: { argb: "FFFFFFFF" } };
+      cell.fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FF"+AZUL } };
+      cell.alignment = { horizontal:"center", vertical:"middle" };
+      cell.border = { bottom: { style:"thin", color:{ argb:"FFB8D4F4" } } };
     });
 
     /* ── Dados ── */
-    var corPar   = "EBF3FD";
-    var corImpar = "FFFFFF";
-    var corStatus = {
-      "Concluído": "DCFCE7", "concluido": "DCFCE7",
-      "Em execução": "EDE9FE", "execucao": "EDE9FE",
-      "atrasado": "FECACA", "urgente": "FEE2E2", "pendente": "FEF9C3"
-    };
-
     dados.forEach(function(p, i) {
-      var row = HDR_ROW + 1 + i;
       var concluido = isConcluido(p);
       var status = concluido ? "Concluído" : p.lock ? "Em execução" : (p._t ? p._t.tipo : "pendente");
       var statusLabel = { "Concluído":"Concluído","Em execução":"Em execução","atrasado":"Atrasado","urgente":"Urgente","pendente":"Pendente" }[status] || status;
       var obsLimpa = (p.obs || "").replace(/https?:\/\/[^\s]+/g,"").replace(/Via Bot Telegram\s*[•·]?\s*/gi,"").replace(/•\s*$/,"").trim();
       if (obsLimpa === "—") obsLimpa = "";
 
-      var bgRow = corStatus[status] || (i % 2 === 0 ? corPar : corImpar);
+      var bgHex = "FF" + (corStatus[statusLabel] || (i % 2 === 0 ? AZUL_BG : "FFFFFF"));
 
-      var cells = [
+      var row = ws.addRow([
         p.protocolo || "",
         p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
         p.endereco || "",
@@ -2536,41 +2571,40 @@ function exportarCSV() {
         p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
         p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
         obsLimpa
-      ];
-
-      cells.forEach(function(val, ci) {
-        ws[R(row, ci)] = { v: val, t: "s",
-          s: { font: { sz: 10 },
-               fill: { fgColor: { rgb: bgRow } },
-               alignment: { vertical: "center", wrapText: ci === 2 || ci === 7 },
-               border: { bottom: { style: "hair", color: { rgb: "E2E8F0" } } } } };
+      ]);
+      row.height = 16;
+      row.eachCell(function(cell) {
+        cell.font = { size: 10 };
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{ argb: bgHex } };
+        cell.alignment = { vertical:"middle" };
+        cell.border = { bottom: { style:"hair", color:{ argb:"FFE2E8F0" } } };
       });
+      /* Endereço e Obs com wrap */
+      row.getCell(3).alignment = { vertical:"middle", wrapText: true };
+      row.getCell(8).alignment = { vertical:"middle", wrapText: true };
     });
 
-    /* ── Range e larguras ── */
-    var totalRows = HDR_ROW + 1 + dados.length;
-    ws["!ref"] = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:totalRows-1,c:cols.length-1} });
-    ws["!merges"] = [
-      { s:{r:0,c:0}, e:{r:0,c:cols.length-1} },
-      { s:{r:1,c:0}, e:{r:1,c:cols.length-1} },
-    ];
-    ws["!cols"] = colWidths.map(function(w){ return { wch: w }; });
-    ws["!rows"] = [{ hpt: 28 }, { hpt: 16 }, { hpt: 6 }];
-    ws["!rows"][HDR_ROW] = { hpt: 20 };
+    /* ── Download ── */
+    workbook.xlsx.writeBuffer().then(function(buffer) {
+      var blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var dataHoje = new Date().toLocaleDateString("pt-BR").replace(/\//g,"-");
+      a.href = url;
+      a.download = "entulhos_" + (filtro === "todos" ? "todos" : filtro) + "_" + dataHoje + ".xlsx";
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+      toast("📥 XLSX exportado — " + dados.length + " protocolos", "ok");
+    }).catch(function(){ toast("❌ Erro ao gerar arquivo","erro"); });
+    } /* fecha _gerarComLogo */
+  } /* fecha _gerarXlsx */
 
-    XLSX.utils.book_append_sheet(wb, ws, "Entulhos");
-
-    var dataHoje = new Date().toLocaleDateString("pt-BR").replace(/\//g,"-");
-    var nome = "entulhos_" + (filtro === "todos" ? "todos" : filtro) + "_" + dataHoje + ".xlsx";
-    XLSX.writeFile(wb, nome);
-    toast("📥 XLSX exportado — " + dados.length + " protocolos", "ok");
-  }
-
-  if (window.XLSX) {
+  if (window.ExcelJS) {
     _gerarXlsx();
   } else {
     var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js";
     s.onload = _gerarXlsx;
     s.onerror = function(){ toast("❌ Erro ao carregar biblioteca XLSX","erro"); };
     document.head.appendChild(s);
