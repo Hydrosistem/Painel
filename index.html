@@ -2357,14 +2357,22 @@ function setFiltroTabComMapa(filtro, btn) {
 
 function _iniciarMapa() {
   if (_mapaIniciado) { _renderMapaMarcadores(_ultimaLista); return; }
-  if (!window.google || !window.google.maps) {
-    var script = document.createElement("script");
-    script.src = "https://maps.googleapis.com/maps/api/js?key=" + MAPS_KEY + "&callback=_initMapaInterno&language=pt-BR&region=BR";
-    script.async = true; script.defer = true;
-    document.head.appendChild(script);
-  } else {
+  if (window.google && window.google.maps) {
     _initMapaInterno();
+    return;
   }
+  /* API ainda carregando, aguarda */
+  var tentativas = 0;
+  var espera = setInterval(function() {
+    tentativas++;
+    if (window.google && window.google.maps) {
+      clearInterval(espera);
+      _initMapaInterno();
+    } else if (tentativas > 20) {
+      clearInterval(espera);
+      toast("❌ Erro ao carregar o mapa", "erro");
+    }
+  }, 300);
 }
 
 function _initMapaInterno() {
