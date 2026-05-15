@@ -1749,7 +1749,7 @@ function renderFiltrado(lista){
   /* Filtro mobile por stat */
   if (!termoBusca && _filtroMobile !== "todos") {
     if (_filtroMobile === "pendente") {
-      ativos = ativos.filter(function(p){ return !p.lock && p._t.tipo === "pendente"; });
+      ativos = ativos.filter(function(p){ return !p.lock && (p._t.tipo === "pendente" || p._t.tipo === "urgente"); });
     } else if (_filtroMobile === "execucao") {
       ativos = ativos.filter(function(p){ return !!p.lock; });
     } else if (_filtroMobile === "atrasado") {
