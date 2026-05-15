@@ -1713,9 +1713,10 @@ function renderTablet(lista){
   else{filtrados.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado"))return 3;if(p._t&&p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
   var gt=document.getElementById("gridTablet");
   if(!filtrados.length){gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'>✅</div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";return;}
-  var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="atrasado";}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}),concL=filtrados.filter(function(p){return isConcluido(p);});
+  var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),prioL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!!p.prioridade;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!p.prioridade&&p._t&&p._t.tipo==="atrasado";}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!p.prioridade&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}),concL=filtrados.filter(function(p){return isConcluido(p);});
   var h="",gIdx=0;
   if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(prioL.length){h+="<div class='sec-label-tablet'>🟡 Prioridade máxima</div>";prioL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
@@ -1725,7 +1726,7 @@ function renderTablet(lista){
 execL.concat(urgL).concat(norL).concat(concL).forEach(function(p){ novosHashesTablet[p.protocolo]=hashProtocolo(p); });
 _prevHashesTablet=novosHashesTablet;
   gt.innerHTML=h;
-  var allCards=execL.concat(urgL).concat(norL).concat(concL);
+  var allCards=execL.concat(prioL).concat(urgL).concat(norL).concat(concL);
   gt.querySelectorAll(".card-t").forEach(function(el,idx){if(allCards[idx])el.onclick=(function(p){return function(){selecionarProtocolo(p);};})(allCards[idx]);});
   if(_protocoloSelecionado){var todosB=ativos.concat(concluidosHoje),pSel=null;for(var i=0;i<todosB.length;i++){if(todosB[i].protocolo===_protocoloSelecionado){pSel=todosB[i];break;}}if(pSel){_preencherDetalhe(pSel);}else{_protocoloSelecionado=null;document.getElementById("detailVazio").style.display="";var dc=document.getElementById("detailContent");dc.classList.remove("show");dc.innerHTML="";var df=document.getElementById("detailFooter");df.classList.remove("show");df.innerHTML="";}}
 }
