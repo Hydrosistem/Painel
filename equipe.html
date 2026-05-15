@@ -363,28 +363,24 @@ function atualizar() {
   var btn = document.getElementById("btnRefresh");
   if (btn) btn.classList.add("spin");
 
-  fetch(API_BASE + "?acao=dados&t=" + Date.now(), {redirect:"follow"})
-    .then(function(r){ return r.json(); })
-    .then(function(dados){
-      _protocolos = Array.isArray(dados) ? dados : [];
-    })
-    .catch(function(){ _protocolos = []; })
-    .then(function(){
-      return fetch(API_BASE + "?acao=presencas&t=" + Date.now(), {redirect:"follow"})
-        .then(function(r){ return r.json(); })
-        .then(function(res){ if (res.ok) _operadores = res.presencas || []; })
-        .catch(function(){ /* presencas falhou, mantém lista anterior */ });
-    })
-    .then(function(){
-      if (btn) btn.classList.remove("spin");
-      renderLista();
-      document.getElementById("tsAtualizacao").textContent =
-        "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-    })
-    .catch(function(){
-      if (btn) btn.classList.remove("spin");
-      toast("❌ Erro ao atualizar", "erro");
-    });
+  Promise.all([
+    fetch(API_BASE + "?acao=presencas&t=" + Date.now(), {redirect:"follow"})
+      .then(function(r){ return r.json(); })
+      .catch(function(){ return {ok:false, presencas:[]}; }),
+    fetch(API_BASE + "?acao=dados&t=" + Date.now(), {redirect:"follow"})
+      .then(function(r){ return r.json(); })
+      .catch(function(){ return []; })
+  ]).then(function(res) {
+    var presRes = res[0], dados = res[1];
+    if (btn) btn.classList.remove("spin");
+    if (presRes.ok) _operadores = presRes.presencas || [];
+    _protocolos = Array.isArray(dados) ? dados : [];
+    renderLista();
+    document.getElementById("tsAtualizacao").textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  }).catch(function() {
+    if (btn) btn.classList.remove("spin");
+    toast("❌ Erro ao atualizar", "erro");
+  });
 }
 
 function _enriquecerOperadores() {
