@@ -2459,7 +2459,7 @@ document.addEventListener("DOMContentLoaded", function() {
   });
 });
 
-/* ══ EXPORTAR CSV ══ */
+/* ══ EXPORTAR XLSX ══ */
 function exportarCSV() {
   var lista = _listaAtiva && _listaAtiva.length ? _listaAtiva : _ultimaLista;
   if (!lista || !lista.length) { toast("Nenhum protocolo para exportar", ""); return; }
@@ -2467,7 +2467,6 @@ function exportarCSV() {
   var hoje = new Date().toDateString();
   var filtro = ftFiltro;
 
-  /* Aplica o mesmo filtro ativo do centro */
   var dados = lista.filter(function(p) {
     var concluido = isConcluido(p);
     if (filtro === "atrasado") return !concluido && p._t && p._t.tipo === "atrasado";
@@ -2479,36 +2478,103 @@ function exportarCSV() {
 
   if (!dados.length) { toast("Nenhum protocolo neste filtro", ""); return; }
 
-  var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Observação"];
-  var linhas = [cols.join(";")];
+  /* Carrega SheetJS se necessário */
+  function _gerarXlsx() {
+    var XLSX = window.XLSX;
+    var wb = XLSX.utils.book_new();
+    var ws = {};
+    var C = XLSX.utils.encode_col, R = function(r,c){ return XLSX.utils.encode_cell({r:r,c:c}); };
 
-  dados.forEach(function(p) {
-    var status = isConcluido(p) ? "Concluído" : p.lock ? "Em execução" : (p._t ? p._t.tipo : "pendente");
-    var obs = (p.obs || "—").replace(/;/g, ",").replace(/\n/g, " ");
-    var row = [
-      p.protocolo || "",
-      p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
-      (p.endereco || "").replace(/;/g, ","),
-      p.registradoPor || "—",
-      status,
-      p.operadorConclusao || (p.lock ? p.lock.usuario : "—") || "—",
-      p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
-      obs
+    /* ── Cabeçalho ── */
+    ws[R(0,0)] = { v: "HYDROSISTEM — Painel de Entulhos", t: "s",
+      s: { font: { bold: true, sz: 14, color: { rgb: "FFFFFF" } },
+           fill: { fgColor: { rgb: "0A3F7F" } },
+           alignment: { horizontal: "center", vertical: "center" } } };
+    ws[R(1,0)] = { v: "RELATÓRIO EXPORTADO — " + new Date().toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}),
+      t: "s",
+      s: { font: { italic: true, sz: 10, color: { rgb: "64748B" } },
+           alignment: { horizontal: "center" } } };
+
+    /* ── Colunas ── */
+    var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Observação"];
+    var colWidths = [12, 16, 42, 20, 14, 20, 16, 36];
+    var HDR_ROW = 3;
+
+    cols.forEach(function(col, ci) {
+      ws[R(HDR_ROW, ci)] = { v: col, t: "s",
+        s: { font: { bold: true, sz: 10, color: { rgb: "FFFFFF" } },
+             fill: { fgColor: { rgb: "1469C7" } },
+             alignment: { horizontal: "center", vertical: "center" },
+             border: { bottom: { style: "thin", color: { rgb: "B8D4F4" } } } } };
+    });
+
+    /* ── Dados ── */
+    var corPar   = "EBF3FD";
+    var corImpar = "FFFFFF";
+    var corStatus = {
+      "Concluído": "DCFCE7", "concluido": "DCFCE7",
+      "Em execução": "EDE9FE", "execucao": "EDE9FE",
+      "atrasado": "FECACA", "urgente": "FEE2E2", "pendente": "FEF9C3"
+    };
+
+    dados.forEach(function(p, i) {
+      var row = HDR_ROW + 1 + i;
+      var concluido = isConcluido(p);
+      var status = concluido ? "Concluído" : p.lock ? "Em execução" : (p._t ? p._t.tipo : "pendente");
+      var statusLabel = { "Concluído":"Concluído","Em execução":"Em execução","atrasado":"Atrasado","urgente":"Urgente","pendente":"Pendente" }[status] || status;
+      var obsLimpa = (p.obs || "").replace(/https?:\/\/[^\s]+/g,"").replace(/Via Bot Telegram\s*[•·]?\s*/gi,"").replace(/•\s*$/,"").trim();
+      if (obsLimpa === "—") obsLimpa = "";
+
+      var bgRow = corStatus[status] || (i % 2 === 0 ? corPar : corImpar);
+
+      var cells = [
+        p.protocolo || "",
+        p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
+        p.endereco || "",
+        p.registradoPor || "—",
+        statusLabel,
+        p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
+        p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
+        obsLimpa
+      ];
+
+      cells.forEach(function(val, ci) {
+        ws[R(row, ci)] = { v: val, t: "s",
+          s: { font: { sz: 10 },
+               fill: { fgColor: { rgb: bgRow } },
+               alignment: { vertical: "center", wrapText: ci === 2 || ci === 7 },
+               border: { bottom: { style: "hair", color: { rgb: "E2E8F0" } } } } };
+      });
+    });
+
+    /* ── Range e larguras ── */
+    var totalRows = HDR_ROW + 1 + dados.length;
+    ws["!ref"] = XLSX.utils.encode_range({ s:{r:0,c:0}, e:{r:totalRows-1,c:cols.length-1} });
+    ws["!merges"] = [
+      { s:{r:0,c:0}, e:{r:0,c:cols.length-1} },
+      { s:{r:1,c:0}, e:{r:1,c:cols.length-1} },
     ];
-    linhas.push(row.map(function(v){ return '"' + String(v).replace(/"/g,'""') + '"'; }).join(";"));
-  });
+    ws["!cols"] = colWidths.map(function(w){ return { wch: w }; });
+    ws["!rows"] = [{ hpt: 28 }, { hpt: 16 }, { hpt: 6 }];
+    ws["!rows"][HDR_ROW] = { hpt: 20 };
 
-  var bom = "\uFEFF"; /* BOM para Excel reconhecer UTF-8 */
-  var blob = new Blob([bom + linhas.join("\n")], { type: "text/csv;charset=utf-8;" });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a");
-  var dataHoje = new Date().toLocaleDateString("pt-BR").replace(/\//g,"-");
-  a.href = url;
-  a.download = "entulhos_" + (filtro === "todos" ? "todos" : filtro) + "_" + dataHoje + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-  toast("📥 CSV exportado — " + dados.length + " protocolos", "ok");
+    XLSX.utils.book_append_sheet(wb, ws, "Entulhos");
+
+    var dataHoje = new Date().toLocaleDateString("pt-BR").replace(/\//g,"-");
+    var nome = "entulhos_" + (filtro === "todos" ? "todos" : filtro) + "_" + dataHoje + ".xlsx";
+    XLSX.writeFile(wb, nome);
+    toast("📥 XLSX exportado — " + dados.length + " protocolos", "ok");
+  }
+
+  if (window.XLSX) {
+    _gerarXlsx();
+  } else {
+    var s = document.createElement("script");
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    s.onload = _gerarXlsx;
+    s.onerror = function(){ toast("❌ Erro ao carregar biblioteca XLSX","erro"); };
+    document.head.appendChild(s);
+  }
 }
 
 /* ══ ESTATÍSTICAS DO DIA ══ */
