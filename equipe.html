@@ -363,28 +363,28 @@ function atualizar() {
   var btn = document.getElementById("btnRefresh");
   if (btn) btn.classList.add("spin");
 
-  var urlPresencas = API_BASE + "?acao=presencas&t=" + Date.now();
-  var urlDados     = API_BASE + "?acao=dados&t=" + Date.now();
-
-  Promise.all([
-    fetch(urlPresencas, {redirect:"follow"})
-      .then(function(r){ return r.json(); })
-      .catch(function(e){ console.error("[presencas] erro:", e); return {ok:false, presencas:[]}; }),
-    fetch(urlDados, {redirect:"follow"})
-      .then(function(r){ return r.json(); })
-      .catch(function(e){ console.error("[dados] erro:", e); return []; })
-  ]).then(function(res) {
-    if (btn) btn.classList.remove("spin");
-    var presRes = res[0], dados = res[1];
-    if (presRes.ok) _operadores = presRes.presencas || [];
-    _protocolos = Array.isArray(dados) ? dados : [];
-    renderLista();
-    document.getElementById("tsAtualizacao").textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
-  }).catch(function(e) {
-    if (btn) btn.classList.remove("spin");
-    console.error("[atualizar] erro geral:", e);
-    toast("❌ Erro ao atualizar", "erro");
-  });
+  fetch(API_BASE + "?acao=dados&t=" + Date.now(), {redirect:"follow"})
+    .then(function(r){ return r.json(); })
+    .then(function(dados){
+      _protocolos = Array.isArray(dados) ? dados : [];
+    })
+    .catch(function(){ _protocolos = []; })
+    .then(function(){
+      return fetch(API_BASE + "?acao=presencas&t=" + Date.now(), {redirect:"follow"})
+        .then(function(r){ return r.json(); })
+        .then(function(res){ if (res.ok) _operadores = res.presencas || []; })
+        .catch(function(){ /* presencas falhou, mantém lista anterior */ });
+    })
+    .then(function(){
+      if (btn) btn.classList.remove("spin");
+      renderLista();
+      document.getElementById("tsAtualizacao").textContent =
+        "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+    })
+    .catch(function(){
+      if (btn) btn.classList.remove("spin");
+      toast("❌ Erro ao atualizar", "erro");
+    });
 }
 
 function _enriquecerOperadores() {
