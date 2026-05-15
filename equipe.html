@@ -128,6 +128,9 @@ header {
 .sb-footer { padding: 8px 14px; border-top: 1px solid var(--borda); font-size: 11px; color: var(--texto3); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
 .btn-refresh { background: none; border: 1px solid var(--borda); color: var(--azul); border-radius: var(--radius-xs); padding: 3px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: "DM Sans",sans-serif; transition: background .12s; }
 .btn-refresh:hover { background: var(--azul-bg); }
+.btn-refresh:hover { background: var(--azul-bg); }
+.btn-refresh.spin { animation: rot .8s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
 
 .sb-vazio { padding: 32px 16px; text-align: center; color: var(--texto3); font-size: 13px; line-height: 1.6; }
 
