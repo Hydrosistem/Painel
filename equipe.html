@@ -4,14 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Hydrosistem — Equipe</title>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(function(regs) {
-    regs.forEach(function(reg) { reg.unregister(); });
-  });
-}
-</script>
-<link href="https://fonts.googleapis.com/...
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <style>
@@ -51,7 +43,7 @@ if ('serviceWorker' in navigator) {
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; font-family: "DM Sans", -apple-system, sans-serif; background: var(--cinza); color: var(--texto); overflow: hidden; }
 
-/* HEADER */
+/* ══ HEADER ══ */
 header {
   background: var(--azul-esc); height: var(--header-h);
   display: flex; align-items: center; justify-content: space-between;
@@ -73,123 +65,162 @@ header {
 }
 .btn-h:hover { background: rgba(255,255,255,.14); }
 
+/* ══ LIVE DOT ══ */
 .live-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; animation: pulseG 2s ease-in-out infinite; }
 @keyframes pulseG { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.5); } 60% { box-shadow: 0 0 0 4px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 
-/* LAYOUT */
+/* ══ LAYOUT ══ */
 .layout {
   display: grid;
-  grid-template-columns: 300px 1fr;
+  grid-template-columns: 320px 1fr;
   height: calc(100vh - var(--header-h));
   overflow: hidden;
 }
 
-/* SIDEBAR */
+/* ══ SIDEBAR ══ */
 .sidebar {
   background: var(--branco); border-right: 1px solid var(--borda);
   display: flex; flex-direction: column; overflow: hidden;
 }
 .sb-header {
-  padding: 12px 14px 10px; border-bottom: 1px solid var(--borda);
+  padding: 14px 16px 12px; border-bottom: 1px solid var(--borda);
   display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
 }
 .sb-titulo { font-size: 13px; font-weight: 700; color: var(--texto); }
-.sb-badge { font-size: 11px; font-weight: 700; font-family: "DM Mono",monospace; background: var(--verde-bg); color: var(--verde); border: 1px solid var(--verde-b); border-radius: 20px; padding: 2px 9px; }
+.sb-badge {
+  font-size: 11px; font-weight: 700; font-family: "DM Mono",monospace;
+  background: var(--verde-bg); color: var(--verde); border: 1px solid var(--verde-b);
+  border-radius: 20px; padding: 2px 9px;
+}
 .sb-badge.zero { background: var(--cinza); color: var(--texto3); border-color: var(--borda); }
 
-.sb-stats { display: grid; grid-template-columns: repeat(3,1fr); border-bottom: 1px solid var(--borda); flex-shrink: 0; }
+/* Stats rápidos */
+.sb-stats {
+  display: grid; grid-template-columns: repeat(3,1fr);
+  border-bottom: 1px solid var(--borda); flex-shrink: 0;
+}
 .sb-stat { padding: 10px 6px; text-align: center; border-right: 1px solid var(--borda); }
 .sb-stat:last-child { border-right: none; }
-.sb-stat-n { font-size: 20px; font-weight: 700; font-family: "DM Mono",monospace; line-height: 1; }
+.sb-stat-n { font-size: 22px; font-weight: 700; font-family: "DM Mono",monospace; line-height: 1; }
 .sb-stat-l { font-size: 9px; font-weight: 600; letter-spacing: .8px; text-transform: uppercase; color: var(--texto3); margin-top: 2px; }
 .sb-stat.s-on  .sb-stat-n { color: var(--verde); }
 .sb-stat.s-ex  .sb-stat-n { color: var(--exec); }
-.sb-stat.s-gps .sb-stat-n { color: var(--azul); }
+.sb-stat.s-off .sb-stat-n { color: var(--texto3); }
 
-.sb-lista { flex: 1; overflow-y: auto; padding: 6px 0; }
+/* Lista de operadores */
+.sb-lista { flex: 1; overflow-y: auto; padding: 8px 0; }
 .op-card {
   display: flex; align-items: center; gap: 10px;
-  padding: 9px 12px; cursor: pointer;
-  border-radius: var(--radius-sm); margin: 2px 6px;
+  padding: 10px 14px; cursor: pointer;
+  border-radius: var(--radius-sm); margin: 2px 8px;
   transition: background .12s; border: 1.5px solid transparent;
 }
 .op-card:hover { background: var(--cinza); }
 .op-card.selected { background: var(--azul-bg); border-color: var(--azul-b); }
 .op-card.selected.exec { background: var(--exec-bg); border-color: var(--exec-b); }
-.op-card.offline { opacity: .65; }
 
-.op-avatar { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0; position: relative; }
-.op-avatar-status { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--branco); }
-
+.op-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800; color: #fff; flex-shrink: 0;
+  position: relative;
+}
+.op-avatar-status {
+  position: absolute; bottom: 0; right: 0;
+  width: 11px; height: 11px; border-radius: 50%;
+  border: 2px solid var(--branco);
+}
 .op-info { flex: 1; min-width: 0; }
 .op-nome { font-size: 13px; font-weight: 700; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .op-status { font-size: 11px; color: var(--texto2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .op-status.exec { color: var(--exec); font-weight: 600; }
 .op-status.online { color: var(--verde); }
 .op-status.offline { color: var(--texto3); }
+.op-gps { font-size: 14px; flex-shrink: 0; }
 
-.op-right { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
-.op-concl { font-size: 10px; font-weight: 700; color: var(--verde); background: var(--verde-bg); border-radius: 20px; padding: 2px 7px; white-space: nowrap; }
-.op-concl.zero { color: var(--texto3); background: var(--cinza); }
-.op-gps { font-size: 12px; }
+.sb-vazio { padding: 32px 16px; text-align: center; color: var(--texto3); font-size: 13px; line-height: 1.6; }
 
-.sb-footer { padding: 8px 14px; border-top: 1px solid var(--borda); font-size: 11px; color: var(--texto3); display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
-.btn-refresh { background: none; border: 1px solid var(--borda); color: var(--azul); border-radius: var(--radius-xs); padding: 3px 10px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: "DM Sans",sans-serif; transition: background .12s; }
+/* Atualização */
+.sb-footer {
+  padding: 8px 14px; border-top: 1px solid var(--borda);
+  font-size: 11px; color: var(--texto3); display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.btn-refresh {
+  background: none; border: 1px solid var(--borda); color: var(--azul);
+  border-radius: var(--radius-xs); padding: 3px 10px; font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: "DM Sans",sans-serif; transition: background .12s;
+}
 .btn-refresh:hover { background: var(--azul-bg); }
 .btn-refresh.spin { animation: rot .8s linear infinite; }
 @keyframes rot { to { transform: rotate(360deg); } }
 
-.sb-vazio { padding: 32px 16px; text-align: center; color: var(--texto3); font-size: 13px; line-height: 1.6; }
+/* ══ DETALHE ══ */
+.detalhe {
+  display: flex; flex-direction: column; overflow: hidden; background: var(--cinza);
+}
 
-/* DETALHE */
-.detalhe { display: flex; flex-direction: column; overflow: hidden; background: var(--cinza); }
-.det-vazio { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--texto2); text-align: center; padding: 32px; }
+/* Detalhe vazio */
+.det-vazio {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; color: var(--texto2); text-align: center; padding: 32px;
+}
 .det-vazio-icon { font-size: 40px; opacity: .4; }
 .det-vazio-txt  { font-size: 14px; font-weight: 600; color: var(--texto2); }
 .det-vazio-sub  { font-size: 12px; color: var(--texto3); line-height: 1.5; }
-.det-content { flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px; }
 
-/* Hero */
-.det-hero { background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda); padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: var(--sombra-sm); }
-.det-avatar-big { width: 50px; height: 50px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 800; color: #fff; position: relative; }
+/* Detalhe preenchido */
+.det-content { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+
+/* Card topo do detalhe */
+.det-hero {
+  background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda);
+  padding: 18px; display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--sombra-sm);
+}
+.det-avatar-big {
+  width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; font-weight: 800; color: #fff; position: relative;
+}
 .det-avatar-big .op-avatar-status { width: 14px; height: 14px; border-width: 2.5px; }
 .det-hero-info { flex: 1; min-width: 0; }
-.det-nome { font-size: 17px; font-weight: 700; color: var(--texto); }
-.det-sub  { font-size: 12px; color: var(--texto2); margin-top: 2px; }
+.det-nome { font-size: 18px; font-weight: 700; color: var(--texto); }
+.det-sub  { font-size: 13px; color: var(--texto2); margin-top: 2px; }
 .det-badges { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
-.badge { font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid transparent; white-space: nowrap; }
+.badge {
+  font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px;
+  border: 1px solid transparent; white-space: nowrap; letter-spacing: .3px;
+}
 .badge.online  { background: var(--verde-bg);  color: var(--verde);  border-color: var(--verde-b); }
 .badge.offline { background: var(--cinza);      color: var(--texto3); border-color: var(--borda); }
 .badge.exec    { background: var(--exec-bg);    color: var(--exec);   border-color: var(--exec-b); }
 .badge.gps-on  { background: var(--azul-bg);    color: var(--azul);   border-color: var(--azul-b); }
 .badge.gps-off { background: var(--cinza);      color: var(--texto3); border-color: var(--borda); }
 
-/* Botão redistribuir */
-.btn-redistribuir {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border-radius: var(--radius-sm);
-  border: 1px solid var(--exec-b); background: var(--exec-bg);
-  color: var(--exec); font-size: 12px; font-weight: 700;
-  cursor: pointer; font-family: "DM Sans",sans-serif;
-  transition: background .15s; flex-shrink: 0;
-}
-.btn-redistribuir:hover { background: #DDD6FE; }
-
 /* Mini cards */
-.det-grid4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
 .det-grid3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-.mini-card { background: var(--branco); border-radius: var(--radius-sm); border: 1px solid var(--borda); padding: 12px 10px; text-align: center; box-shadow: var(--sombra-sm); }
-.mini-card-val { font-family: "DM Mono",monospace; font-size: 17px; font-weight: 700; line-height: 1; color: var(--texto); }
+.det-grid2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 8px; }
+.mini-card {
+  background: var(--branco); border-radius: var(--radius-sm); border: 1px solid var(--borda);
+  padding: 12px 10px; text-align: center; box-shadow: var(--sombra-sm);
+}
+.mini-card-val { font-family: "DM Mono",monospace; font-size: 18px; font-weight: 700; line-height: 1; color: var(--texto); }
 .mini-card-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--texto3); margin-top: 3px; }
 .mini-card-val.verde  { color: var(--verde); }
 .mini-card-val.exec   { color: var(--exec); }
 .mini-card-val.azul   { color: var(--azul); }
 .mini-card-val.texto3 { color: var(--texto3); }
 
-/* Seções */
-.det-section { background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda); padding: 14px 16px; box-shadow: var(--sombra-sm); }
-.det-section.exec-border { border-color: var(--exec-b); }
-.det-section-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--texto3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+/* Seção protocolo */
+.det-section {
+  background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda);
+  padding: 14px 16px; box-shadow: var(--sombra-sm);
+}
+.det-section-title {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px;
+  color: var(--texto3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+}
 .det-section-title::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 .det-row { display: flex; flex-direction: column; gap: 2px; margin-bottom: 8px; }
 .det-row:last-child { margin-bottom: 0; }
@@ -197,25 +228,25 @@ header {
 .det-row-val { font-size: 13px; color: var(--texto); line-height: 1.4; }
 .det-row-val a { color: var(--azul); font-weight: 600; text-decoration: none; }
 
-/* Histórico */
-.hist-item { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--borda); }
-.hist-item:last-child { border-bottom: none; }
-.hist-stripe { width: 4px; border-radius: 2px; align-self: stretch; min-height: 28px; flex-shrink: 0; }
-.hist-info { flex: 1; min-width: 0; }
-.hist-end  { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.hist-meta { font-size: 11px; color: var(--texto2); margin-top: 1px; }
-.hist-dur  { font-size: 11px; font-family: "DM Mono",monospace; color: var(--texto3); flex-shrink: 0; }
-
 /* Mapa */
-.det-mapa-wrap { background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda); overflow: hidden; box-shadow: var(--sombra-sm); flex-shrink: 0; }
-.det-mapa-header { padding: 10px 14px; border-bottom: 1px solid var(--borda); display: flex; align-items: center; justify-content: space-between; }
+.det-mapa-wrap {
+  background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda);
+  overflow: hidden; box-shadow: var(--sombra-sm); flex-shrink: 0;
+}
+.det-mapa-header {
+  padding: 10px 14px; border-bottom: 1px solid var(--borda);
+  display: flex; align-items: center; justify-content: space-between;
+}
 .det-mapa-titulo { font-size: 12px; font-weight: 700; color: var(--texto); display: flex; align-items: center; gap: 6px; }
 .det-mapa-atualizado { font-size: 11px; color: var(--texto3); }
-#mapaOperador { height: 260px; width: 100%; display: block; }
-.det-mapa-vazio { height: 160px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: var(--texto3); font-size: 13px; }
+#mapaOperador { height: 300px; width: 100%; display: block; }
+.det-mapa-vazio {
+  height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 6px; color: var(--texto3); font-size: 13px;
+}
 .det-mapa-vazio-icon { font-size: 28px; opacity: .5; }
 
-/* Animações */
+/* Pulso exec */
 @keyframes pulseExec { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
 .dot-exec { width: 7px; height: 7px; border-radius: 50%; background: var(--exec); display: inline-block; margin-right: 4px; animation: pulseExec 1.4s ease-in-out infinite; }
 
@@ -229,6 +260,7 @@ header {
 #toast.ok   { background: var(--verde); }
 #toast.erro { background: var(--vermelho); }
 
+/* Mobile */
 @media (max-width: 767px) {
   .layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
   .sidebar { max-height: 50vh; }
@@ -237,13 +269,12 @@ header {
   header { padding: 0 14px; height: 52px; }
   :root { --header-h: 52px; }
   .layout { height: calc(100vh - 52px); }
-  .det-grid4 { grid-template-columns: repeat(2,1fr); }
-  .btn-redistribuir { display: none; }
 }
 </style>
 </head>
 <body>
 <script>
+/* Callback global chamado quando Maps API carrega */
 function _mapaCarregado() {
   window._mapsCarregado = true;
   if (window._opParaMapa) {
@@ -265,12 +296,14 @@ function _mapaCarregado() {
     </div>
   </div>
   <div class="h-btns">
-    <span class="live-dot" title="Atualizando ao vivo"></span>
-    <a href="./" class="btn-h">← Painel</a>
+    <span class="live-dot" title="Atualizando"></span>
+    <a href="./index.html" class="btn-h">← Painel</a>
   </div>
 </header>
 
 <div class="layout">
+
+  <!-- ══ SIDEBAR ══ -->
   <div class="sidebar">
     <div class="sb-header">
       <span class="sb-titulo">Operadores</span>
@@ -279,7 +312,7 @@ function _mapaCarregado() {
     <div class="sb-stats">
       <div class="sb-stat s-on"><div class="sb-stat-n" id="statOnline">—</div><div class="sb-stat-l">Online</div></div>
       <div class="sb-stat s-ex"><div class="sb-stat-n" id="statExec">—</div><div class="sb-stat-l">Executando</div></div>
-      <div class="sb-stat s-gps"><div class="sb-stat-n" id="statGps">—</div><div class="sb-stat-l">Com GPS</div></div>
+      <div class="sb-stat s-off"><div class="sb-stat-n" id="statGps">—</div><div class="sb-stat-l">Com GPS</div></div>
     </div>
     <div class="sb-lista" id="sbLista">
       <div class="sb-vazio">Carregando operadores…</div>
@@ -290,32 +323,39 @@ function _mapaCarregado() {
     </div>
   </div>
 
+  <!-- ══ DETALHE ══ -->
   <div class="detalhe" id="detalhe">
     <div class="det-vazio" id="detVazio">
       <div class="det-vazio-icon">👷</div>
       <div class="det-vazio-txt">Selecione um operador</div>
-      <div class="det-vazio-sub">Clique em qualquer operador para ver detalhes, localização e histórico do dia.</div>
+      <div class="det-vazio-sub">Clique em qualquer operador para ver detalhes, localização e protocolo em execução.</div>
     </div>
     <div class="det-content" id="detContent" style="display:none"></div>
   </div>
+
 </div>
 
 <div id="toast"></div>
 
 <script>
+/* ══ CONFIG ══ */
 var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
-var REFRESH_MS    = 30000;
-var GPS_TTL_MIN   = 10;
-var ONLINE_TTL_MIN= 6;
+var MAPS_KEY = "AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc";
+var REFRESH_MS = 30000; /* atualiza a cada 30s */
+var GPS_TTL_MIN = 5;    /* considera GPS ativo se atualizado há menos de 5 min */
+var ONLINE_TTL_MIN = 6; /* considera online se ping há menos de 6 min */
 
+/* ══ ESTADO ══ */
 var _operadores = [];
 var _protocolos = [];
 var _selecionado = null;
 var _mapaObj = null;
+var _mapaIniciado = false;
 var _marcadorOp = null;
 var _marcadorCirculo = null;
 var _refreshTimer = null;
 
+/* ══ CORES ══ */
 var CORES = ["#1469C7","#15803D","#7C3AED","#A16207","#B91C1C","#0F6E56","#993556","#0369A1","#9D174D"];
 function corOp(nome) {
   var h = 0;
@@ -326,6 +366,7 @@ function iniciaisOp(nome) {
   return nome.trim().split(/\s+/).map(function(w){ return w[0]||""; }).join("").slice(0,2).toUpperCase() || "OP";
 }
 
+/* ══ UTILITÁRIOS ══ */
 var _toastTimer = null;
 function toast(msg, tipo) {
   var el = document.getElementById("toast");
@@ -363,23 +404,21 @@ function formatarDataHora(iso) {
   return new Date(iso).toLocaleString("pt-BR", {day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
 }
 
-function formatarDuracao(min) {
-  if (min == null || isNaN(min)) return "—";
-  if (min < 60) return min + "min";
-  return Math.floor(min/60) + "h " + (min%60) + "m";
-}
-
+/* ══ CARREGAR DADOS ══ */
 function atualizar() {
   var btn = document.getElementById("btnRefresh");
   if (btn) btn.classList.add("spin");
 
+  /* Busca presencas + dados em paralelo */
   Promise.all([
     fetch(API_BASE + "?acao=presencas&t=" + Date.now(), {redirect:"follow"}).then(function(r){ return r.json(); }).catch(function(){ return {ok:false}; }),
     fetch(API_BASE + "?acao=dados&t=" + Date.now(), {redirect:"follow"}).then(function(r){ return r.json(); }).catch(function(){ return []; })
   ]).then(function(res) {
     var presRes = res[0], dados = res[1];
     if (btn) btn.classList.remove("spin");
-    if (presRes.ok) _operadores = presRes.presencas || [];
+    if (presRes.ok) {
+      _operadores = presRes.presencas || [];
+    }
     _protocolos = Array.isArray(dados) ? dados : [];
     renderLista();
     document.getElementById("tsAtualizacao").textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
@@ -389,81 +428,54 @@ function atualizar() {
   });
 }
 
-function _enriquecerOperadores() {
+/* ══ RENDER LISTA ══ */
+function renderLista() {
+  /* Enriquece operadores com dados de lock */
   var lockMap = {};
   _protocolos.forEach(function(p) {
     if (p.lock) lockMap[p.lock.sessionId] = p;
   });
 
-  var hoje = new Date().toDateString();
-  var operadoresFiltrados = _operadores.filter(function(op) { return !op.supervisor; });
-
-  operadoresFiltrados.forEach(function(op) {
-    op._online     = minutosDesde(op.timestamp) < ONLINE_TTL_MIN;
-    op._temGps     = op.lat != null && op.lng != null && minutosDesde(op.gpsTs) < GPS_TTL_MIN && (op.accuracy == null || op.accuracy < 150);
-    op._protocolo  = lockMap[op.sessionId] || null;
-    op._executando = !!op._protocolo;
-
-    /* Histórico do dia: protocolos concluídos hoje por este operador */
-    op._historico = _protocolos.filter(function(p) {
-      var concl = (p.status||"").toUpperCase().trim();
-      var ehConcluido = concl === "CONCLUÍDO" || concl === "CONCLUIDO";
-      if (!ehConcluido) return false;
-      var nomeOp = (p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
-      var nomeAtual = (op.operador || "").trim().toLowerCase();
-      var mesmoOp = nomeOp === nomeAtual;
-      var hoje2 = p.dataConclusao && new Date(p.dataConclusao).toDateString() === hoje;
-      return mesmoOp && hoje2;
-    }).map(function(p) {
-      var dur = (p.dataHora && p.dataConclusao)
-        ? Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000)
-        : null;
-      return { protocolo: p.protocolo, endereco: p.endereco, dataConclusao: p.dataConclusao, duracaoMin: dur };
-    }).sort(function(a,b){ return new Date(b.dataConclusao) - new Date(a.dataConclusao); });
-
-    op._conclHoje = op._historico.length;
-
-    /* Taxa de conclusão */
-    var totalOp = _protocolos.filter(function(p) {
-      var nomeOp = (p.operadorConclusao || p.registradoPor || "").trim().toLowerCase();
-      return nomeOp === (op.operador||"").trim().toLowerCase();
-    }).length;
-    op._taxa = totalOp > 0 ? Math.round(op._conclHoje / totalOp * 100) : 0;
+  /* Filtra supervisores */
+  var operadoresFiltrados = _operadores.filter(function(op) {
+    return !op.supervisor;
   });
 
+  operadoresFiltrados.forEach(function(op) {
+    op._online = minutosDesde(op.timestamp) < ONLINE_TTL_MIN;
+    op._temGps = op.lat != null && op.lng != null && minutosDesde(op.gpsTs) < GPS_TTL_MIN && (op.accuracy == null || op.accuracy < 150);
+    op._protocolo = lockMap[op.sessionId] || null;
+    op._executando = !!op._protocolo;
+  });
+
+  /* Ordena: executando > online > offline */
   operadoresFiltrados.sort(function(a,b) {
     var ra = a._executando ? 0 : a._online ? 1 : 2;
     var rb = b._executando ? 0 : b._online ? 1 : 2;
     return ra - rb;
   });
 
-  return operadoresFiltrados;
-}
+  var online = operadoresFiltrados.filter(function(o){ return o._online; }).length;
+  var exec   = operadoresFiltrados.filter(function(o){ return o._executando; }).length;
+  var gps    = operadoresFiltrados.filter(function(o){ return o._temGps; }).length;
 
-function renderLista() {
-  var lista = _enriquecerOperadores();
-  window._operadoresFiltrados = lista;
-
-  var online = lista.filter(function(o){ return o._online; }).length;
-  var exec   = lista.filter(function(o){ return o._executando; }).length;
-  var gps    = lista.filter(function(o){ return o._temGps; }).length;
-
+  /* Stats */
   document.getElementById("statOnline").textContent = online;
   document.getElementById("statExec").textContent   = exec;
   document.getElementById("statGps").textContent    = gps;
-
   var badge = document.getElementById("badgeOnline");
   badge.textContent = online + " online";
   badge.className   = "sb-badge" + (online === 0 ? " zero" : "");
 
-  var sbLista = document.getElementById("sbLista");
-  if (!lista.length) {
-    sbLista.innerHTML = "<div class='sb-vazio'>Nenhum operador encontrado.</div>";
+  /* Lista */
+  var lista = document.getElementById("sbLista");
+  if (!operadoresFiltrados.length) {
+    lista.innerHTML = "<div class='sb-vazio'>Nenhum operador online no momento.</div>";
     return;
   }
 
   var html = "";
-  lista.forEach(function(op, idx) {
+  operadoresFiltrados.forEach(function(op, idx) {
     var cor = corOp(op.operador);
     var statusCls = op._executando ? "exec" : op._online ? "online" : "offline";
     var statusTxt = op._executando
@@ -472,37 +484,37 @@ function renderLista() {
         ? (minutosDesde(op.timestamp) < 1 ? "online agora" : "há " + formatarTempo(minutosDesde(op.timestamp)))
         : "offline há " + formatarTempo(minutosDesde(op.timestamp));
     var gpsIcon = op._temGps ? "📍" : "📵";
+    var selecionadoCls = (_selecionado && _selecionado.sessionId === op.sessionId) ? " selected" + (op._executando?" exec":"") : "";
 
-    var selecionadoCls = (_selecionado && _selecionado.sessionId === op.sessionId)
-      ? " selected" + (op._executando ? " exec" : "") : "";
-    var offlineCls = !op._online ? " offline" : "";
-
-    var conclCls = op._conclHoje === 0 ? "op-concl zero" : "op-concl";
-
-    html += "<div class='op-card" + selecionadoCls + offlineCls + "' onclick='selecionarOp(" + idx + ")'>" +
+    html += "<div class='op-card" + selecionadoCls + "' onclick='selecionarOp(" + idx + ")'>" +
       "<div class='op-avatar' style='background:" + cor + "'>" +
-        "<i class='fa-solid fa-user' style='font-size:13px'></i>" +
+        "<i class='fa-solid fa-user'></i>" +
         "<div class='op-avatar-status' style='background:" + (op._online?"#4ade80":"#94A3B8") + "'></div>" +
       "</div>" +
       "<div class='op-info'>" +
         "<div class='op-nome'>" + safeText(op.operador) + "</div>" +
         "<div class='op-status " + statusCls + "'>" + statusTxt + "</div>" +
       "</div>" +
-      "<div class='op-right'>" +
-        "<span class='" + conclCls + "'>✅ " + op._conclHoje + " hoje</span>" +
-        "<span class='op-gps' title='" + (op._temGps?"GPS ativo":"Sem GPS") + "'>" + gpsIcon + "</span>" +
-      "</div>" +
+      "<div class='op-gps' title='" + (op._temGps?"GPS ativo":"Sem GPS") + "'>" + gpsIcon + "</div>" +
     "</div>";
   });
 
-  sbLista.innerHTML = html;
+  lista.innerHTML = html;
 
+  /* Salva lista filtrada para seleção por índice */
+  window._operadoresFiltrados = operadoresFiltrados;
+
+  /* Re-renderiza detalhe se selecionado */
   if (_selecionado) {
-    var atualizado = lista.find(function(o){ return o.sessionId === _selecionado.sessionId; });
-    if (atualizado) { _selecionado = atualizado; renderDetalhe(); }
+    var atualizado = operadoresFiltrados.find(function(o){ return o.sessionId === _selecionado.sessionId; });
+    if (atualizado) {
+      _selecionado = atualizado;
+      renderDetalhe();
+    }
   }
 }
 
+/* ══ SELECIONAR OPERADOR ══ */
 function selecionarOp(idx) {
   var lista = window._operadoresFiltrados || [];
   _selecionado = lista[idx];
@@ -510,6 +522,7 @@ function selecionarOp(idx) {
   renderDetalhe();
 }
 
+/* ══ RENDER DETALHE ══ */
 function renderDetalhe() {
   if (!_selecionado) return;
   var op = _selecionado;
@@ -524,117 +537,78 @@ function renderDetalhe() {
   var gpsBadge    = op._temGps
     ? "<span class='badge gps-on'>📍 GPS ativo</span>"
     : "<span class='badge gps-off'>📵 GPS inativo</span>";
-  var minOnline = minutosDesde(op.timestamp);
-  var minGps    = minutosDesde(op.gpsTs);
-
-  /* Botão redistribuir só se executando */
-  var btnRedist = op._executando
-    ? "<button class='btn-redistribuir' onclick='abrirRedistribuir()'><i class='fa-solid fa-arrows-rotate' style='font-size:12px'></i> Redistribuir</button>"
-    : "";
-
-  /* Mini cards */
-  var minExec = op._executando && op._protocolo && op._protocolo.lock
-    ? minutosDesde(op._protocolo.lock.iniciadoEm || op._protocolo.lock.timestamp)
-    : null;
-
-  var miniHtml = "<div class='det-grid4'>" +
-    "<div class='mini-card'><div class='mini-card-val verde'>" + op._conclHoje + "</div><div class='mini-card-lbl'>Concluídos hoje</div></div>" +
-    "<div class='mini-card'><div class='mini-card-val " + (op._executando?"exec":"texto3") + "'>" + (op._executando && minExec!=null ? formatarTempo(minExec) : "—") + "</div><div class='mini-card-lbl'>Em execução</div></div>" +
-    "<div class='mini-card'><div class='mini-card-val " + (op._temGps?"azul":"texto3") + "'>" + (op._temGps ? (op.accuracy ? Math.round(op.accuracy)+"m" : "Ativo") : "—") + "</div><div class='mini-card-lbl'>Precisão GPS</div></div>" +
-    "<div class='mini-card'><div class='mini-card-val " + (op._conclHoje>0?"verde":"texto3") + "'>" + (op._conclHoje > 0 ? op._taxa+"%" : "—") + "</div><div class='mini-card-lbl'>Taxa conclusão</div></div>" +
-  "</div>";
+  var minOnline   = minutosDesde(op.timestamp);
+  var minGps      = minutosDesde(op.gpsTs);
 
   /* Protocolo em execução */
   var protoHtml = "";
   if (op._executando && op._protocolo) {
     var p = op._protocolo;
+    var minExec = p.lock ? minutosDesde(p.lock.iniciadoEm || p.lock.timestamp) : 0;
     var mapsLink = (p.lat && p.lng)
       ? "https://maps.google.com/?q=" + p.lat + "," + p.lng
-      : "https://maps.google.com/?q=" + encodeURIComponent((p.endereco||"") + ", Arapongas, PR");
-    protoHtml = "<div class='det-section exec-border'>" +
-      "<div class='det-section-title'>🚧 Protocolo em execução</div>" +
-      "<div class='det-row'><div class='det-row-lbl'>Protocolo</div><div class='det-row-val' style='font-family:DM Mono,monospace;font-size:12px;color:var(--texto3)'>" + safeText(p.protocolo) + "</div></div>" +
-      "<div class='det-row'><div class='det-row-lbl'>Endereço</div><div class='det-row-val'><a href='" + mapsLink + "' target='_blank' rel='noopener'>📍 " + safeText(p.endereco) + "</a></div></div>" +
-      "<div class='det-row'><div class='det-row-lbl'>Tempo em execução</div><div class='det-row-val' style='font-weight:700;color:var(--exec)'>" + (minExec!=null?formatarTempo(minExec):"—") + "</div></div>" +
-      "<div class='det-row'><div class='det-row-lbl'>Iniciado às</div><div class='det-row-val'>" + formatarHora(p.lock ? (p.lock.iniciadoEm || p.lock.timestamp) : null) + "</div></div>" +
-    "</div>";
+      : "https://maps.google.com/?q=" + encodeURIComponent(p.endereco + ", Arapongas, PR");
+    protoHtml =
+      "<div class='det-section'>" +
+        "<div class='det-section-title'>🚧 Protocolo em execução</div>" +
+        "<div class='det-row'><div class='det-row-lbl'>Protocolo</div><div class='det-row-val' style='font-family:DM Mono,monospace;font-size:12px;color:var(--texto3)'>" + safeText(p.protocolo) + "</div></div>" +
+        "<div class='det-row'><div class='det-row-lbl'>Endereço</div><div class='det-row-val'><a href='" + mapsLink + "' target='_blank' rel='noopener'>📍 " + safeText(p.endereco) + "</a></div></div>" +
+        "<div class='det-row'><div class='det-row-lbl'>Tempo em execução</div><div class='det-row-val' style='font-weight:700;color:var(--exec)'>" + formatarTempo(minExec) + "</div></div>" +
+        "<div class='det-row'><div class='det-row-lbl'>Iniciado às</div><div class='det-row-val'>" + formatarHora(p.lock ? (p.lock.iniciadoEm || p.lock.timestamp) : null) + "</div></div>" +
+      "</div>";
   }
 
   /* Mapa GPS */
-  var mapaHtml = "<div class='det-mapa-wrap'>" +
-    "<div class='det-mapa-header'>" +
-      "<span class='det-mapa-titulo'>🗺️ Localização GPS" +
-        (op._temGps ? " <span style='color:var(--verde);font-size:11px;font-weight:600'>● ao vivo</span>" : "") +
-      "</span>" +
-      (op._temGps ? "<span class='det-mapa-atualizado'>Atualizado há " + formatarTempo(minGps) + "</span>" : "") +
-    "</div>" +
-    (op._temGps
-      ? "<div id='mapaOperador'></div>"
-      : "<div class='det-mapa-vazio'><div class='det-mapa-vazio-icon'>📵</div><span>GPS não disponível para este operador</span></div>"
-    ) +
-  "</div>";
-
-  /* Histórico do dia */
-  var histHtml = "<div class='det-section'>" +
-    "<div class='det-section-title'>📋 Histórico do dia</div>";
-
-  if (op._historico && op._historico.length > 0) {
-    op._historico.forEach(function(h) {
-      histHtml += "<div class='hist-item'>" +
-        "<div class='hist-stripe' style='background:var(--verde)'></div>" +
-        "<div class='hist-info'>" +
-          "<div class='hist-end'>" + safeText(h.endereco || "—") + "</div>" +
-          "<div class='hist-meta'>" + safeText(h.protocolo) + " · " + formatarHora(h.dataConclusao) + "</div>" +
-        "</div>" +
-        "<div class='hist-dur'>" + formatarDuracao(h.duracaoMin) + "</div>" +
-      "</div>";
-    });
-  }
-
-  if (op._executando && op._protocolo) {
-    histHtml += "<div class='hist-item'>" +
-      "<div class='hist-stripe' style='background:var(--exec)'></div>" +
-      "<div class='hist-info'>" +
-        "<div class='hist-end'>" + safeText(op._protocolo.endereco || "—") + "</div>" +
-        "<div class='hist-meta'>" + safeText(op._protocolo.protocolo) + " · em execução</div>" +
+  var mapaHtml =
+    "<div class='det-mapa-wrap'>" +
+      "<div class='det-mapa-header'>" +
+        "<span class='det-mapa-titulo'>🗺️ Localização GPS" + (op._temGps ? " <span style='color:var(--verde);font-size:11px;font-weight:600'>● ao vivo</span>" : "") + "</span>" +
+        (op._temGps ? "<span class='det-mapa-atualizado'>Atualizado há " + formatarTempo(minGps) + "</span>" : "") +
       "</div>" +
-      "<div class='hist-dur' style='color:var(--exec)'>⏱ em andamento</div>" +
+      (op._temGps
+        ? "<div id='mapaOperador'></div>"
+        : "<div class='det-mapa-vazio'><div class='det-mapa-vazio-icon'>📵</div><span>GPS não disponível para este operador</span></div>"
+      ) +
     "</div>";
-  }
 
-  if ((!op._historico || op._historico.length === 0) && !op._executando) {
-    histHtml += "<div style='padding:16px;text-align:center;color:var(--texto3);font-size:13px'>Nenhuma conclusão hoje</div>";
-  }
+  /* Mini cards */
+  var miniHtml =
+    "<div class='det-grid3'>" +
+      "<div class='mini-card'><div class='mini-card-val " + (op._online?"verde":"texto3") + "'>" + (op._online ? "Online" : "Offline") + "</div><div class='mini-card-lbl'>Status</div></div>" +
+      "<div class='mini-card'><div class='mini-card-val " + (op._temGps?"azul":"texto3") + "'>" + (op._temGps ? "Ativo" : "—") + "</div><div class='mini-card-lbl'>GPS</div></div>" +
+      "<div class='mini-card'><div class='mini-card-val " + (op._executando?"exec":"texto3") + "'>" + (op._executando ? "Sim" : "Não") + "</div><div class='mini-card-lbl'>Executando</div></div>" +
+    "</div>";
 
-  histHtml += "</div>";
+  var infoHtml =
+    "<div class='det-section'>" +
+      "<div class='det-section-title'>ℹ️ Informações</div>" +
+      "<div class='det-row'><div class='det-row-lbl'>Último ping</div><div class='det-row-val'>" + formatarDataHora(op.timestamp) + " (" + formatarTempo(minOnline) + " atrás)</div></div>" +
+      (op._temGps ? "<div class='det-row'><div class='det-row-lbl'>Última posição GPS</div><div class='det-row-val'>" + formatarDataHora(op.gpsTs) + " (" + formatarTempo(minGps) + " atrás)<br><a href='https://maps.google.com/?q=" + op.lat + "," + op.lng + "' target='_blank' rel='noopener' style='font-size:12px'>Ver no Google Maps ↗</a></div></div>" : "") +
+      "<div class='det-row'><div class='det-row-lbl'>Session ID</div><div class='det-row-val' style='font-family:DM Mono,monospace;font-size:11px;color:var(--texto3)'>" + safeText((op.sessionId||"").slice(0,24) + "…") + "</div></div>" +
+    "</div>";
 
   content.innerHTML =
     "<div class='det-hero'>" +
-      "<div class='det-avatar-big' style='background:" + cor + "'>" +
-        "<i class='fa-solid fa-user' style='font-size:20px'></i>" +
-        "<div class='op-avatar-status' style='background:" + (op._online?"#4ade80":"#94A3B8") + ";width:14px;height:14px;border-width:2.5px'></div>" +
+      "<div class='det-hero'>" +
+        "<div class='det-avatar-big' style='background:" + cor + "'>" +
+          "<i class='fa-solid fa-user' style='font-size:20px'></i>" +
+          "<div class='op-avatar-status' style='background:" + (op._online?"#4ade80":"#94A3B8") + ";width:14px;height:14px;border-width:2.5px'></div>" +
       "</div>" +
       "<div class='det-hero-info'>" +
         "<div class='det-nome'>" + safeText(op.operador) + "</div>" +
-        "<div class='det-sub'>" +
-          (op._executando
-            ? "Em execução há " + (minExec!=null?formatarTempo(minExec):"—")
-            : op._online
-              ? "Online há " + formatarTempo(minOnline)
-              : "Offline há " + formatarTempo(minOnline)) +
-        "</div>" +
+        "<div class='det-sub'>" + (op._executando ? "Em execução há " + formatarTempo(op._protocolo && op._protocolo.lock ? minutosDesde(op._protocolo.lock.iniciadoEm || op._protocolo.lock.timestamp) : 9999) : op._online ? "Online há " + formatarTempo(minOnline) : "Offline há " + formatarTempo(minOnline)) + "</div>" +
         "<div class='det-badges'>" +
           "<span class='badge " + statusCls + "'>" + statusLabel + "</span>" +
           gpsBadge +
         "</div>" +
       "</div>" +
-      btnRedist +
     "</div>" +
     miniHtml +
     protoHtml +
     mapaHtml +
-    histHtml;
+    infoHtml;
 
+  /* Inicializa mapa se GPS disponível — setTimeout garante que o innerHTML já está no DOM */
   if (op._temGps) {
     setTimeout(function() { _iniciarMapaOp(op); }, 50);
   } else {
@@ -642,18 +616,12 @@ function renderDetalhe() {
   }
 }
 
-/* Redistribuir — abre o painel principal na redistribuição */
-function abrirRedistribuir() {
-  if (!_selecionado || !_selecionado._protocolo) return;
-  var p = _selecionado._protocolo;
-  toast("↔ Redistribuição disponível no Painel principal", "");
-}
-
-/* Mapa */
+/* ══ MAPA DO OPERADOR ══ */
 function _iniciarMapaOp(op) {
   if (window._mapsCarregado) {
     _renderMapaOp(op);
   } else {
+    /* Maps ainda carregando — callback vai pegar */
     window._opParaMapa = op;
   }
 }
@@ -674,6 +642,7 @@ function _renderMapaOp(op) {
 
   var pos = { lat: parseFloat(op.lat), lng: parseFloat(op.lng) };
 
+  /* Sempre cria nova instância — o elemento foi recriado via innerHTML */
   _mapaObj = new google.maps.Map(el, {
     center: pos, zoom: 15,
     mapTypeControl: false, streetViewControl: false, fullscreenControl: false,
@@ -683,12 +652,13 @@ function _renderMapaOp(op) {
     ]
   });
 
+  /* Remove marcadores antigos */
   if (_marcadorOp)      { _marcadorOp.setMap(null); _marcadorOp = null; }
   if (_marcadorCirculo) { _marcadorCirculo.setMap(null); _marcadorCirculo = null; }
 
   var cor = corOp(op.operador);
-  var ini = iniciaisOp(op.operador);
 
+  /* Círculo de precisão */
   if (op.accuracy) {
     _marcadorCirculo = new google.maps.Circle({
       center: pos, radius: op.accuracy,
@@ -698,6 +668,8 @@ function _renderMapaOp(op) {
     });
   }
 
+  /* SVG do pin do operador */
+  var ini = iniciaisOp(op.operador);
   var svgContent =
     '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="54" viewBox="0 0 44 54">' +
     '<path d="M22 0C13.2 0 6 7.2 6 16c0 12 16 38 16 38S38 28 38 16C38 7.2 30.8 0 22 0z" fill="' + cor + '"/>' +
@@ -706,19 +678,24 @@ function _renderMapaOp(op) {
     '</svg>';
 
   _marcadorOp = new google.maps.Marker({
-    position: pos, map: _mapaObj,
-    icon: { url: "data:image/svg+xml;base64," + window.btoa(svgContent), scaledSize: new google.maps.Size(44, 54), anchor: new google.maps.Point(22, 54) },
+    position: pos,
+    map: _mapaObj,
+    icon: {
+      url: "data:image/svg+xml;base64," + window.btoa(svgContent),
+      scaledSize: new google.maps.Size(44, 54),
+      anchor: new google.maps.Point(22, 54)
+    },
     title: op.operador
   });
 
-  var minGps = minutosDesde(op.gpsTs);
+  /* Info window */
   var execInfo = op._executando && op._protocolo
-    ? "<div style='color:#7C3AED;font-weight:600;margin-top:4px;font-size:11px'>🚧 " + safeText(op._protocolo.protocolo) + " — " + safeText((op._protocolo.endereco||"").split(",")[0]) + "</div>"
+    ? "<div style='color:#7C3AED;font-weight:600;margin-top:4px;font-size:11px'>🚧 " + op._protocolo.protocolo + " — " + safeText(op._protocolo.endereco.split(",")[0]) + "</div>"
     : "";
   var iw = new google.maps.InfoWindow({
     content: "<div style='font-family:DM Sans,sans-serif;padding:2px'>" +
       "<div style='font-weight:700;font-size:13px'>" + safeText(op.operador) + "</div>" +
-      "<div style='font-size:11px;color:#64748B;margin-top:2px'>GPS atualizado há " + formatarTempo(minGps) + "</div>" +
+      "<div style='font-size:11px;color:#64748B;margin-top:2px'>Atualizado há " + formatarTempo(minutosDesde(op.gpsTs)) + "</div>" +
       execInfo +
       "<a href='https://maps.google.com/?q=" + op.lat + "," + op.lng + "' target='_blank' rel='noopener' style='display:block;margin-top:8px;padding:5px 10px;background:#EBF3FD;border-radius:6px;color:#1469C7;font-size:11px;font-weight:700;text-decoration:none;text-align:center'>Abrir no Google Maps ↗</a>" +
     "</div>"
@@ -726,17 +703,34 @@ function _renderMapaOp(op) {
   _marcadorOp.addListener("click", function() { iw.open(_mapaObj, _marcadorOp); });
 }
 
-function iniciarRefresh() {
-  clearInterval(_refreshTimer);
-  _refreshTimer = setInterval(atualizar, REFRESH_MS);
+/* Atualiza pin do mapa quando dados chegam */
+function atualizarMapaSeVisivel() {
+  if (_selecionado && _mapaObj && _selecionado._temGps) {
+    var op = _operadores.find(function(o){ return o.sessionId === _selecionado.sessionId; });
+    if (op && op._temGps) _renderMapaOp(op);
+  }
 }
 
+/* ══ AUTO REFRESH ══ */
+function iniciarRefresh() {
+  clearInterval(_refreshTimer);
+  _refreshTimer = setInterval(function() {
+    atualizar();
+  }, REFRESH_MS);
+}
+
+/* ══ INIT ══ */
 atualizar();
 iniciarRefresh();
 
+/* Pausa refresh quando aba não está visível */
 document.addEventListener("visibilitychange", function() {
-  if (document.visibilityState === "visible") { atualizar(); iniciarRefresh(); }
-  else { clearInterval(_refreshTimer); }
+  if (document.visibilityState === "visible") {
+    atualizar();
+    iniciarRefresh();
+  } else {
+    clearInterval(_refreshTimer);
+  }
 });
 </script>
 </body>
