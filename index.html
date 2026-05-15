@@ -968,8 +968,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <div class="centro-top">
   <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
   <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
-  <button class="filtro-tab t-urgente" data-ft="urgente" onclick="setFiltroTabComMapa('urgente',this)">Urgentes <span class="filtro-tab-badge" id="ftb-urgente">—</span></button>
-  <button class="filtro-tab t-exec" data-ft="execucao" onclick="setFiltroTabComMapa('execucao',this)">Em execução <span class="filtro-tab-badge" id="ftb-execucao">—</span></button>
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
@@ -1714,10 +1712,10 @@ function renderTablet(lista){
   else{filtrados.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t&&(p._t.r<=0||p._t.tipo==="atrasado"))return 3;if(p._t&&p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
   var gt=document.getElementById("gridTablet");
   if(!filtrados.length){gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'>✅</div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";return;}
-  var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=filtrados.filter(function(p){return isConcluido(p);});
+  var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&p._t.tipo==="atrasado";}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}),concL=filtrados.filter(function(p){return isConcluido(p);});
   var h="",gIdx=0;
   if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
-  if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atrasados</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
   if(concL.length){h+="<div class='sec-label-tablet'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
@@ -1763,7 +1761,10 @@ function renderFiltrado(lista){
   var gridList=termoBusca?filtrados:ativos.slice();
   if(_modoPerto&&_posAtual){gridList.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});}
   else{gridList.sort(function(a,b){var rank=function(p){if(isConcluido(p))return 6;if(p.prioridade&&!isConcluido(p))return 0;if(p.lock&&p.lock.sessionId===SESSION_ID)return 1;if(p.lock)return 2;if(p._t.r<=0||p._t.tipo==="atrasado")return 3;if(p._t.r<=4)return 4;return 5;};var d=rank(a)-rank(b);return d!==0?d:(a._t&&b._t?a._t.r-b._t.r:0);});}
-  var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;}),urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="atrasado"||p._t.r<=4);}),norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="pendente"&&p._t.r>4;}),concL=gridList.filter(function(p){return isConcluido(p)&&p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje;});
+  var execL=gridList.filter(function(p){return !isConcluido(p)&&!!p.lock;}),
+  urgL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&p._t.tipo==="atrasado";}),
+  norL=gridList.filter(function(p){return !isConcluido(p)&&!p.lock&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}),
+  concL=gridList.filter(function(p){return isConcluido(p)&&p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje;});
   var novoHashes={};gridList.forEach(function(p){novoHashes[p.protocolo]=hashProtocolo(p);});
   var secaoAtual=[execL.length,urgL.length,norL.length,concL.length].join("|"),precisaReconstruir=secaoAtual!==(_prevHashes.__secoes__||"");
   if(!precisaReconstruir&&gridList.map(function(p){return p.protocolo;}).join(",")!==(_prevHashes.__ordem__||""))precisaReconstruir=true;
@@ -1771,7 +1772,7 @@ function renderFiltrado(lista){
   if(precisaReconstruir){
     var h="",gIdx=0;
     if(execL.length){h+="<div class='sec-label'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
-    if(urgL.length){h+="<div class='sec-label'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(urgL.length){h+="<div class='sec-label'>🔴 Atrasados</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     if(norL.length){h+="<div class='sec-label'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
     if(concL.length){h+="<div class='sec-label'>✅ Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
