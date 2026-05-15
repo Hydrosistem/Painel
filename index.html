@@ -974,7 +974,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
-  <i class="fa-solid fa-download"></i> CSV
+  <i class="fa-solid fa-download"></i> XLSX
 </button>  
 </div>
     <!-- ══ MAPA INTEGRADO ══ -->
@@ -2525,7 +2525,7 @@ function exportarCSV() {
     /* ── Linha 1: título ── */
     var r1 = ws.addRow(["HYDROSISTEM — Painel de Entulhos"]);
     ws.mergeCells(1, 1, 1, 8);
-    r1.height = 28;
+    r1.height = 40;
     r1.getCell(1).font = { bold: true, size: 14, color: { argb: "FFFFFFFF" } };
     r1.getCell(1).fill = { type:"pattern", pattern:"solid", fgColor:{ argb: "FF"+AZUL_ESC } };
     r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
@@ -2572,7 +2572,6 @@ function exportarCSV() {
         p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
         obsLimpa
       ]);
-      row.height = 16;
       row.eachCell(function(cell) {
         cell.font = { size: 10 };
         cell.fill = { type:"pattern", pattern:"solid", fgColor:{ argb: bgHex } };
