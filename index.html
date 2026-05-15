@@ -2448,10 +2448,29 @@ function setMapaFiltro(filtro, btn) {
   _renderMapaMarcadores(_ultimaLista);
 }
 
+var _marcadorLocalizacao = null;
 function centralizarLocalizacao() {
   if (!navigator.geolocation) { toast("GPS não disponível",""); return; }
   navigator.geolocation.getCurrentPosition(function(pos) {
-    if (_mapaObj) { _mapaObj.panTo({lat:pos.coords.latitude,lng:pos.coords.longitude}); _mapaObj.setZoom(14); }
+    var latlng = {lat:pos.coords.latitude, lng:pos.coords.longitude};
+    if (_mapaObj) {
+      _mapaObj.panTo(latlng);
+      _mapaObj.setZoom(14);
+      if (_marcadorLocalizacao) _marcadorLocalizacao.setMap(null);
+      _marcadorLocalizacao = new google.maps.Marker({
+        position: latlng,
+        map: _mapaObj,
+        title: "Minha localização",
+        icon: {
+          path: google.maps.SymbolPath.CIRCLE,
+          scale: 10,
+          fillColor: "#1469C7",
+          fillOpacity: 1,
+          strokeColor: "#fff",
+          strokeWeight: 3
+        }
+      });
+    }
     toast("📍 Localização obtida","ok");
   }, function() { toast("❌ Não foi possível obter localização","erro"); }, {enableHighAccuracy:true,timeout:10000});
 }
