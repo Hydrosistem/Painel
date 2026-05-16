@@ -1795,9 +1795,10 @@ function flashBar(){}
 function initProgressBar(){}
 
 /* ══ CARREGAR DADOS ══ */
-function carregarDados(){
+function carregarDados(tentativa){
+  tentativa = tentativa || 1;
   if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
-  fetch(API+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).then(function(lista){salvarCache(lista);mostrarBannerOffline(null);render(lista);}).catch(function(err){console.error("[carregarDados]",err);var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("cache");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}}).finally(function(){flashBar();});
+  fetch(API+"&t="+Date.now(),{redirect:"follow",cache:"no-store"}).then(function(r){return r.json();}).then(function(lista){salvarCache(lista);mostrarBannerOffline(null);render(lista);}).catch(function(err){console.error("[carregarDados] tentativa "+tentativa,err);if(tentativa<3){setTimeout(function(){carregarDados(tentativa+1);},1500*tentativa);return;}var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("cache");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}}).finally(function(){flashBar();});
 }
 
 /* ══ LIBERAR LOCKS AO FECHAR ══ */
