@@ -1443,7 +1443,7 @@ var SESSION_ID=(function(){var k="hyd_session_id";try{var s=localStorage.getItem
 var meusLocks={},protocoloPendente=null,enderecoPendente=null,_protocoloSelecionado=null,_lockIniciadoEm={},_aguardandoConclusao={};
 
 /* ══ UTILITÁRIOS ══ */
-function isDesktop(){return !('ontouchstart' in window)&&!navigator.maxTouchPoints;}
+function isDesktop(){return window.innerWidth >= 600;}
 function fotoSrc(id){if(!id)return null;return isDesktop()?"https://lh3.googleusercontent.com/d/"+encodeURIComponent(id):"https://drive.google.com/uc?export=view&id="+encodeURIComponent(id);}
 function onFotoErro(img,u,id){if(!img.dataset.r1&&id){img.dataset.r1="1";img.src="https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w800";return;}if(!img.dataset.r2&&id&&isDesktop()){img.dataset.r2="1";img.src="https://drive.google.com/uc?export=view&id="+encodeURIComponent(id);return;}var w=img.closest(".foto-wrap,.detail-foto-wrap");if(w)w.outerHTML="<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";}
 function onFotoLoad(img){img.classList.add("loaded");var sk=img.previousElementSibling;if(sk&&sk.classList.contains("foto-skeleton"))sk.style.display="none";}
