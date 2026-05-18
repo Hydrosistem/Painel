@@ -1956,8 +1956,6 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
 
   items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'><i class='fa-solid fa-pencil'></i> Editar endereço</button>";
 
-  var _obsVal = (p.obs && p.obs !== "—") ? p.obs : "";
-  items += "<button class='sup-menu-item' onclick='abrirModalObs(\""+prot+"\",\""+esc(_obsVal)+"\");fecharMenuSupervisor()'>📝 Editar observação</button>";
 
   if (!concluido) {
     items += "<button class='sup-menu-item' onclick='forcarConclusaoSupervisor(\""+prot+"\");fecharMenuSupervisor()'><i class='fa-solid fa-circle-check'></i> Forçar conclusão sem foto</button>";
