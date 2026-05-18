@@ -1677,7 +1677,6 @@ function enviarConclusao(){
       try{fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});}catch(e){}
       setTimeout(carregarDados,3000);
     });
-}
 function renderCard(p,idx,isNovo){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
