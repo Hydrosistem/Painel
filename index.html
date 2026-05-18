@@ -1689,9 +1689,10 @@ function renderCardTablet(p,idx,isNovo){
   var delay=isNovo?Math.min((idx||0)*45,320):0;
   var thumbHtml="",srcThumb=fotoSrc(p.fotoId);
   if(srcThumb)thumbHtml="<div class='card-t-thumb'><div class='card-t-thumb-sk'></div><img class='card-t-thumb-img' src='"+srcThumb+"' loading='lazy' onload='this.classList.add(\"loaded\");var sk=this.previousElementSibling;if(sk)sk.style.display=\"none\";' onerror='this.closest(\".card-t-thumb\").style.display=\"none\";' alt='Foto'></div>";
-  var loteChk=isSupervisor()?"<div class='lote-check-wrap'><input type='checkbox' class='lote-check' id='lote-chk-"+idSafe+"' "+(!!_loteSelecionados[p.protocolo]?"checked":"")+" onclick='toggleLoteCard(\""+esc(p.protocolo)+"\",event)'></div>":"";
+  var loteChk=isSupervisor()?"<div class='lote-check-wrap'><input type='checkbox' class='lote-check' id='lote-chk-"+idSafe+"' "+(!!_loteSelecionados[p.protocolo]?"checked":"")+" onclick='event.stopPropagation();toggleLoteCard(\""+esc(p.protocolo)+"\",event)'></div>":"";
   var loteClass=_loteSelecionados[p.protocolo]?" lote-selecionado":"";
-  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+loteClass+(isNovo?" card-animar":"")+"' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+" onclick='if(_modoLote){toggleLoteCard(\""+esc(p.protocolo)+"\",event);}'>"+loteChk+
+  var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
+  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+loteClass+(isNovo?" card-animar":"")+"' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+loteChk+
     thumbHtml+
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
