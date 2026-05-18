@@ -1039,7 +1039,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
 <div id="barraLote">
   <div class="barra-lote-info"><span id="loteContador">0</span> selecionados</div>
   <button class="btn-lote-cancelar" onclick="cancelarLote()">✕ Cancelar</button>
-  <button class="btn-lote-concluir" id="btnLoteConcluir" onclick="loteAcao('concluir')" disabled>✅ Concluir</button>
+  <button class="btn-lote-concluir" id="btnLoteConcluir" onclick="loteAcao('concluir')" disabled><i class="fa-solid fa-circle-check"></i> Concluir</button>
   <button class="btn-lote-remover" id="btnLoteRemover" onclick="loteAcao('remover')" disabled>🗑️ Remover</button>
 </div>
 
@@ -1646,9 +1646,9 @@ function renderCard(p,idx,isNovo){
   if(outraExecucao){var min=Math.round((new Date()-new Date(lock.timestamp))/60000),quem=lock.usuario?" por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info'>⏱ Iniciado há "+(min<1?"<1 min":min+" min")+quem+"</div>";}
   else if(minhaExecucao){execInfoHtml="<div class='exec-info' style='background:#DCFCE7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando</div>";}
   var btnHtml;
-  if(concluido){btnHtml="<div class='btn-concluido-info'>✅ Concluído em "+fdt(p.dataConclusao)+"</div>";}
+  if(concluido){btnHtml="<div class='btn-concluido-info'><i class="fa-solid fa-circle-check"></i> Concluído em "+fdt(p.dataConclusao)+"</div>";}
   else if(outraExecucao){btnHtml="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
-  else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'>✅ Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
+  else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class="fa-solid fa-circle-check"></i> Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
   else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
   var delay=isNovo?Math.min(idx*50,380):0;
@@ -1960,7 +1960,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   items += "<button class='sup-menu-item' onclick='abrirModalObs(\""+prot+"\",\""+esc(_obsVal)+"\");fecharMenuSupervisor()'>📝 Editar observação</button>";
 
   if (!concluido) {
-    items += "<button class='sup-menu-item' onclick='forcarConclusaoSupervisor(\""+prot+"\");fecharMenuSupervisor()'>✅ Forçar conclusão sem foto</button>";
+    items += "<button class='sup-menu-item' onclick='forcarConclusaoSupervisor(\""+prot+"\");fecharMenuSupervisor()'><i class=\"fa-solid fa-circle-check\"></i> Forçar conclusão sem foto</button>";
   }
 
   var prioridade = !!p.prioridade && !concluido;
