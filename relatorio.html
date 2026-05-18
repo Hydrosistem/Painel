@@ -53,35 +53,47 @@ header {
 .h-nome { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .6px; }
 .h-sub  { font-size: 10px; color: rgba(255,255,255,.5); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
 .h-badge { font-size: 11px; font-weight: 700; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.8); padding: 4px 12px; border-radius: 20px; letter-spacing: .4px; }
-.btn-sair { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.75); border-radius: var(--radius-sm); padding: 0 14px; height: 34px; font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+.btn-sair { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14); color: rgba(255,255,255,.75); border-radius: var(--radius-sm); padding: 0 14px; height: 34px; font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; text-decoration: none; }
 .btn-sair:hover { background: rgba(255,255,255,.15); }
 
-/* ══ LOGIN ══ */
-#telaLogin { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 60px); padding: 24px; }
-.login-card { background: var(--branco); border-radius: var(--radius); border: 1px solid var(--borda); padding: 36px 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: 0 4px 24px rgba(0,0,0,.06); }
-.login-icon { font-size: 40px; margin-bottom: 16px; line-height: 1; }
-.login-title { font-size: 18px; font-weight: 700; color: var(--texto); margin-bottom: 6px; }
-.login-sub { font-size: 13px; color: var(--texto2); margin-bottom: 28px; line-height: 1.6; }
-.login-input { width: 100%; padding: 12px 14px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 16px; outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; margin-bottom: 12px; text-align: center; letter-spacing: 6px; font-weight: 700; }
-.login-input:focus { border-color: var(--azul); box-shadow: 0 0 0 3px rgba(20,105,199,.12); }
-.login-input.erro { border-color: var(--vermelho); box-shadow: 0 0 0 3px rgba(185,28,28,.1); animation: shake .3s ease; }
-@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
-.btn-entrar { width: 100%; min-height: 48px; border-radius: var(--radius-sm); background: var(--azul); color: #fff; font-family: "DM Sans",sans-serif; font-size: 15px; font-weight: 700; border: none; cursor: pointer; transition: background .15s; }
-.btn-entrar:hover { background: #1058a8; }
-.login-erro { font-size: 12px; color: var(--vermelho); margin-top: 10px; min-height: 18px; }
-
-/* ══ PAINEL RELATÓRIO ══ */
-#painelRelatorio { display: none; }
+/* ══ PAINEL ══ */
 .relatorio-wrap { max-width: 900px; margin: 0 auto; padding: 28px 20px 48px; }
 
 /* ══ TOOLBAR ══ */
 .toolbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-.toolbar-left { display: flex; flex-direction: column; gap: 3px; }
+.toolbar-left { display: flex; flex-direction: column; gap: 4px; }
 .toolbar-data { font-size: 20px; font-weight: 700; color: var(--texto); }
-.toolbar-sub { font-size: 13px; color: var(--texto2); }
-.toolbar-right { display: flex; gap: 8px; align-items: center; }
+.toolbar-sub { font-size: 13px; color: var(--texto2); display: flex; align-items: center; gap: 8px; }
+.dia-chip {
+  display: inline-flex; align-items: center;
+  font-size: 11px; font-weight: 700; padding: 2px 9px;
+  border-radius: 20px; letter-spacing: .3px;
+}
+.dia-chip.hoje    { background: var(--verde-bg);   color: var(--verde);   border: 1px solid var(--verde-b); }
+.dia-chip.ontem   { background: var(--azul-bg);    color: var(--azul);    border: 1px solid #B8D4F4; }
+.dia-chip.antigo  { background: var(--cinza-md);   color: var(--texto2);  border: 1px solid var(--borda); }
+
+.toolbar-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+/* ══ DATE PICKER ══ */
+.date-picker-wrap { position: relative; }
+.btn-data {
+  background: var(--branco); border: 1px solid var(--borda);
+  border-radius: var(--radius-sm); padding: 0 14px; height: 36px;
+  font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600;
+  cursor: pointer; color: var(--texto2); display: flex; align-items: center;
+  gap: 6px; transition: background .15s, border-color .15s;
+}
+.btn-data:hover { background: var(--cinza-md); border-color: #CBD5E1; }
+.btn-data svg { flex-shrink: 0; }
+#inputData {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer; border: none;
+}
+
 .btn-nav { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius-sm); padding: 0 14px; height: 36px; font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; color: var(--texto2); display: flex; align-items: center; gap: 5px; transition: background .15s, border-color .15s; }
 .btn-nav:hover { background: var(--cinza-md); border-color: #CBD5E1; }
+.btn-nav:disabled { opacity: .4; cursor: not-allowed; }
 .btn-exportar { background: var(--azul); color: #fff; border: none; border-radius: var(--radius-sm); padding: 0 16px; height: 36px; font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
 .btn-exportar:hover { background: #1058a8; }
 
@@ -91,8 +103,8 @@ header {
 .stat-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto3); margin-bottom: 8px; }
 .stat-valor { font-size: 32px; font-weight: 700; line-height: 1; font-family: "DM Mono", monospace; }
 .stat-sub { font-size: 11px; color: var(--texto2); margin-top: 4px; }
-.stat-card.s-azul .stat-valor { color: var(--azul); }
-.stat-card.s-verde .stat-valor { color: var(--verde); }
+.stat-card.s-azul    .stat-valor { color: var(--azul); }
+.stat-card.s-verde   .stat-valor { color: var(--verde); }
 .stat-card.s-vermelho .stat-valor { color: var(--vermelho); }
 .stat-card.s-amarelo .stat-valor { color: var(--amarelo); }
 
@@ -100,15 +112,21 @@ header {
 .sec-titulo { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--texto3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .sec-titulo::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-/* ══ GRÁFICO BARRAS ══ */
+/* ══ GRÁFICO DUPLO ══ */
 .chart-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
-.chart-title { font-size: 13px; font-weight: 600; color: var(--texto2); margin-bottom: 16px; }
-.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.chart-legend { display: flex; gap: 16px; margin-bottom: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--texto2); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
 .bar-hora { font-size: 11px; color: var(--texto3); width: 36px; text-align: right; flex-shrink: 0; font-family: "DM Mono", monospace; }
-.bar-track { flex: 1; height: 24px; background: var(--cinza-md); border-radius: 6px; overflow: hidden; }
-.bar-fill { height: 100%; background: var(--azul); border-radius: 6px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; transition: width .6s cubic-bezier(.22,1,.36,1); }
-.bar-fill-val { font-size: 11px; font-weight: 700; color: #fff; }
-.bar-zero { height: 100%; background: transparent; }
+.bar-track-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.bar-track { height: 14px; background: var(--cinza-md); border-radius: 4px; overflow: hidden; position: relative; }
+.bar-fill-abertura { height: 100%; background: #CBD5E1; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; transition: width .6s cubic-bezier(.22,1,.36,1); min-width: 0; }
+.bar-fill-conclusao { height: 100%; background: var(--azul); border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; transition: width .6s cubic-bezier(.22,1,.36,1); min-width: 0; }
+.bar-val { font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+.bar-val-cinza { font-size: 10px; font-weight: 700; color: var(--texto2); white-space: nowrap; }
+.bar-total { font-size: 10px; color: var(--texto3); width: 24px; text-align: right; flex-shrink: 0; font-family: "DM Mono", monospace; }
 
 /* ══ DUAS COLUNAS ══ */
 .dois-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
@@ -137,9 +155,9 @@ header {
 
 /* ══ LISTA PROTOCOLOS ══ */
 .proto-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; }
-.proto-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--borda); }
+.proto-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid var(--borda); flex-wrap: wrap; gap: 8px; }
 .proto-header-title { font-size: 13px; font-weight: 600; color: var(--texto2); }
-.proto-filtros { display: flex; gap: 5px; }
+.proto-filtros { display: flex; gap: 5px; flex-wrap: wrap; }
 .proto-filtro { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid var(--borda); background: none; cursor: pointer; color: var(--texto2); transition: all .15s; font-family: "DM Sans", sans-serif; }
 .proto-filtro.active { background: var(--azul); border-color: var(--azul); color: #fff; }
 .proto-item { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--borda); }
@@ -153,6 +171,11 @@ header {
 .proto-badge.t-pendente  { background: var(--amarelo-bg); color: var(--amarelo); }
 .proto-badge.t-execucao  { background: var(--exec-bg); color: var(--exec); }
 .proto-tempo { font-size: 11px; font-family: "DM Mono", monospace; color: var(--texto3); margin-left: 8px; flex-shrink: 0; }
+
+/* ══ LOADING ══ */
+.loading-wrap { text-align: center; padding: 60px 20px; color: var(--texto2); }
+.spinner { width: 32px; height: 32px; border: 2.5px solid var(--borda); border-top-color: var(--azul); border-radius: 50%; animation: rot .8s linear infinite; margin: 0 auto 14px; }
+@keyframes rot { to { transform: rotate(360deg); } }
 
 /* ══ VAZIO ══ */
 .vazio { text-align: center; padding: 40px 20px; color: var(--texto2); }
@@ -169,6 +192,8 @@ header {
   .tempo-item { border-right: none; border-bottom: 1px solid var(--borda); }
   .tempo-item:last-child { border-bottom: none; }
   .toolbar { flex-direction: column; align-items: flex-start; }
+  .toolbar-right { width: 100%; }
+  .proto-header { flex-direction: column; align-items: flex-start; }
 }
 </style>
 </head>
@@ -185,122 +210,136 @@ header {
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:10px">
-    <a href="./" class="btn-sair" style="text-decoration:none">← Painel</a>
+    <a href="./" class="btn-sair">← Painel</a>
     <span class="h-badge">🔐 Supervisor</span>
   </div>
 </header>
 
-<!-- ══ PAINEL RELATÓRIO ══ -->
-<div id="painelRelatorio" style="display:block">
-  <div class="relatorio-wrap">
+<div class="relatorio-wrap">
 
-    <div class="toolbar">
-      <div class="toolbar-left">
-        <div class="toolbar-data" id="toolbarData">—</div>
-        <div class="toolbar-sub" id="toolbarSub">Carregando dados…</div>
-      </div>
-      <div class="toolbar-right">
-        <button class="btn-nav" onclick="mudarDia(-1)">← Dia anterior</button>
-        <button class="btn-nav" id="btnHoje" onclick="mudarDia(0)" style="display:none">Hoje</button>
-        <button class="btn-nav" onclick="mudarDia(1)" id="btnProximo">Próximo →</button>
-        <button class="btn-exportar" onclick="exportarPDF()">⬇ Exportar PDF</button>
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="toolbar-data" id="toolbarData">—</div>
+      <div class="toolbar-sub">
+        <span id="toolbarSub">Carregando…</span>
+        <span class="dia-chip" id="diaChip" style="display:none"></span>
       </div>
     </div>
+    <div class="toolbar-right">
+      <button class="btn-nav" onclick="mudarDia(-1)">← Anterior</button>
 
-    <!-- STATS -->
-    <div class="stat-grid">
-      <div class="stat-card s-azul">
-        <div class="stat-label">Total abertos</div>
-        <div class="stat-valor" id="sTotal">—</div>
-        <div class="stat-sub" id="sSubTotal">protocolos no dia</div>
+      <!-- Seletor de data -->
+      <div class="date-picker-wrap">
+        <button class="btn-data">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Ir para data
+        </button>
+        <input type="date" id="inputData" onchange="irParaData(this.value)">
       </div>
-      <div class="stat-card s-verde">
-        <div class="stat-label">Concluídos</div>
-        <div class="stat-valor" id="sConcluidos">—</div>
-        <div class="stat-sub" id="sSubConc">no prazo</div>
-      </div>
-      <div class="stat-card s-vermelho">
-        <div class="stat-label">Atrasados</div>
-        <div class="stat-valor" id="sAtrasados">—</div>
-        <div class="stat-sub" id="sSubAtr">vencidos sem conclusão</div>
-      </div>
-      <div class="stat-card s-amarelo">
-        <div class="stat-label">Taxa conclusão</div>
-        <div class="stat-valor" id="sTaxa">—</div>
-        <div class="stat-sub" id="sSubTaxa">meta: 85%</div>
-      </div>
+
+      <button class="btn-nav" id="btnHoje" onclick="mudarDia(0)" style="display:none">Hoje</button>
+      <button class="btn-nav" id="btnProximo" onclick="mudarDia(1)" style="display:none">Próximo →</button>
+      <button class="btn-exportar" onclick="exportarPDF()">⬇ PDF</button>
     </div>
-
-    <!-- GRÁFICO HORAS -->
-    <div class="sec-titulo">Conclusões por hora</div>
-    <div class="chart-card">
-      <div id="barrasHora"></div>
-    </div>
-
-    <!-- OPERADORES + TEMPOS -->
-    <div class="sec-titulo">Desempenho</div>
-    <div class="dois-col">
-      <div class="op-card">
-        <div class="op-header">Por operador</div>
-        <div id="listaOperadores"></div>
-      </div>
-      <div class="tempo-card">
-        <div class="tempo-header">Tempo médio de execução</div>
-        <div class="tempo-grid">
-          <div class="tempo-item">
-            <div class="tempo-val" id="tMedia" style="color:var(--azul)">—</div>
-            <div class="tempo-lbl">Média geral</div>
-          </div>
-          <div class="tempo-item">
-            <div class="tempo-val" id="tRapido" style="color:var(--verde)">—</div>
-            <div class="tempo-lbl">Mais rápido</div>
-          </div>
-          <div class="tempo-item">
-            <div class="tempo-val" id="tLento" style="color:var(--vermelho)">—</div>
-            <div class="tempo-lbl">Mais lento</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- LISTA PROTOCOLOS -->
-    <div class="sec-titulo">Protocolos do dia</div>
-    <div class="proto-card">
-      <div class="proto-header">
-        <div class="proto-header-title" id="protoCount">—</div>
-        <div class="proto-filtros">
-          <button class="proto-filtro active" onclick="filtrarProtos('todos',this)">Todos</button>
-          <button class="proto-filtro" onclick="filtrarProtos('concluido',this)">Concluídos</button>
-          <button class="proto-filtro" onclick="filtrarProtos('atrasado',this)">Atrasados</button>
-          <button class="proto-filtro" onclick="filtrarProtos('pendente',this)">Pendentes</button>
-        </div>
-      </div>
-      <div id="listaProtos"></div>
-    </div>
-
-    <div class="relatorio-footer" id="relatorioFooter"></div>
-
   </div>
+
+  <!-- STATS -->
+  <div class="stat-grid">
+    <div class="stat-card s-azul">
+      <div class="stat-label">Total abertos</div>
+      <div class="stat-valor" id="sTotal">—</div>
+      <div class="stat-sub">protocolos no dia</div>
+    </div>
+    <div class="stat-card s-verde">
+      <div class="stat-label">Concluídos</div>
+      <div class="stat-valor" id="sConcluidos">—</div>
+      <div class="stat-sub" id="sSubConc">no prazo</div>
+    </div>
+    <div class="stat-card s-vermelho">
+      <div class="stat-label">Atrasados</div>
+      <div class="stat-valor" id="sAtrasados">—</div>
+      <div class="stat-sub">vencidos sem conclusão</div>
+    </div>
+    <div class="stat-card s-amarelo">
+      <div class="stat-label">Taxa conclusão</div>
+      <div class="stat-valor" id="sTaxa">—</div>
+      <div class="stat-sub">meta: 85%</div>
+    </div>
+  </div>
+
+  <!-- GRÁFICO -->
+  <div class="sec-titulo">Abertura vs conclusão por hora</div>
+  <div class="chart-card">
+    <div class="chart-legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#CBD5E1"></div> Abertos</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--azul)"></div> Concluídos</div>
+    </div>
+    <div id="barrasHora"></div>
+  </div>
+
+  <!-- OPERADORES + TEMPOS -->
+  <div class="sec-titulo">Desempenho</div>
+  <div class="dois-col">
+    <div class="op-card">
+      <div class="op-header">Por operador</div>
+      <div id="listaOperadores"></div>
+    </div>
+    <div class="tempo-card">
+      <div class="tempo-header">Tempo médio de execução</div>
+      <div class="tempo-grid">
+        <div class="tempo-item">
+          <div class="tempo-val" id="tMedia" style="color:var(--azul)">—</div>
+          <div class="tempo-lbl">Média geral</div>
+        </div>
+        <div class="tempo-item">
+          <div class="tempo-val" id="tRapido" style="color:var(--verde)">—</div>
+          <div class="tempo-lbl">Mais rápido</div>
+        </div>
+        <div class="tempo-item">
+          <div class="tempo-val" id="tLento" style="color:var(--vermelho)">—</div>
+          <div class="tempo-lbl">Mais lento</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LISTA PROTOCOLOS -->
+  <div class="sec-titulo">Protocolos do dia</div>
+  <div class="proto-card">
+    <div class="proto-header">
+      <div class="proto-header-title" id="protoCount">—</div>
+      <div class="proto-filtros">
+        <button class="proto-filtro active" onclick="filtrarProtos('todos',this)">Todos</button>
+        <button class="proto-filtro" onclick="filtrarProtos('concluido',this)">Concluídos</button>
+        <button class="proto-filtro" onclick="filtrarProtos('atrasado',this)">Atrasados</button>
+        <button class="proto-filtro" onclick="filtrarProtos('pendente',this)">Pendentes</button>
+      </div>
+    </div>
+    <div id="listaProtos"></div>
+  </div>
+
+  <div class="relatorio-footer" id="relatorioFooter"></div>
+
 </div>
 
 <script>
-/* ══ CONFIG ══ */
 var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
 var API = API_BASE + "?acao=dados";
 var PRAZO = 24;
 
-window.addEventListener("DOMContentLoaded", function() {
-  carregarRelatorio();
-});
-
-/* ══ DATA ATUAL ══ */
+/* ══ DATA ══ */
 var _diaOffset = 0;
+var _dataCustom = null; // Date quando o usuário escolhe pelo calendar
+
 function getDiaAtual() {
+  if (_dataCustom) return new Date(_dataCustom);
   var d = new Date();
   d.setDate(d.getDate() + _diaOffset);
+  d.setHours(0,0,0,0);
   return d;
 }
-function formatarData(d) {
+
+function formatarDataLonga(d) {
   return d.toLocaleDateString("pt-BR", { weekday:"long", day:"2-digit", month:"long", year:"numeric" });
 }
 function formatarDataCurta(d) {
@@ -310,36 +349,96 @@ function isMesmaData(iso, d) {
   var dd = new Date(iso);
   return dd.toDateString() === d.toDateString();
 }
+function getDiaChip(d) {
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  var diff = Math.round((hoje - d) / 86400000);
+  if (diff === 0) return { txt: "Hoje", cls: "hoje" };
+  if (diff === 1) return { txt: "Ontem", cls: "ontem" };
+  if (diff > 1)  return { txt: diff + " dias atrás", cls: "antigo" };
+  return null;
+}
 
-/* ══ CARREGAR DADOS ══ */
+function irParaData(val) {
+  if (!val) return;
+  var partes = val.split("-");
+  var d = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
+  d.setHours(0,0,0,0);
+  var hoje = new Date(); hoje.setHours(0,0,0,0);
+  if (d > hoje) return; // não permite datas futuras
+  _dataCustom = d;
+  _diaOffset = Math.round((hoje - d) / 86400000) * -1;
+  _filtroAtual = "todos";
+  document.querySelectorAll(".proto-filtro").forEach(function(b,i){b.classList.toggle("active",i===0);});
+  carregarRelatorio();
+}
+
+function mudarDia(dir) {
+  if (dir === 0) {
+    _diaOffset = 0;
+    _dataCustom = null;
+  } else {
+    _diaOffset += dir;
+    if (_diaOffset > 0) _diaOffset = 0;
+    _dataCustom = null;
+  }
+  _filtroAtual = "todos";
+  document.querySelectorAll(".proto-filtro").forEach(function(b,i){b.classList.toggle("active",i===0);});
+  carregarRelatorio();
+}
+
+/* ══ CARREGAR ══ */
 var _todosProtos = [];
 var _filtroAtual = "todos";
+var _cacheData = null;
+
+window.addEventListener("DOMContentLoaded", function() {
+  carregarRelatorio();
+});
 
 function carregarRelatorio() {
   var dia = getDiaAtual();
-  var isHoje = _diaOffset === 0;
-  document.getElementById("toolbarData").textContent = formatarData(dia);
-  document.getElementById("toolbarSub").textContent = "Carregando dados…";
+  document.getElementById("toolbarData").textContent = formatarDataLonga(dia);
+  document.getElementById("toolbarSub").textContent = "Carregando…";
+  document.getElementById("diaChip").style.display = "none";
   document.getElementById("btnHoje").style.display = _diaOffset < 0 ? "" : "none";
   document.getElementById("btnProximo").style.display = _diaOffset < 0 ? "" : "none";
 
+  // Seta o max do input para hoje
+  var hoje = new Date();
+  var maxStr = hoje.getFullYear() + "-" +
+    String(hoje.getMonth()+1).padStart(2,"0") + "-" +
+    String(hoje.getDate()).padStart(2,"0");
+  document.getElementById("inputData").max = maxStr;
+
+  // Se já tem cache, reutiliza
+  if (_cacheData) {
+    processarDados(_cacheData, dia);
+    return;
+  }
+
   fetch(API + "&t=" + Date.now(), { redirect: "follow" })
     .then(function(r) { return r.json(); })
-    .then(function(lista) { processarDados(lista, dia); })
+    .then(function(lista) {
+      _cacheData = lista;
+      processarDados(lista, dia);
+      // Invalida cache após 30s
+      setTimeout(function(){ _cacheData = null; }, 30000);
+    })
     .catch(function() {
-      document.getElementById("toolbarSub").textContent = "Erro ao carregar dados da API.";
+      document.getElementById("toolbarSub").textContent = "Erro ao carregar dados.";
     });
 }
 
 function processarDados(lista, dia) {
   var doDia = lista.filter(function(p) {
-    var abertura = p.dataHora && isMesmaData(p.dataHora, dia);
+    var abertura    = p.dataHora      && isMesmaData(p.dataHora, dia);
     var conclusaoDia = p.dataConclusao && isMesmaData(p.dataConclusao, dia);
     return abertura || conclusaoDia;
   });
 
   _todosProtos = doDia.map(function(p) {
-    var concluido = (p.status||"").toUpperCase().trim() === "CONCLUÍDO" || (p.status||"").toUpperCase().trim() === "CONCLUIDO";
+    var s = (p.status||"").toUpperCase().trim();
+    var concluido = s === "CONCLUÍDO" || s === "CONCLUIDO";
     var t = !concluido ? calcTempo(p.dataHora) : null;
     var tipo = concluido ? "concluido" : (p.lock ? "execucao" : (t && t.tipo === "atrasado" ? "atrasado" : "pendente"));
     var duracaoMin = null;
@@ -363,7 +462,7 @@ function calcTempo(iso) {
 function formatarMin(min) {
   if (min == null || isNaN(min)) return "—";
   if (min < 60) return min + "min";
-  return Math.floor(min/60) + "h " + (min%60) + "m";
+  return Math.floor(min/60) + "h" + (min%60 > 0 ? " " + (min%60) + "m" : "");
 }
 
 var coresOp = ["#1469C7","#15803D","#7C3AED","#A16207","#B91C1C","#0F6E56","#993556"];
@@ -374,68 +473,108 @@ function renderRelatorio(dia) {
   var atrasados = _todosProtos.filter(function(p){return p._tipo==="atrasado";});
   var taxa      = total > 0 ? Math.round(concl.length / total * 100) : 0;
 
+  /* ── Chip de dia ── */
+  var chip = getDiaChip(dia);
+  var chipEl = document.getElementById("diaChip");
+  if (chip) {
+    chipEl.textContent = chip.txt;
+    chipEl.className = "dia-chip " + chip.cls;
+    chipEl.style.display = "";
+  } else {
+    chipEl.style.display = "none";
+  }
+
   document.getElementById("toolbarSub").textContent = "Arapongas · PR · " + formatarDataCurta(dia);
   document.getElementById("sTotal").textContent = total;
   document.getElementById("sConcluidos").textContent = concl.length;
   document.getElementById("sAtrasados").textContent = atrasados.length;
   document.getElementById("sTaxa").textContent = taxa + "%";
-  document.getElementById("sSubTaxa").className = "stat-sub";
 
-  /* ── Barras por hora ── */
-  var horas = {};
-  for (var h = 6; h <= 18; h++) horas[h] = 0;
+  /* ── Gráfico duplo por hora ── */
+  var horasAb  = {}, horasConc = {};
+  for (var h = 6; h <= 18; h++) { horasAb[h] = 0; horasConc[h] = 0; }
+
+  _todosProtos.forEach(function(p) {
+    if (p.dataHora && isMesmaData(p.dataHora, dia)) {
+      var hr = new Date(p.dataHora).getHours();
+      if (horasAb[hr] !== undefined) horasAb[hr]++;
+    }
+  });
   concl.forEach(function(p) {
     if (!p.dataConclusao) return;
     var hr = new Date(p.dataConclusao).getHours();
-    if (horas[hr] !== undefined) horas[hr]++;
+    if (horasConc[hr] !== undefined) horasConc[hr]++;
   });
-  var maxVal = Math.max.apply(null, Object.values(horas).concat([1]));
+
+  var maxVal = 1;
+  for (var hh = 6; hh <= 18; hh++) {
+    if (horasAb[hh]   > maxVal) maxVal = horasAb[hh];
+    if (horasConc[hh] > maxVal) maxVal = horasConc[hh];
+  }
+
   var barHTML = "";
-  Object.keys(horas).forEach(function(h) {
-    var v = horas[h];
-    var pct = Math.round(v / maxVal * 100);
-    var label = h < 10 ? "0"+h+"h" : h+"h";
+  for (var h = 6; h <= 18; h++) {
+    var vAb   = horasAb[h];
+    var vConc = horasConc[h];
+    var pAb   = Math.round(vAb   / maxVal * 100);
+    var pConc = Math.round(vConc / maxVal * 100);
+    var label = (h < 10 ? "0"+h : h) + "h";
+    var temAlgo = vAb > 0 || vConc > 0;
+
     barHTML += '<div class="bar-row">' +
       '<span class="bar-hora">'+label+'</span>' +
-      '<div class="bar-track">' +
-        (v > 0
-          ? '<div class="bar-fill" style="width:'+pct+'%"><span class="bar-fill-val">'+v+'</span></div>'
-          : '<div class="bar-zero" style="width:100%"></div>') +
-      '</div></div>';
-  });
+      '<div class="bar-track-wrap">' +
+        '<div class="bar-track">' +
+          (vAb > 0
+            ? '<div class="bar-fill-abertura" style="width:'+pAb+'%"><span class="bar-val-cinza">'+(vAb>0?vAb:"")+'</span></div>'
+            : '<div style="height:100%"></div>') +
+        '</div>' +
+        '<div class="bar-track">' +
+          (vConc > 0
+            ? '<div class="bar-fill-conclusao" style="width:'+pConc+'%"><span class="bar-val">'+(vConc>0?vConc:"")+'</span></div>'
+            : '<div style="height:100%"></div>') +
+        '</div>' +
+      '</div>' +
+      '<span class="bar-total" style="color:'+(temAlgo?"var(--texto2)":"var(--borda)")+'">'+
+        (temAlgo ? (vConc+"/"+vAb) : "") +
+      '</span>' +
+    '</div>';
+  }
   document.getElementById("barrasHora").innerHTML = barHTML;
 
   /* ── Operadores ── */
   var ops = {};
-  _todosProtos.forEach(function(p) {
-    var nome = p.operadorConclusao || p.registradoPor || "Desconhecido";
-    if (!ops[nome]) ops[nome] = { concl: 0, atr: 0, total: 0 };
-    ops[nome].total++;
-    if (p._tipo === "concluido") ops[nome].concl++;
-    if (p._tipo === "atrasado")  ops[nome].atr++;
+  concl.forEach(function(p) {
+    var nome = p.operadorConclusao || "—";
+    if (!nome || nome === "—") return;
+    if (!ops[nome]) ops[nome] = { concl: 0, mins: [] };
+    ops[nome].concl++;
+    if (p._duracaoMin != null) ops[nome].mins.push(p._duracaoMin);
   });
   var opKeys = Object.keys(ops).sort(function(a,b){ return ops[b].concl - ops[a].concl; });
   var opHTML = "";
+  var maxConcl = opKeys.length ? ops[opKeys[0]].concl : 1;
   opKeys.forEach(function(nome, idx) {
     var o = ops[nome];
-    var pct = o.total > 0 ? Math.round(o.concl / o.total * 100) : 0;
+    var pct = Math.round(o.concl / maxConcl * 100);
     var cor = coresOp[idx % coresOp.length];
     var initials = nome.split(" ").map(function(w){return w[0];}).join("").slice(0,2).toUpperCase();
-    var corPct = pct >= 75 ? "var(--verde)" : pct >= 50 ? "var(--amarelo)" : "var(--vermelho)";
+    var mediaOp = o.mins.length ? Math.round(o.mins.reduce(function(a,b){return a+b;},0)/o.mins.length) : null;
     opHTML += '<div class="op-row">' +
       '<div class="op-avatar" style="background:'+cor+'">'+initials+'</div>' +
       '<div class="op-info">' +
         '<div class="op-nome">'+safeText(nome)+'</div>' +
-        '<div class="op-detalhe">'+o.concl+' concluído'+(o.concl!==1?"s":"")+(o.atr>0?" · "+o.atr+" atrasado"+(o.atr!==1?"s":""):"")+'</div>' +
-        '<div class="op-bar-wrap"><div class="op-bar-fill" style="width:'+pct+'%;background:'+corPct+'"></div></div>' +
+        '<div class="op-detalhe">'+o.concl+' concluído'+(o.concl!==1?"s":"")+(mediaOp?" · média "+formatarMin(mediaOp):"")+'</div>' +
+        '<div class="op-bar-wrap"><div class="op-bar-fill" style="width:'+pct+'%;background:'+cor+'"></div></div>' +
       '</div>' +
-      '<div class="op-pct" style="color:'+corPct+'">'+pct+'%</div>' +
+      '<div class="op-pct" style="color:'+cor+'">'+o.concl+'</div>' +
     '</div>';
   });
-  document.getElementById("listaOperadores").innerHTML = opHTML || '<div class="vazio"><div class="vazio-icon">👷</div><div class="vazio-txt">Sem dados de operadores</div></div>';
+  document.getElementById("listaOperadores").innerHTML = opHTML ||
+    '<div class="vazio"><div class="vazio-icon">👷</div><div class="vazio-txt">Sem conclusões no dia</div></div>';
 
   /* ── Tempos ── */
-  var duracoes = concl.filter(function(p){return p._duracaoMin!=null;}).map(function(p){return p._duracaoMin;});
+  var duracoes = concl.filter(function(p){return p._duracaoMin!=null&&p._duracaoMin>0;}).map(function(p){return p._duracaoMin;});
   if (duracoes.length > 0) {
     var media  = Math.round(duracoes.reduce(function(a,b){return a+b;},0) / duracoes.length);
     var minimo = Math.min.apply(null, duracoes);
@@ -444,15 +583,11 @@ function renderRelatorio(dia) {
     document.getElementById("tRapido").textContent = formatarMin(minimo);
     document.getElementById("tLento").textContent  = formatarMin(maximo);
   } else {
-    document.getElementById("tMedia").textContent  = "—";
-    document.getElementById("tRapido").textContent = "—";
-    document.getElementById("tLento").textContent  = "—";
+    ["tMedia","tRapido","tLento"].forEach(function(id){ document.getElementById(id).textContent="—"; });
   }
 
-  /* ── Lista protocolos ── */
   renderProtos();
 
-  /* ── Footer ── */
   document.getElementById("relatorioFooter").textContent =
     "Gerado em " + new Date().toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"}) + " · Hydrosistem";
 }
@@ -462,20 +597,22 @@ function renderProtos() {
     ? _todosProtos
     : _todosProtos.filter(function(p){return p._tipo === _filtroAtual;});
 
-  document.getElementById("protoCount").textContent = filtrados.length + " protocolo" + (filtrados.length!==1?"s":"");
+  document.getElementById("protoCount").textContent =
+    filtrados.length + " protocolo" + (filtrados.length!==1?"s":"");
 
   var cores   = { concluido:"var(--verde)", atrasado:"var(--vermelho)", pendente:"var(--amarelo)", execucao:"var(--exec)" };
   var labels  = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
   var badgeCls= { concluido:"t-concluido", atrasado:"t-atrasado", pendente:"t-pendente", execucao:"t-execucao" };
 
   if (!filtrados.length) {
-    document.getElementById("listaProtos").innerHTML = '<div class="vazio"><div class="vazio-icon">✅</div><div class="vazio-txt">Nenhum protocolo neste filtro</div></div>';
+    document.getElementById("listaProtos").innerHTML =
+      '<div class="vazio"><div class="vazio-icon">✅</div><div class="vazio-txt">Nenhum protocolo neste filtro</div></div>';
     return;
   }
 
   var html = "";
   filtrados.forEach(function(p) {
-    var durStr = p._duracaoMin != null ? formatarMin(p._duracaoMin) : "";
+    var durStr = p._duracaoMin != null && p._duracaoMin > 0 ? formatarMin(p._duracaoMin) : "";
     html += '<div class="proto-item">' +
       '<div class="proto-stripe" style="background:'+cores[p._tipo]+'"></div>' +
       '<div style="flex:1;min-width:0">' +
@@ -496,17 +633,13 @@ function filtrarProtos(filtro, btn) {
   renderProtos();
 }
 
-function mudarDia(dir) {
-  if (dir === 0) { _diaOffset = 0; }
-  else { _diaOffset += dir; if (_diaOffset > 0) _diaOffset = 0; }
-  _filtroAtual = "todos";
-  document.querySelectorAll(".proto-filtro").forEach(function(b,i){b.classList.toggle("active",i===0);});
-  carregarRelatorio();
-}
-
 function exportarPDF() { window.print(); }
 
-function safeText(s) { var d = document.createElement("div"); d.textContent = String(s||""); return d.innerHTML; }
+function safeText(s) {
+  var d = document.createElement("div");
+  d.textContent = String(s||"");
+  return d.innerHTML;
+}
 </script>
 
 </body>
