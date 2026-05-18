@@ -1978,7 +1978,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   items += "<button class='sup-menu-item danger' onclick='abrirModalRemover(\""+prot+"\",\""+end+"\");fecharMenuSupervisor()'>🗑️ Remover protocolo</button>";
 
   return "<div class='sup-menu-wrap' id='"+menuId+"'>"+
-    "<button class='sup-menu-btn' onclick='toggleMenuSupervisor(\""+menuId+"\")' title='Opções de supervisor'>⚙️</button>"+
+    "<button class='sup-menu-btn' onclick='toggleMenuSupervisor(\""+menuId+"\")' title='Opções de supervisor'><i class=\"fa-solid fa-gear\"></i></button>"+
     "<div class='sup-menu-dropdown' id='"+menuId+"_dd'>"+items+"</div>"+
   "</div>";
 }
