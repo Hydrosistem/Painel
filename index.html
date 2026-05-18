@@ -1954,7 +1954,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   items += "<button class='sup-menu-item' onclick='selecionarLoteCard(\""+prot+"\");fecharMenuSupervisor()'>"+(_loteSelecionados[p.protocolo]?"☑ Desmarcar":"☑ Selecionar para lote")+"</button>";
   if(Object.keys(_loteSelecionados).length>0||_modoLote) items += "<div class='sup-menu-divider'></div>";
 
-  items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'>✏️ Editar endereço</button>";
+  items += "<button class='sup-menu-item' onclick=\"abrirModalEditarEndereco('"+prot+"','"+esc(p.endereco)+"');fecharMenuSupervisor()\">✏️ Editar endereço</button>";
 
   var _obsVal = (p.obs && p.obs !== "—") ? p.obs : "";
   items += "<button class='sup-menu-item' onclick='abrirModalObs(\""+prot+"\",\""+esc(_obsVal)+"\");fecharMenuSupervisor()'>📝 Editar observação</button>";
