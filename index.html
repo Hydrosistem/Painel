@@ -799,6 +799,29 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .tl-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto3); }
 .tl-val   { font-size: 12px; font-weight: 600; color: var(--texto); margin-top: 1px; line-height: 1.4; }
 .tl-sub   { font-size: 11px; color: var(--texto2); margin-top: 1px; }
+/* ══ LOTE ══ */
+.btn-lote-ativar { padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--borda);background:none;cursor:pointer;font-family:"DM Sans",sans-serif;color:var(--texto2);display:none;align-items:center;gap:5px;white-space:nowrap;transition:all .15s; }
+.btn-lote-ativar:hover { background:var(--cinza-md); }
+.btn-lote-ativar.ativo { background:var(--azul-bg);border-color:var(--azul-borda);color:var(--azul); }
+body.supervisor-view .btn-lote-ativar { display:flex; }
+.lote-check-wrap { display:none;position:absolute;top:10px;left:10px;z-index:10; }
+body.modo-lote .lote-check-wrap { display:flex; }
+.lote-check { width:22px;height:22px;border-radius:6px;border:2px solid var(--borda-md);background:var(--branco);cursor:pointer;appearance:none;-webkit-appearance:none;transition:background .15s,border-color .15s;flex-shrink:0; }
+.lote-check:checked { background:var(--azul);border-color:var(--azul); }
+body.modo-lote .card { position:relative;cursor:pointer; }
+body.modo-lote .card-t { position:relative;cursor:pointer; }
+body.modo-lote .card.lote-selecionado { border:2px solid var(--azul) !important;background:var(--azul-bg); }
+body.modo-lote .card-t.lote-selecionado { border:2px solid var(--azul) !important;background:var(--azul-bg); }
+#barraLote { display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--texto);color:#fff;padding:12px 20px;gap:12px;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.08);font-family:"DM Sans",sans-serif; }
+#barraLote.show { display:flex; }
+.barra-lote-info { flex:1;font-size:13px;font-weight:600; }
+.barra-lote-info span { font-family:"DM Mono",monospace;font-size:15px;color:#60A5FA; }
+.btn-lote-cancelar { padding:8px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer; }
+.btn-lote-concluir { padding:8px 16px;border-radius:var(--radius-sm);background:var(--verde);border:none;color:#fff;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;cursor:pointer; }
+.btn-lote-concluir:disabled,.btn-lote-remover:disabled { opacity:.4;cursor:not-allowed; }
+.btn-lote-remover { padding:8px 16px;border-radius:var(--radius-sm);background:var(--vermelho);border:none;color:#fff;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;cursor:pointer; }
+body.modo-lote .main { padding-bottom:80px; }
+body.modo-lote .centro-scroll { padding-bottom:80px; }
 </style>
 </head>
 <body>
@@ -974,6 +997,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
+  <button class="btn-lote-ativar" id="btnLoteAtivar" onclick="toggleModoLote()">☑ Selecionar</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
   <i class="fa-solid fa-download"></i> XLSX
 </button>  
@@ -1013,6 +1037,12 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
     <div class="detail-footer" id="detailFooter"></div>
   </div>
 
+</div>
+<div id="barraLote">
+  <div class="barra-lote-info"><span id="loteContador">0</span> selecionados</div>
+  <button class="btn-lote-cancelar" onclick="cancelarLote()">✕ Cancelar</button>
+  <button class="btn-lote-concluir" id="btnLoteConcluir" onclick="loteAcao('concluir')" disabled>✅ Concluir</button>
+  <button class="btn-lote-remover" id="btnLoteRemover" onclick="loteAcao('remover')" disabled>🗑️ Remover</button>
 </div>
 
 <!-- ══ LIGHTBOX ══ -->
@@ -1661,8 +1691,9 @@ function renderCardTablet(p,idx,isNovo){
   var delay=isNovo?Math.min((idx||0)*45,320):0;
   var thumbHtml="",srcThumb=fotoSrc(p.fotoId);
   if(srcThumb)thumbHtml="<div class='card-t-thumb'><div class='card-t-thumb-sk'></div><img class='card-t-thumb-img' src='"+srcThumb+"' loading='lazy' onload='this.classList.add(\"loaded\");var sk=this.previousElementSibling;if(sk)sk.style.display=\"none\";' onerror='this.closest(\".card-t-thumb\").style.display=\"none\";' alt='Foto'></div>";
-  var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
-  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+(isNovo?" card-animar":"")+"' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
+  var loteChk=isSupervisor()?"<div class='lote-check-wrap'><input type='checkbox' class='lote-check' id='lote-chk-"+idSafe+"' "+(!!_loteSelecionados[p.protocolo]?"checked":"")+" onclick='toggleLoteCard(\""+esc(p.protocolo)+"\",event)'></div>":"";
+  var loteClass=_loteSelecionados[p.protocolo]?" lote-selecionado":"";
+  return "<div class='card-t t-"+tipoCard+(prioridade?" t-prioridade":"")+selecionado+loteClass+(isNovo?" card-animar":"")+"' id='card-t-"+idSafe+"' style='--delay:"+delay+"ms' "+isoAttr+" onclick='if(_modoLote){toggleLoteCard(\""+esc(p.protocolo)+"\",event);}'>"+loteChk+
     thumbHtml+
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
@@ -2810,6 +2841,14 @@ function _renderTimeline(p) {
   html += "</div>";
   return html;
 }
+
+/* ══ AÇÕES EM LOTE ══ */
+var _modoLote=false,_loteSelecionados={};
+function toggleModoLote(){_modoLote=!_modoLote;_loteSelecionados={};document.body.classList.toggle("modo-lote",_modoLote);var btn=document.getElementById("btnLoteAtivar");if(btn){btn.classList.toggle("ativo",_modoLote);btn.innerHTML=_modoLote?"✕ Sair da seleção":"☑ Selecionar";}_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
+function cancelarLote(){_modoLote=false;_loteSelecionados={};document.body.classList.remove("modo-lote");var btn=document.getElementById("btnLoteAtivar");if(btn){btn.classList.remove("ativo");btn.innerHTML="☑ Selecionar";}_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
+function toggleLoteCard(protocolo,event){if(!_modoLote)return;if(event)event.stopPropagation();if(_loteSelecionados[protocolo])delete _loteSelecionados[protocolo];else _loteSelecionados[protocolo]=true;var idSafe=protocolo.replace(/[^a-z0-9]/gi,"_");var cardT=document.getElementById("card-t-"+idSafe);if(cardT)cardT.classList.toggle("lote-selecionado",!!_loteSelecionados[protocolo]);var chk=document.getElementById("lote-chk-"+idSafe);if(chk)chk.checked=!!_loteSelecionados[protocolo];_atualizarBarraLote();}
+function _atualizarBarraLote(){var n=Object.keys(_loteSelecionados).length;var barra=document.getElementById("barraLote");var contador=document.getElementById("loteContador");var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(barra)barra.classList.toggle("show",_modoLote);if(contador)contador.textContent=n;if(btnR)btnR.disabled=n===0;if(btnC)btnC.disabled=n===0;}
+function loteAcao(tipo){var prots=Object.keys(_loteSelecionados);if(!prots.length)return;var label=tipo==="remover"?"remover":"concluir";if(!confirm("Confirma "+label+" "+prots.length+" protocolo(s)?\n\n"+prots.join(", ")))return;var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(btnR)btnR.disabled=true;if(btnC)btnC.disabled=true;toast("⏳ Processando "+prots.length+" protocolo(s)…","exec");var operador=getOperador()||"Supervisor";var promises=prots.map(function(protocolo){if(tipo==="remover"){return fetch(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});}else{return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});}});Promise.all(promises).then(function(resultados){var ok=resultados.filter(function(r){return r.ok!==false;}).length;var falhas=prots.length-ok;cancelarLote();var msg=tipo==="remover"?"🗑️ "+ok+" protocolo(s) removido(s)":"✅ "+ok+" protocolo(s) concluído(s)";if(falhas>0)msg+=" ("+falhas+" falha(s))";toast(msg,ok>0?"ok":"erro");setTimeout(carregarDados,800);});}
   
 </script>
 </body>
