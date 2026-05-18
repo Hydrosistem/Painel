@@ -1678,14 +1678,6 @@ function enviarConclusao(){
       setTimeout(carregarDados,3000);
     });
 }
-  var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
-  var sid = SESSION_ID;
-  if (p && p.lock && p.lock.sessionId && p.lock.sessionId.indexOf("redist_") === 0) {
-    if ((p.lock.usuario||"").trim().toLowerCase() === operador.trim().toLowerCase()) sid = p.lock.sessionId;
-  }
-  fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"}).then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});}).then(function(res){if(res.ok!==false){fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("<i class='fa-solid fa-circle-check'></i> Protocolo concluído com sucesso!","ok");setTimeout(carregarDados,1200);}else{btn.disabled=false;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";toast("❌ "+(res.erro||"Erro ao concluir"),"erro");}}).catch(function(){try{fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});}catch(e2){}fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("<i class='fa-solid fa-circle-check'></i> Conclusão enviada! Aguarde a atualização.","ok");setTimeout(carregarDados,3000);});}
-
-/* ══ RENDER MOBILE ══ */
 function renderCard(p,idx,isNovo){
   var t=p._t,pct=t.pct.toFixed(0),lock=p.lock,concluido=isConcluido(p),minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido),tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var prioridade = !!p.prioridade && !concluido;
