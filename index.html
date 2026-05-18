@@ -803,7 +803,6 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 .btn-lote-ativar { padding:5px 12px;border-radius:20px;font-size:12px;font-weight:700;border:1.5px solid var(--borda);background:none;cursor:pointer;font-family:"DM Sans",sans-serif;color:var(--texto2);display:none;align-items:center;gap:5px;white-space:nowrap;transition:all .15s; }
 .btn-lote-ativar:hover { background:var(--cinza-md); }
 .btn-lote-ativar.ativo { background:var(--azul-bg);border-color:var(--azul-borda);color:var(--azul); }
-body.supervisor-view .btn-lote-ativar { display:flex; }
 .lote-check-wrap { display:none;position:absolute;top:10px;left:10px;z-index:10; }
 body.modo-lote .lote-check-wrap { display:flex; }
 .lote-check { width:22px;height:22px;border-radius:6px;border:2px solid var(--borda-md);background:var(--branco);cursor:pointer;appearance:none;-webkit-appearance:none;transition:background .15s,border-color .15s;flex-shrink:0; }
@@ -997,7 +996,6 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
-  <button class="btn-lote-ativar" id="btnLoteAtivar" onclick="toggleModoLote()">☑ Selecionar</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
   <i class="fa-solid fa-download"></i> XLSX
 </button>  
@@ -1952,6 +1950,9 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   var menuId = "supMenu_" + p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var items = "";
 
+  items += "<button class='sup-menu-item' onclick='selecionarLoteCard(\""+prot+"\");fecharMenuSupervisor()'>"+(_loteSelecionados[p.protocolo]?"☑ Desmarcar":"☑ Selecionar para lote")+"</button>";
+  if(Object.keys(_loteSelecionados).length>0||_modoLote) items += "<div class='sup-menu-divider'></div>";
+
   items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'>✏️ Editar endereço</button>";
 
   var _obsVal = (p.obs && p.obs !== "—") ? p.obs : "";
@@ -2844,11 +2845,19 @@ function _renderTimeline(p) {
 
 /* ══ AÇÕES EM LOTE ══ */
 var _modoLote=false,_loteSelecionados={};
-function toggleModoLote(){_modoLote=!_modoLote;_loteSelecionados={};document.body.classList.toggle("modo-lote",_modoLote);var btn=document.getElementById("btnLoteAtivar");if(btn){btn.classList.toggle("ativo",_modoLote);btn.innerHTML=_modoLote?"✕ Sair da seleção":"☑ Selecionar";}_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
-function cancelarLote(){_modoLote=false;_loteSelecionados={};document.body.classList.remove("modo-lote");var btn=document.getElementById("btnLoteAtivar");if(btn){btn.classList.remove("ativo");btn.innerHTML="☑ Selecionar";}_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
+function toggleModoLote(){_modoLote=!_modoLote;_loteSelecionados={};document.body.classList.toggle("modo-lote",_modoLote);_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
+function cancelarLote(){_modoLote=false;_loteSelecionados={};document.body.classList.remove("modo-lote");_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
 function toggleLoteCard(protocolo,event){if(!_modoLote)return;if(event)event.stopPropagation();if(_loteSelecionados[protocolo])delete _loteSelecionados[protocolo];else _loteSelecionados[protocolo]=true;var idSafe=protocolo.replace(/[^a-z0-9]/gi,"_");var cardT=document.getElementById("card-t-"+idSafe);if(cardT)cardT.classList.toggle("lote-selecionado",!!_loteSelecionados[protocolo]);var chk=document.getElementById("lote-chk-"+idSafe);if(chk)chk.checked=!!_loteSelecionados[protocolo];_atualizarBarraLote();}
 function _atualizarBarraLote(){var n=Object.keys(_loteSelecionados).length;var barra=document.getElementById("barraLote");var contador=document.getElementById("loteContador");var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(barra)barra.classList.toggle("show",_modoLote);if(contador)contador.textContent=n;if(btnR)btnR.disabled=n===0;if(btnC)btnC.disabled=n===0;}
 function loteAcao(tipo){var prots=Object.keys(_loteSelecionados);if(!prots.length)return;var label=tipo==="remover"?"remover":"concluir";if(!confirm("Confirma "+label+" "+prots.length+" protocolo(s)?\n\n"+prots.join(", ")))return;var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(btnR)btnR.disabled=true;if(btnC)btnC.disabled=true;toast("⏳ Processando "+prots.length+" protocolo(s)…","exec");var operador=getOperador()||"Supervisor";var promises=prots.map(function(protocolo){if(tipo==="remover"){return fetch(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});}else{return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});}});Promise.all(promises).then(function(resultados){var ok=resultados.filter(function(r){return r.ok!==false;}).length;var falhas=prots.length-ok;cancelarLote();var msg=tipo==="remover"?"🗑️ "+ok+" protocolo(s) removido(s)":"✅ "+ok+" protocolo(s) concluído(s)";if(falhas>0)msg+=" ("+falhas+" falha(s))";toast(msg,ok>0?"ok":"erro");setTimeout(carregarDados,800);});}
+
+function selecionarLoteCard(protocolo) {
+  if (!_modoLote) {
+    _modoLote = true;
+    document.body.classList.add("modo-lote");
+  }
+  toggleLoteCard(protocolo, null);
+}
   
 </script>
 </body>
