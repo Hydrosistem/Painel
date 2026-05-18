@@ -1521,8 +1521,11 @@ function fecharModal(){document.getElementById("modalOverlay").classList.remove(
 function confirmarExecucao(){   var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;   if(!protocolo)return;   var locksAtivos=Object.keys(meusLocks);   if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}   if(navigator.vibrate)navigator.vibrate(50);   fecharModal();   var operador=getOperador()||"Operador";   var lockOtimista={sessionId:SESSION_ID,usuario:operador,timestamp:new Date().toISOString(),iniciadoEm:new Date().toISOString(),_otimista:true};   _optimisticLocks[protocolo]=lockOtimista;   for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=lockOtimista;break;}}   renderFiltrado(_ultimaLista);   renderTablet(_ultimaLista);   var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}   if(pSel)selecionarProtocolo(pSel);   toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");   postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){     if(!res.ok){       delete _optimisticLocks[protocolo];       for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){var l=_ultimaLista[i].lock;if(l&&l._otimista&&l.sessionId===SESSION_ID)_ultimaLista[i].lock=null;break;}}       renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);       toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");       carregarDados();return;     }     delete _optimisticLocks[protocolo];     for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo&&_ultimaLista[i].lock){delete _ultimaLista[i].lock._otimista;break;}}     iniciarHeartbeat(protocolo);     carregarDados();   }).catch(function(err){     console.error("[confirmarExecucao]",err);     delete _optimisticLocks[protocolo];     iniciarHeartbeat(protocolo);     setTimeout(carregarDados,2000);   }); }
 function cancelarMinhaExecucao(protocolo){
   pararHeartbeat(protocolo);
+  for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=null;break;}}
+  renderFiltrado(_ultimaLista);
+  renderTablet(_ultimaLista);
   toast("🔓 Execução cancelada.","");
-  liberarLockApi(protocolo).then(function(){ carregarDados(); });
+  liberarLockApi(protocolo).catch(function(){ carregarDados(); });
 }
 
 function isMinhaExecucao(lock, concluido) {
@@ -1609,8 +1612,14 @@ function _preencherDetalhe(p){
 }
 function cancelarMinhaExecucaoPainel(protocolo){
   pararHeartbeat(protocolo);
+  for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=null;break;}}
+  renderFiltrado(_ultimaLista);
+  renderTablet(_ultimaLista);
+  // atualiza painel de detalhe
+  var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}
+  if(pSel)selecionarProtocolo(pSel);
   toast("🔓 Execução cancelada.","");
-  liberarLockApi(protocolo).then(function(){ carregarDados(); });
+  liberarLockApi(protocolo).catch(function(){ carregarDados(); });
 }
 
 /* ══ MODAL CONCLUSÃO ══ */
@@ -1620,13 +1629,66 @@ function fecharModalConclusao(){document.getElementById("modalConclusao").classL
 function _comprimirImagem(file,callback){var tipo=file.type;if(!tipo||tipo==="image/jpg")tipo="image/jpeg";var reader=new FileReader();reader.onload=function(e){var rr=e.target.result;if(rr&&rr.startsWith("data:image/jpg"))rr=rr.replace("data:image/jpg","data:image/jpeg");if(file.size<800*1024){callback(rr);return;}var img=new Image();img.onload=function(){try{var MAX=1280,w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}var canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;var ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,w,h);var result=canvas.toDataURL("image/jpeg",0.82);if(!result||result.length<1000||result==="data:,"){callback(rr);}else{callback(result);}}catch(err){callback(rr);}};img.onerror=function(){callback(rr);};img.src=rr;};reader.onerror=function(){callback(null);};reader.readAsDataURL(file);}
 function onFotoConclChange(input){var file=input.files[0];if(!file)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="⏳ Processando…";_comprimirImagem(file,function(base64){if(!base64){toast("❌ Não foi possível carregar a foto","erro");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";return;}_fotoConclBase64=base64;document.getElementById("fotoConclImg").src=base64;document.getElementById("fotoConclPreview").classList.add("show");document.getElementById("btnFotoConcl").classList.add("oculto");btn.disabled=false;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";});}
 function removerFotoConcl(){_fotoConclBase64=null;document.getElementById("fotoConclImg").src="";document.getElementById("fotoConclPreview").classList.remove("show");document.getElementById("btnFotoConcl").classList.remove("oculto");document.getElementById("inputFotoConcl").value="";var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";}
-function enviarConclusao(){if(!_protocoloConcluindo)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="⏳ Enviando…";var operador=getOperador()||"Operador",protocolo=_protocoloConcluindo,fotoBase64=_fotoConclBase64||"";
-  var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
-  var sid = SESSION_ID;
-  if (p && p.lock && p.lock.sessionId && p.lock.sessionId.indexOf("redist_") === 0) {
-    if ((p.lock.usuario||"").trim().toLowerCase() === operador.trim().toLowerCase()) sid = p.lock.sessionId;
+function enviarConclusao(){
+  if(!_protocoloConcluindo)return;
+  var btn=document.getElementById("btnEnviarConclusao");
+  btn.disabled=true;btn.textContent="⏳ Enviando…";
+  var operador=getOperador()||"Operador",protocolo=_protocoloConcluindo,fotoBase64=_fotoConclBase64||"";
+  var p=_ultimaLista.filter(function(x){return x.protocolo===protocolo;})[0];
+  var sid=SESSION_ID;
+  if(p&&p.lock&&p.lock.sessionId&&p.lock.sessionId.indexOf("redist_")===0){
+    if((p.lock.usuario||"").trim().toLowerCase()===operador.trim().toLowerCase())sid=p.lock.sessionId;
   }
-  fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"}).then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});}).then(function(res){if(res.ok!==false){fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("<i class='fa-solid fa-circle-check'></i> Protocolo concluído com sucesso!","ok");setTimeout(carregarDados,1200);}else{btn.disabled=false;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";toast("❌ "+(res.erro||"Erro ao concluir"),"erro");}}).catch(function(){try{fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});}catch(e2){}fecharModalConclusao();pararHeartbeat(protocolo);if(navigator.vibrate)navigator.vibrate([50,30,50]);toast("<i class='fa-solid fa-circle-check'></i> Conclusão enviada! Aguarde a atualização.","ok");setTimeout(carregarDados,3000);});}
+
+  // ── OPTIMISTIC UPDATE ──
+  var agora=new Date().toISOString();
+  for(var i=0;i<_ultimaLista.length;i++){
+    if(_ultimaLista[i].protocolo===protocolo){
+      _ultimaLista[i].status="CONCLUÍDO";
+      _ultimaLista[i].dataConclusao=agora;
+      _ultimaLista[i].operadorConclusao=operador;
+      _ultimaLista[i].lock=null;
+      break;
+    }
+  }
+  pararHeartbeat(protocolo);
+  fecharModalConclusao();
+  renderFiltrado(_ultimaLista);
+  renderTablet(_ultimaLista);
+  if(navigator.vibrate)navigator.vibrate([50,30,50]);
+  toast("<i class='fa-solid fa-circle-check'></i> Protocolo concluído!","ok");
+
+  // ── ENVIO EM BACKGROUND ──
+  fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"})
+    .then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});})
+    .then(function(res){
+      if(res.ok===false){
+        // servidor recusou — reverte
+        for(var i=0;i<_ultimaLista.length;i++){
+          if(_ultimaLista[i].protocolo===protocolo){
+            _ultimaLista[i].status="EM ANDAMENTO";
+            _ultimaLista[i].dataConclusao="";
+            _ultimaLista[i].operadorConclusao="";
+            _ultimaLista[i].lock={sessionId:sid,usuario:operador,timestamp:agora};
+            break;
+          }
+        }
+        iniciarHeartbeat(protocolo);
+        renderFiltrado(_ultimaLista);
+        renderTablet(_ultimaLista);
+        toast("❌ "+(res.erro||"Erro ao concluir — tente novamente"),"erro");
+      } else {
+        setTimeout(carregarDados,1500);
+      }
+    })
+    .catch(function(){
+      // erro de rede — mantém concluído, servidor provavelmente processou
+      try{
+        fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});
+      }catch(e2){}
+      setTimeout(carregarDados,3000);
+    });
+}
 
 /* ══ RENDER MOBILE ══ */
 function renderCard(p,idx,isNovo){
