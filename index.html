@@ -1951,7 +1951,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   var menuId = "supMenu_" + p.protocolo.replace(/[^a-z0-9]/gi,"_");
   var items = "";
 
-  items += "<button class='sup-menu-item' onclick='selecionarLoteCard(\""+prot+"\");fecharMenuSupervisor()'>"+(_loteSelecionados[p.protocolo]?"☑ Desmarcar":"☑ Selecionar para lote")+"</button>";
+  items += "<button class='sup-menu-item' onclick='selecionarLoteCard(\""+prot+"\");fecharMenuSupervisor()'><i class='fa-solid fa-square-check'></i> "+(_loteSelecionados[p.protocolo]?"Desmarcar":"Selecionar")+"</button>";
   if(Object.keys(_loteSelecionados).length>0||_modoLote) items += "<div class='sup-menu-divider'></div>";
 
   items += "<button class='sup-menu-item' onclick='abrirModalEditarEndereco(\""+prot+"\",\""+esc(p.endereco)+"\");fecharMenuSupervisor()'><i class='fa-solid fa-pencil'></i> Editar endereço</button>";
@@ -1973,7 +1973,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   }
 
   items += "<div class='sup-menu-divider'></div>";
-  items += "<button class='sup-menu-item danger' onclick='abrirModalRemover(\""+prot+"\",\""+end+"\");fecharMenuSupervisor()'>🗑️ Remover protocolo</button>";
+  items += "<button class='sup-menu-item danger' onclick='abrirModalRemover(\""+prot+"\",\""+end+"\");fecharMenuSupervisor()\'><i class='fa-solid fa-trash'></i> Remover protocolo</button>";
 
   return "<div class='sup-menu-wrap' id='"+menuId+"'>"+
     "<button class='sup-menu-btn' onclick='toggleMenuSupervisor(\""+menuId+"\")' title='Opções de supervisor'><i class=\"fa-solid fa-gear\"></i></button>"+
