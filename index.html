@@ -1886,11 +1886,11 @@ function confirmarEditarEndereco() {
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalEditarEndereco();
-      btn.disabled = false; btn.textContent = "<i class='fa-solid fa-pencil'></i> Salvar";
+      btn.disabled = false; btn.innerHTML = "<i class='fa-solid fa-pencil'></i> Salvar";
       if (res.ok) { toast("<i class='fa-solid fa-pencil'></i> Endereço atualizado.", "ok"); carregarDados(); }
       else toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
     })
-    .catch(function(){ fecharModalEditarEndereco(); btn.disabled=false; btn.textContent="<i class='fa-solid fa-pencil'></i> Salvar"; toast("❌ Erro ao salvar","erro"); });
+    .catch(function(){ fecharModalEditarEndereco(); btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-pencil'></i> Salvar"; toast("❌ Erro ao salvar","erro"); });
 }
 
 /* ══ OBSERVAÇÃO ══ */
