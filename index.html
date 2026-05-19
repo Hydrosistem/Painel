@@ -1274,6 +1274,19 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
 
+<!-- ══ MODAL CONFIRMAÇÃO GENÉRICO (substitui confirm() nativo) ══ -->
+<div class="modal-overlay" id="modalConfirmacaoGenerica">
+  <div class="modal">
+    <div class="modal-icon" id="modalConfGenIcon">⚠️</div>
+    <div class="modal-title" id="modalConfGenTitulo"></div>
+    <div class="modal-sub" id="modalConfGenSub"></div>
+    <div class="modal-btns">
+      <button class="btn-cancelar" onclick="fecharModalConfirmacaoGenerica()">Cancelar</button>
+      <button class="btn-confirmar" id="btnConfirmacaoGenerica" onclick="_confirmarGenerica()">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ══ MODAL INICIAR ══ -->
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
@@ -1297,7 +1310,21 @@ var PRAZO = 24, LOCK_TTL = 3600, REFRESH_INTERVAL = 15000;
 var API = API_BASE + "?acao=dados";
 var CACHE_KEY = "hyd_cache_dados", CACHE_TS = "hyd_cache_ts";
 
-function isConcluido(p) { var s=(p.status||"").toUpperCase().trim(); return s==="CONCLUÍDO"||s==="CONCLUIDO"; }
+/* ══ CONSTANTES DE STATUS (melhoria: elimina magic strings) ══ */
+var STATUS = {
+  CONCLUIDO:  "CONCLUÍDO",
+  CONCLUIDO2: "CONCLUIDO",
+  EM_ANDAMENTO: "EM ANDAMENTO",
+  TIPO: {
+    PENDENTE:  "pendente",
+    URGENTE:   "urgente",
+    ATRASADO:  "atrasado",
+    EXECUCAO:  "execucao",
+    CONCLUIDO: "concluido"
+  }
+};
+
+function isConcluido(p) { var s=(p.status||"").toUpperCase().trim(); return s===STATUS.CONCLUIDO||s===STATUS.CONCLUIDO2; }
 
 /* ══ OPERADOR ══ */
 var OPERADOR_KEY = "hyd_operador";
@@ -1630,7 +1657,14 @@ function fdt(iso){if(!iso)return "—";return new Date(iso).toLocaleString("pt-B
 function abrirFoto(u){window.open(u,'_blank','noopener');}
 function fecharFoto(){document.getElementById("lb").classList.remove("open");document.getElementById("lbImg").src="";}
 var _toastTimer=null;
-function toast(msg,tipo){var el=document.getElementById("toast");el.innerHTML=msg;el.className="show "+(tipo||"");clearTimeout(_toastTimer);_toastTimer=setTimeout(function(){el.className="";},3500);}
+function toast(msg,tipo,duracao){
+  var el=document.getElementById("toast");
+  el.innerHTML=msg;
+  el.className="show "+(tipo||"");
+  clearTimeout(_toastTimer);
+  var ms = duracao || (tipo==="exec" ? 6000 : 3500);
+  _toastTimer=setTimeout(function(){el.className="";},ms);
+}
 function bump(id){var el=document.getElementById(id);if(!el)return;el.classList.remove("bump");void el.offsetWidth;el.classList.add("bump");setTimeout(function(){el.classList.remove("bump");},400);}
 function esc(s){return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
 function safeText(s){var d=document.createElement("div");d.textContent=String(s||"");return d.innerHTML;}
@@ -1978,7 +2012,47 @@ var _prevStats={},_prevHashes={};
 var _prevHashesTablet = {};
 function hashProtocolo(p){return (p.protocolo||"")+"_"+(p.status||"")+"_"+(p.lock?p.lock.sessionId+p.lock.timestamp:"")+"_"+(p.obs||"")+"_"+(p.fotoId||"");}
 var _renderPendingMobile=false, _renderPendingTablet=false;
-function render(lista){_ultimaLista=lista;renderFiltrado(lista);renderTablet(lista);}
+/* ══ SETS DE CONTROLE PARA ALERTAS ══ */
+var _protocolosConhecidos = null;
+var _prioridadesConhecidas = {};
+
+function render(lista){
+  _ultimaLista = lista;
+
+  /* ── Alerta de novo protocolo e prioridade máxima ── */
+  if (_protocolosConhecidos !== null) {
+
+    /* Novos protocolos (não concluídos) */
+    lista.forEach(function(p) {
+      if (isConcluido(p)) return;
+      if (!_protocolosConhecidos.has(p.protocolo)) {
+        var tipo = p._t ? p._t.tipo : "pendente";
+        var icone = tipo === STATUS.TIPO.ATRASADO ? "🔴" : tipo === STATUS.TIPO.URGENTE ? "⚠️" : "🆕";
+        toast(icone + " Novo protocolo: " + p.endereco, tipo === STATUS.TIPO.ATRASADO ? "erro" : "ok");
+        if (navigator.vibrate) navigator.vibrate(tipo === STATUS.TIPO.ATRASADO ? [80,40,80] : [50]);
+      }
+    });
+
+    /* Protocolos que viraram prioridade máxima */
+    lista.forEach(function(p) {
+      if (isConcluido(p)) return;
+      var eraPrioridade = !!_prioridadesConhecidas[p.protocolo];
+      var ehPrioridade  = !!p.prioridade;
+      if (!eraPrioridade && ehPrioridade) {
+        toast("⚡ Prioridade máxima: " + p.endereco, "exec");
+        if (navigator.vibrate) navigator.vibrate([80, 40, 80, 40, 80]);
+      }
+    });
+  }
+
+  /* Atualiza os sets para o próximo ciclo */
+  _protocolosConhecidos = new Set(lista.filter(function(p){ return !isConcluido(p); }).map(function(p){ return p.protocolo; }));
+  _prioridadesConhecidas = {};
+  lista.forEach(function(p){ if (p.prioridade && !isConcluido(p)) _prioridadesConhecidas[p.protocolo] = true; });
+
+  renderFiltrado(lista);
+  renderTablet(lista);
+}
 function renderFiltrado(lista){
   var pen=0,exec=0,urg=0,ok=0,ativos=[],concluidosHoje=[],hoje=new Date().toDateString();
   lista.forEach(function(p){var concluido=isConcluido(p);if(concluido){if(p.dataConclusao&&new Date(p.dataConclusao).toDateString()===hoje)ok++;concluidosHoje.push(p);if(_aguardandoConclusao[p.protocolo]){toast("<i class='fa-solid fa-circle-check'></i> Protocolo "+p.protocolo+" concluído!","ok");delete _aguardandoConclusao[p.protocolo];}else if(meusLocks[p.protocolo]){pararHeartbeat(p.protocolo);if(_lockIniciadoEm[p.protocolo]){var dataConclusao=p.dataConclusao?new Date(p.dataConclusao).getTime():0;if(dataConclusao>_lockIniciadoEm[p.protocolo])toast("<i class='fa-solid fa-circle-check'></i> Protocolo "+p.protocolo+" concluído!","ok");delete _lockIniciadoEm[p.protocolo];}}return;}p._t=tempo(p.dataHora);if(p.lock)exec++;else if(p._t.tipo==="atrasado")urg++;else pen++;ativos.push(p);});
@@ -2035,14 +2109,84 @@ function startBar(){}
 function flashBar(){}
 function initProgressBar(){}
 
-/* ══ CARREGAR DADOS ══ */
-function carregarDados(){
-  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
-  fetch(API+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).then(function(lista){salvarCache(lista);mostrarBannerOffline(null);render(lista);}).catch(function(err){console.error("[carregarDados]",err);var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("cache");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}}).finally(function(){flashBar();});
+/* ══ MODAL CONFIRMAÇÃO GENÉRICO (substitui confirm() nativo) ══ */
+var _cbConfirmacaoGenerica = null;
+
+function abrirModalConfirmacaoGenerica(opts) {
+  document.getElementById("modalConfGenIcon").textContent  = opts.icon  || "⚠️";
+  document.getElementById("modalConfGenTitulo").textContent = opts.titulo || "Confirmar?";
+  document.getElementById("modalConfGenSub").textContent    = opts.sub   || "";
+  var btnConf = document.getElementById("btnConfirmacaoGenerica");
+  btnConf.textContent   = opts.labelConfirmar || "Confirmar";
+  btnConf.style.background = opts.corConfirmar || "var(--azul)";
+  _cbConfirmacaoGenerica = opts.onConfirmar || null;
+  document.getElementById("modalConfirmacaoGenerica").classList.add("open");
 }
 
-/* ══ LIBERAR LOCKS AO FECHAR ══ */
-window.addEventListener("beforeunload",function(){Object.keys(meusLocks).forEach(function(prot){pararHeartbeat(prot);var params="acao=liberar&protocolo="+encodeURIComponent(prot)+"&sessionId="+encodeURIComponent(SESSION_ID);try{if(navigator.sendBeacon)navigator.sendBeacon(API_BASE+"?"+params);}catch(e){}});});
+function fecharModalConfirmacaoGenerica() {
+  document.getElementById("modalConfirmacaoGenerica").classList.remove("open");
+  _cbConfirmacaoGenerica = null;
+}
+
+function _confirmarGenerica() {
+  fecharModalConfirmacaoGenerica();
+  if (_cbConfirmacaoGenerica) _cbConfirmacaoGenerica();
+}
+
+/* ══ CARREGAR DADOS — com retry backoff exponencial ══ */
+var _retryTimer = null;
+var _RETRY_DELAYS = [1000, 2000, 4000];
+
+function _sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
+
+async function _fetchComRetry(url, tentativas) {
+  tentativas = tentativas || 3;
+  var ultimoErro;
+  for (var i = 0; i < tentativas; i++) {
+    try {
+      var r = await fetch(url, { redirect: "follow" });
+      var lista = await r.json();
+      return lista;
+    } catch(err) {
+      ultimoErro = err;
+      if (i < tentativas - 1) {
+        await _sleep(_RETRY_DELAYS[i] || 4000);
+      }
+    }
+  }
+  throw ultimoErro;
+}
+
+function carregarDados(){
+  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
+  _fetchComRetry(API+"&t="+Date.now(), 3)
+    .then(function(lista){
+      salvarCache(lista);
+      mostrarBannerOffline(null);
+      render(lista);
+    })
+    .catch(function(err){
+      console.error("[carregarDados] falhou após 3 tentativas",err);
+      var cache=lerCache();
+      if(cache){render(cache);mostrarBannerOffline("cache");}
+      else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
+    })
+    .finally(function(){ flashBar(); });
+}
+
+/* ══ LIBERAR LOCKS AO FECHAR — com aviso se lock ativo ══ */
+window.addEventListener("beforeunload",function(e){
+  var protsAtivos = Object.keys(meusLocks);
+  if (protsAtivos.length > 0) {
+    e.preventDefault();
+    e.returnValue = "Você está executando o protocolo " + protsAtivos[0] + ". Sair agora vai liberar o lock e o protocolo volta para a fila.";
+  }
+  protsAtivos.forEach(function(prot){
+    pararHeartbeat(prot);
+    var params="acao=liberar&protocolo="+encodeURIComponent(prot)+"&sessionId="+encodeURIComponent(SESSION_ID);
+    try{if(navigator.sendBeacon)navigator.sendBeacon(API_BASE+"?"+params);}catch(e){}
+  });
+});
 
 /* ══ INICIAR ══ */
 initProgressBar();
@@ -2140,19 +2284,27 @@ function confirmarObs() {
 function forcarConclusaoSupervisor(protocolo) {
   if (!isSupervisor()) return;
   var operador = getOperador() || "Supervisor";
-  if (!confirm("Marcar " + protocolo + " como concluído sem foto?\n\nRegistrado por: " + operador)) return;
-  fetch(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now(), { redirect: "follow" })
-    .then(function(r){ return r.json(); })
-    .then(function(res){
-      if (res.ok) {
-        pararHeartbeat(protocolo);
-        toast("<i class='fa-solid fa-circle-check'></i> Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
-        carregarDados();
-      } else {
-        toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
-      }
-    })
-    .catch(function(){ toast("❌ Erro ao forçar conclusão", "erro"); });
+  abrirModalConfirmacaoGenerica({
+    icon: "⚡",
+    titulo: "Forçar conclusão?",
+    sub: "Protocolo " + protocolo + " será marcado como concluído sem foto.\n\nRegistrado por: " + operador,
+    labelConfirmar: "✔ Confirmar",
+    corConfirmar: "var(--verde)",
+    onConfirmar: function() {
+      fetch(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now(), { redirect: "follow" })
+        .then(function(r){ return r.json(); })
+        .then(function(res){
+          if (res.ok) {
+            pararHeartbeat(protocolo);
+            toast("<i class='fa-solid fa-circle-check'></i> Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
+            carregarDados();
+          } else {
+            toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+          }
+        })
+        .catch(function(){ toast("❌ Erro ao forçar conclusão", "erro"); });
+    }
+  });
 }
 
 /* ══ MENU SUPERVISOR ══ */
@@ -3063,7 +3215,40 @@ function toggleModoLote(){_modoLote=!_modoLote;_loteSelecionados={};document.bod
 function cancelarLote(){_modoLote=false;_loteSelecionados={};document.body.classList.remove("modo-lote");_atualizarBarraLote();renderTablet(_ultimaLista);renderFiltrado(_ultimaLista);}
 function toggleLoteCard(protocolo,event){if(!_modoLote)return;if(event)event.stopPropagation();if(_loteSelecionados[protocolo])delete _loteSelecionados[protocolo];else _loteSelecionados[protocolo]=true;var idSafe=protocolo.replace(/[^a-z0-9]/gi,"_");var cardT=document.getElementById("card-t-"+idSafe);if(cardT)cardT.classList.toggle("lote-selecionado",!!_loteSelecionados[protocolo]);var chk=document.getElementById("lote-chk-"+idSafe);if(chk)chk.checked=!!_loteSelecionados[protocolo];_atualizarBarraLote();}
 function _atualizarBarraLote(){var n=Object.keys(_loteSelecionados).length;var barra=document.getElementById("barraLote");var contador=document.getElementById("loteContador");var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(barra)barra.classList.toggle("show",_modoLote);if(contador)contador.textContent=n;if(btnR)btnR.disabled=n===0;if(btnC)btnC.disabled=n===0;}
-function loteAcao(tipo){var prots=Object.keys(_loteSelecionados);if(!prots.length)return;var label=tipo==="remover"?"remover":"concluir";if(!confirm("Confirma "+label+" "+prots.length+" protocolo(s)?\n\n"+prots.join(", ")))return;var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");if(btnR)btnR.disabled=true;if(btnC)btnC.disabled=true;toast("⏳ Processando "+prots.length+" protocolo(s)…","exec");var operador = isSupervisor() ? "" : (getOperador() || "Operador");var promises=prots.map(function(protocolo){if(tipo==="remover"){return fetch(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});}else{return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});}});Promise.all(promises).then(function(resultados){var ok=resultados.filter(function(r){return r.ok!==false;}).length;var falhas=prots.length-ok;cancelarLote();var msg=tipo==="remover"?"🗑️ "+ok+" protocolo(s) removido(s)":"<i class='fa-solid fa-circle-check'></i> "+ok+" protocolo(s) concluído(s)";if(falhas>0)msg+=" ("+falhas+" falha(s))";toast(msg,ok>0?"ok":"erro");setTimeout(carregarDados,800);});}
+function loteAcao(tipo){
+  var prots=Object.keys(_loteSelecionados);
+  if(!prots.length)return;
+  var label=tipo==="remover"?"remover":"concluir";
+  abrirModalConfirmacaoGenerica({
+    icon: tipo==="remover" ? "🗑️" : "✔",
+    titulo: "Confirmar ação em lote?",
+    sub: "Deseja "+label+" "+prots.length+" protocolo(s)?\n\n"+prots.join(", "),
+    labelConfirmar: tipo==="remover" ? "🗑️ Remover" : "✔ Concluir",
+    corConfirmar: tipo==="remover" ? "var(--vermelho)" : "var(--verde)",
+    onConfirmar: function() {
+      var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");
+      if(btnR)btnR.disabled=true;if(btnC)btnC.disabled=true;
+      toast("⏳ Processando "+prots.length+" protocolo(s)…","exec");
+      var operador = isSupervisor() ? "" : (getOperador() || "Operador");
+      var promises=prots.map(function(protocolo){
+        if(tipo==="remover"){
+          return fetch(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});
+        } else {
+          return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});
+        }
+      });
+      Promise.all(promises).then(function(resultados){
+        var ok=resultados.filter(function(r){return r.ok!==false;}).length;
+        var falhas=prots.length-ok;
+        cancelarLote();
+        var msg=tipo==="remover"?"🗑️ "+ok+" protocolo(s) removido(s)":"<i class='fa-solid fa-circle-check'></i> "+ok+" protocolo(s) concluído(s)";
+        if(falhas>0)msg+=" ("+falhas+" falha(s))";
+        toast(msg,ok>0?"ok":"erro");
+        setTimeout(carregarDados,800);
+      });
+    }
+  });
+}
 
 function selecionarLoteCard(protocolo) {
   if (!_modoLote) {
