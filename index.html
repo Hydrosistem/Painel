@@ -2017,6 +2017,22 @@ var _protocolosConhecidos = null;
 var _prioridadesConhecidas = {};
 
 function render(lista){
+
+  /* ── Reaplica locks otimistas pendentes antes de renderizar ──
+     Quando o servidor ainda não confirmou o lock (demora ~1-2s),
+     a lista volta sem ele e o card pisca de volta para "Atrasado".
+     Aqui garantimos que locks otimistas locais prevalecem até o
+     servidor confirmar ou rejeitar. */
+  var protsOtimistas = Object.keys(_optimisticLocks);
+  if (protsOtimistas.length > 0) {
+    lista = lista.map(function(p) {
+      if (_optimisticLocks[p.protocolo]) {
+        return Object.assign({}, p, { lock: _optimisticLocks[p.protocolo] });
+      }
+      return p;
+    });
+  }
+
   _ultimaLista = lista;
 
   /* ── Alerta de novo protocolo e prioridade máxima ── */
