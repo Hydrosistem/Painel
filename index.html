@@ -42,6 +42,7 @@
   --prioridade-bg: #FEF3C7;
   --prioridade-b:  #FCD34D;
   --cinza-md:    #F1F5F9;
+  --cinza-bg:    #F8FAFC;
   --texto:       #0F172A;
   --texto2:      #64748B;
   --texto3:      #94A3B8;
@@ -58,6 +59,38 @@
   --sidebar-w:   248px;
   --detail-w:    304px;
   --header-h:    60px;
+}
+
+
+}
+/* ══ MODO NOTURNO — forçado manualmente ══ */
+body.dark-mode {
+  --azul-bg:     #1e3a5f;
+  --azul-borda:  #2d5a8e;
+  --verde-bg:    #14311f;
+  --verde-borda: #1a5c2e;
+  --amarelo-bg:  #2d2208;
+  --amarelo-borda:#7a5a00;
+  --vermelho-bg: #2d1010;
+  --vermelho-borda:#8b2020;
+  --atrasado-bg: #2d0a0a;
+  --atrasado-borda:#7a1515;
+  --exec-bg:     #1e1040;
+  --exec-borda:  #5b3dbf;
+  --prioridade-bg: #2d1f04;
+  --prioridade-b:  #9a7a00;
+  --cinza-md:    #1e2535;
+  --cinza-bg:    #111827;
+  --texto:       #F1F5F9;
+  --texto2:      #94A3B8;
+  --texto3:      #64748B;
+  --borda:       #1E293B;
+  --borda-md:    #334155;
+  --branco:      #1A2234;
+  --sombra-xs:   0 1px 2px rgba(0,0,0,.3);
+  --sombra-sm:   0 1px 3px rgba(0,0,0,.4), 0 1px 2px rgba(0,0,0,.3);
+  --sombra-md:   0 4px 6px -1px rgba(0,0,0,.4), 0 2px 4px -2px rgba(0,0,0,.3);
+  --sombra-lg:   0 10px 15px -3px rgba(0,0,0,.5), 0 4px 6px -4px rgba(0,0,0,.4);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -145,6 +178,7 @@ header {
 #bannerOffline.show { display: block; }
 #bannerCache { display: none; background: var(--amarelo-bg); color: var(--amarelo); border-bottom: 1px solid var(--amarelo-borda); font-size: 11px; font-weight: 600; text-align: center; padding: 6px 16px; }
 #bannerCache.show { display: block; }
+#bannerFila.show { display: block !important; }
 
 /* ══ MODAL OPERADOR ══ */
 #modalOperador { display: none; position: fixed; inset: 0; background: rgba(15,23,42,.6); z-index: 600; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
@@ -833,6 +867,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
     <div class="modal-op-sub">Digite seu nome ou número de equipe para registrar as execuções.</div>
     <input class="modal-op-input" id="inputOperador" type="text" placeholder="Ex: Gustavo ou Equipe 3404" maxlength="40" autocomplete="off" autocorrect="off" spellcheck="false">
     <button class="btn-op-confirmar" id="btnConfirmarOperador" disabled>Confirmar entrada</button>
+
   </div>
 </div>
 
@@ -853,12 +888,14 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
     <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
+    <button class="btn-header btn-dark-toggle" id="btnDarkHeader" onclick="toggleDarkMode()" title="Alternar modo noturno"><i class="fa-solid fa-moon" id="darkHeaderIcon"></i></button>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   </div>
 </header>
 
 <div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
+<div id="bannerFila" style="display:none;background:#7C3AED;color:#fff;font-size:11px;font-weight:600;text-align:center;padding:6px 16px;letter-spacing:.4px;"></div>
 
 <div class="layout-root">
 
@@ -868,6 +905,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
       <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="buscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
+      <button class="btn-compacto" id="btnDarkMobile" onclick="toggleDarkMode()" title="Modo noturno"><i class="fa-solid fa-moon" id="darkMobileIcon"></i></button>
       <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()">☰</button>
     </div>
   </div>
@@ -995,6 +1033,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
   <button class="filtro-tab" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
   <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
+  <button class="filtro-tab" id="btnDarkTablet" onclick="toggleDarkMode()" title="Modo noturno"><i class="fa-solid fa-moon" id="darkTabletIcon"></i></button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
   <i class="fa-solid fa-download"></i> XLSX
@@ -2944,6 +2983,169 @@ function abrirLightbox(u) {
   document.getElementById("lb").classList.add("open");
 }
   
+/* ══ MODO NOTURNO — toggle manual ══ */
+var _darkMode = false;
+(function(){
+  try {
+    var saved = localStorage.getItem('hyd_dark');
+    if (saved === '1') {
+      _darkMode = true;
+      document.body.classList.add('dark-mode');
+    }
+  } catch(e) {}
+})();
+
+function toggleDarkMode() {
+  _darkMode = !_darkMode;
+  document.body.classList.toggle('dark-mode', _darkMode);
+  _atualizarBtnDark();
+  try { localStorage.setItem('hyd_dark', _darkMode ? '1' : '0'); } catch(e) {}
+  toast(_darkMode ? '<i class="fa-solid fa-moon"></i> Modo noturno ativado' : '<i class="fa-solid fa-sun"></i> Modo claro ativado', '');
+}
+
+function _atualizarBtnDark() {
+  var icone = _darkMode ? 'fa-sun' : 'fa-moon';
+  var ids = ['darkHeaderIcon','darkMobileIcon','darkTabletIcon'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'fa-solid fa-' + icone;
+  });
+  var btnHeader = document.getElementById('btnDarkHeader');
+  var btnMobile = document.getElementById('btnDarkMobile');
+  var btnTablet = document.getElementById('btnDarkTablet');
+  if (btnHeader) { btnHeader.style.background = _darkMode ? 'rgba(255,255,255,.22)' : ''; btnHeader.style.borderColor = _darkMode ? 'rgba(255,255,255,.3)' : ''; }
+  if (btnMobile) { btnMobile.classList.toggle('ativo', _darkMode); }
+  if (btnTablet) { btnTablet.classList.toggle('active', _darkMode); }
+}
+
+window.addEventListener('DOMContentLoaded', function() {
+  _atualizarBtnDark();
+});
+
+/* ══ FILA OFFLINE ══ */
+var FILA_KEY = 'hyd_fila_offline';
+
+function _lerFila() {
+  try { return JSON.parse(localStorage.getItem(FILA_KEY) || '[]'); } catch(e) { return []; }
+}
+
+function _salvarFila(fila) {
+  try { localStorage.setItem(FILA_KEY, JSON.stringify(fila)); } catch(e) {}
+}
+
+function _adicionarFila(acao) {
+  var fila = _lerFila();
+  acao.id = Date.now() + '_' + Math.random().toString(36).slice(2);
+  acao.ts = new Date().toISOString();
+  fila.push(acao);
+  _salvarFila(fila);
+  _mostrarBannerFila();
+}
+
+function _removerDaFila(id) {
+  var fila = _lerFila().filter(function(a){ return a.id !== id; });
+  _salvarFila(fila);
+  if (!fila.length) _ocultarBannerFila();
+}
+
+function _mostrarBannerFila() {
+  var fila = _lerFila();
+  if (!fila.length) return;
+  var banner = document.getElementById('bannerFila');
+  if (banner) { banner.textContent = '📤 ' + fila.length + ' ação(ões) na fila — aguardando conexão'; banner.classList.add('show'); }
+}
+
+function _ocultarBannerFila() {
+  var banner = document.getElementById('bannerFila');
+  if (banner) banner.classList.remove('show');
+}
+
+function _processarFila() {
+  var fila = _lerFila();
+  if (!fila.length) return;
+  toast('📤 Processando ' + fila.length + ' ação(ões) salva(s)…', 'exec');
+  fila.forEach(function(acao) {
+    if (acao.tipo === 'concluir') {
+      fetch(API_BASE, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify({ acao: 'concluir', protocolo: acao.protocolo, operador: acao.operador, foto: acao.foto || '', sessionId: acao.sessionId }),
+        redirect: 'follow'
+      })
+      .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return {ok:true}; } }); })
+      .then(function(res){
+        if (res.ok !== false) {
+          _removerDaFila(acao.id);
+          toast('<i class="fa-solid fa-circle-check"></i> ' + acao.protocolo + ' sincronizado!', 'ok');
+          setTimeout(carregarDados, 500);
+        }
+      })
+      .catch(function(){});
+    } else if (acao.tipo === 'iniciar') {
+      postLock({ acao: 'adquirir', protocolo: acao.protocolo, sessionId: acao.sessionId, usuario: acao.operador })
+      .then(function(res){
+        if (res.ok) {
+          _removerDaFila(acao.id);
+          iniciarHeartbeat(acao.protocolo);
+          setTimeout(carregarDados, 500);
+        }
+      })
+      .catch(function(){});
+    }
+  });
+}
+
+/* Intercepta enviarConclusao para suportar fila offline */
+var _origEnviarConclusao = enviarConclusao;
+enviarConclusao = function() {
+  if (!estaOnline()) {
+    if (!_protocoloConcluindo) return;
+    var operador = getOperador() || 'Operador';
+    var protocolo = _protocoloConcluindo;
+    var fotoBase64 = _fotoConclBase64 || '';
+    var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
+    var sid = SESSION_ID;
+    if (p && p.lock && p.lock.sessionId && p.lock.sessionId.indexOf('redist_') === 0) {
+      if ((p.lock.usuario||'').trim().toLowerCase() === operador.trim().toLowerCase()) sid = p.lock.sessionId;
+    }
+    /* Salva na fila */
+    _adicionarFila({ tipo: 'concluir', protocolo: protocolo, operador: operador, foto: fotoBase64, sessionId: sid });
+    /* Optimistic update local */
+    var agora = new Date().toISOString();
+    for (var i = 0; i < _ultimaLista.length; i++) {
+      if (_ultimaLista[i].protocolo === protocolo) {
+        _ultimaLista[i].status = 'CONCLUÍDO';
+        _ultimaLista[i].dataConclusao = agora;
+        _ultimaLista[i].operadorConclusao = operador;
+        _ultimaLista[i].lock = null;
+        break;
+      }
+    }
+    pararHeartbeat(protocolo);
+    fecharModalConclusao();
+    renderFiltrado(_ultimaLista);
+    renderTablet(_ultimaLista);
+    if (navigator.vibrate) navigator.vibrate([50,30,50]);
+    toast('📥 Sem conexão — conclusão salva para envio automático', 'exec');
+    return;
+  }
+  _origEnviarConclusao();
+};
+
+/* Processa fila ao voltar online */
+window.addEventListener('online', function() {
+  mostrarBannerOffline(null);
+  carregarDados();
+  setTimeout(_processarFila, 1000);
+});
+
+/* Verifica fila ao carregar */
+window.addEventListener('DOMContentLoaded', function() {
+  _mostrarBannerFila();
+  if (estaOnline()) setTimeout(_processarFila, 2000);
+});
+
 </script>
 </body>
 </html>
