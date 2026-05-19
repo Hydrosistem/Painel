@@ -985,6 +985,9 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
+     <button class="btn-dark-mode" id="btnDarkMode" title="Modo noturno" onclick="toggleDarkMode()">
+    <i class="fa-solid fa-moon"></i>
+  </button>
   </div>
 </header>
 
@@ -3073,6 +3076,28 @@ function abrirLightbox(u) {
     }
   };
   document.getElementById("lb").classList.add("open");
+}
+
+/* ══ MODO NOTURNO ══ */
+(function(){
+  try {
+    if(localStorage.getItem("hyd_dark")==="1") {
+      document.body.classList.add("dark-mode");
+      var btn = document.getElementById("btnDarkMode");
+      if(btn){ btn.classList.add("ativo"); btn.innerHTML='<i class="fa-solid fa-sun"></i>'; }
+    }
+  } catch(e){}
+})();
+
+function toggleDarkMode(){
+  var ativo = document.body.classList.toggle("dark-mode");
+  var btn = document.getElementById("btnDarkMode");
+  if(btn){
+    btn.classList.toggle("ativo", ativo);
+    btn.innerHTML = ativo ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+  }
+  try{ localStorage.setItem("hyd_dark", ativo ? "1" : "0"); }catch(e){}
+  toast(ativo ? "🌙 Modo noturno ativado" : "☀️ Modo claro ativado", "");
 }
   
 </script>
