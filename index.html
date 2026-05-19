@@ -1562,7 +1562,7 @@ function _preencherDetalhe(p){
   if(outraExecucao){var minEx=Math.round((new Date()-new Date(lock.timestamp))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
   else if(minhaExecucao){execInfoHtml="<div class='exec-info-box meu'>✔ Você está executando — vá ao local e conclua aqui</div>";}
   var fotoHtml="",src=fotoSrc(p.fotoId);
-  if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
+  if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
   function _renderObs(obs){
     if(!obs||obs==="—")return "";
     var mapsUrl = null;
@@ -1581,7 +1581,7 @@ function _preencherDetalhe(p){
   var obsHtml=_renderObs(p.obs);
   var badgeMap={urgente:"<span class='badge t-urgente'>⚠️ Urgente</span>",pendente:"<span class='badge t-pendente'>🟡 Pendente</span>",atrasado:"<span class='badge t-atrasado'>🔴 Atrasado</span>",execucao:"<span class='badge-exec'><span class='dot'></span>Em execução</span>",concluido:"<span class='badge t-concluido'><i class='fa-solid fa-circle-check'></i> Concluído</span>"};
   var conclusaoHtml="";
-  if(concluido){var fotoConcHtml="",_fcId=p.fotoConcId||p.fotoConclusaoId||"",_fcUrl=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcId){var srcC=fotoSrc(_fcId);fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(_fcUrl)+"\",\""+esc(_fcId)+"\")' alt='Foto conclusão'></div>";}else if(_fcUrl){fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+esc(_fcUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirFoto(\""+esc(_fcUrl)+"\")' alt='Foto conclusão'></div>";}conclusaoHtml="<div class='detail-conclusao-section'><div class='detail-conclusao-header'><i class='fa-solid fa-circle-check'></i> Dados de conclusão</div>"+(p.operadorConclusao?"<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>":"")+"<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>"+(fotoConcHtml?"<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConcHtml+"</div>":"")+"</div>";}
+  if(concluido){var fotoConcHtml="",_fcId=p.fotoConcId||p.fotoConclusaoId||"",_fcUrl=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcId){var srcC=fotoSrc(_fcId);fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fcUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(_fcUrl)+"\",\""+esc(_fcId)+"\")' alt='Foto conclusão'></div>";}else if(_fcUrl){fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+esc(_fcUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fcUrl)+"\")' alt='Foto conclusão'></div>";}conclusaoHtml="<div class='detail-conclusao-section'><div class='detail-conclusao-header'><i class='fa-solid fa-circle-check'></i> Dados de conclusão</div>"+(p.operadorConclusao?"<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>":"")+"<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>"+(fotoConcHtml?"<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConcHtml+"</div>":"")+"</div>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso-detalhe='"+esc(p.dataHora)+"' data-concluido-detalhe='"+(concluido?"1":"0")+"'":"";
   content.innerHTML=
     "<div style='display:flex;align-items:flex-start;justify-content:space-between;gap:8px'>"+
@@ -1702,7 +1702,7 @@ function renderCard(p,idx,isNovo){
   var obsMaps = _mapsUrl ? "<a href='"+_mapsUrl+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",src=fotoSrc(p.fotoId);
-  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirFoto(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
+  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
   var protEsc=esc(p.protocolo),endEsc=esc(p.endereco);
   var execInfoHtml="";
@@ -2924,6 +2924,11 @@ function selecionarLoteCard(protocolo) {
     document.body.classList.add("modo-lote");
   }
   toggleLoteCard(protocolo, null);
+}
+
+function abrirLightbox(u) {
+  document.getElementById("lbImg").src = u;
+  document.getElementById("lb").classList.add("open");
 }
   
 </script>
