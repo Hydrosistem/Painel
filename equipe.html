@@ -282,7 +282,7 @@ function _mapaCarregado() {
 
   <div class="detalhe" id="detalhe">
     <div class="det-vazio" id="detVazio">
-      <div class="det-vazio-icon">👷</div>
+      <div class="det-vazio-icon"><i class="fa-solid fa-user-helmet-safety" style="font-size:40px;opacity:.4"></i></div>
       <div class="det-vazio-txt">Selecione um operador</div>
       <div class="det-vazio-sub">Clique em qualquer operador para ver detalhes, localização e histórico do dia.</div>
     </div>
@@ -294,7 +294,8 @@ function _mapaCarregado() {
 
 <script>
 var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
-var REFRESH_MS    = 30000;
+var REFRESH_MS_ATIVO   = 15000;
+var REFRESH_MS_FUNDO   = 60000;
 var GPS_TTL_MIN   = 10;
 var ONLINE_TTL_MIN= 6;
 
@@ -461,13 +462,16 @@ function renderLista() {
       : op._online
         ? (minutosDesde(op.timestamp) < 1 ? "online agora" : "há " + formatarTempo(minutosDesde(op.timestamp)))
         : "offline há " + formatarTempo(minutosDesde(op.timestamp));
-    var gpsIcon = op._temGps ? "📍" : "📵";
+    var gpsIcon = op._temGps
+      ? "<i class='fa-solid fa-map-pin' style='font-size:12px;color:var(--azul)' title='GPS ativo'></i>"
+      : "<i class='fa-solid fa-map-pin' style='font-size:12px;color:var(--borda-md)' title='GPS inativo'></i>";
 
     var selecionadoCls = (_selecionado && _selecionado.sessionId === op.sessionId)
       ? " selected" + (op._executando ? " exec" : "") : "";
     var offlineCls = !op._online ? " offline" : "";
 
     var conclCls = op._conclHoje === 0 ? "op-concl zero" : "op-concl";
+    var conclHtml = "<span class='" + conclCls + "'><i class='fa-solid fa-circle-check' style='font-size:10px'></i> " + op._conclHoje + " hoje</span>";
 
     html += "<div class='op-card" + selecionadoCls + offlineCls + "' onclick='selecionarOp(" + idx + ")'>" +
       "<div class='op-avatar' style='background:" + cor + "'>" +
@@ -479,8 +483,8 @@ function renderLista() {
         "<div class='op-status " + statusCls + "'>" + statusTxt + "</div>" +
       "</div>" +
       "<div class='op-right'>" +
-        "<span class='" + conclCls + "'>✅ " + op._conclHoje + " hoje</span>" +
-        "<span class='op-gps' title='" + (op._temGps?"GPS ativo":"Sem GPS") + "'>" + gpsIcon + "</span>" +
+        conclHtml +
+        "<span class='op-gps'>" + gpsIcon + "</span>" +
       "</div>" +
     "</div>";
   });
@@ -511,9 +515,9 @@ function renderDetalhe() {
 
   var statusLabel = op._executando ? "Em execução" : op._online ? "Online" : "Offline";
   var statusCls   = op._executando ? "exec"        : op._online ? "online"  : "offline";
-  var gpsBadge    = op._temGps
-    ? "<span class='badge gps-on'>📍 GPS ativo</span>"
-    : "<span class='badge gps-off'>📵 GPS inativo</span>";
+  var gpsBadge = op._temGps
+    ? "<span class='badge gps-on'><i class='fa-solid fa-map-pin' style='font-size:10px'></i> GPS ativo</span>"
+    : "<span class='badge gps-off'><i class='fa-solid fa-map-pin' style='font-size:10px'></i> GPS inativo</span>";
   var minOnline = minutosDesde(op.timestamp);
   var minGps    = minutosDesde(op.gpsTs);
 
@@ -542,9 +546,9 @@ function renderDetalhe() {
       ? "https://maps.google.com/?q=" + p.lat + "," + p.lng
       : "https://maps.google.com/?q=" + encodeURIComponent((p.endereco||"") + ", Arapongas, PR");
     protoHtml = "<div class='det-section exec-border'>" +
-      "<div class='det-section-title'>🚧 Protocolo em execução</div>" +
+      "<div class='det-section-title'><i class='fa-solid fa-play' style='font-size:9px'></i> Protocolo em execução</div>" +
       "<div class='det-row'><div class='det-row-lbl'>Protocolo</div><div class='det-row-val' style='font-family:DM Mono,monospace;font-size:12px;color:var(--texto3)'>" + safeText(p.protocolo) + "</div></div>" +
-      "<div class='det-row'><div class='det-row-lbl'>Endereço</div><div class='det-row-val'><a href='" + mapsLink + "' target='_blank' rel='noopener'>📍 " + safeText(p.endereco) + "</a></div></div>" +
+      "<div class='det-row'><div class='det-row-lbl'>Endereço</div><div class='det-row-val'><a href='" + mapsLink + "' target='_blank' rel='noopener'><i class='fa-solid fa-map-pin' style='font-size:11px'></i> " + safeText(p.endereco) + "</a></div></div>" +
       "<div class='det-row'><div class='det-row-lbl'>Tempo em execução</div><div class='det-row-val' style='font-weight:700;color:var(--exec)'>" + (minExec!=null?formatarTempo(minExec):"—") + "</div></div>" +
       "<div class='det-row'><div class='det-row-lbl'>Iniciado às</div><div class='det-row-val'>" + formatarHora(p.lock ? (p.lock.iniciadoEm || p.lock.timestamp) : null) + "</div></div>" +
     "</div>";
@@ -553,20 +557,20 @@ function renderDetalhe() {
   /* Mapa GPS */
   var mapaHtml = "<div class='det-mapa-wrap'>" +
     "<div class='det-mapa-header'>" +
-      "<span class='det-mapa-titulo'>🗺️ Localização GPS" +
+      "<span class='det-mapa-titulo'><i class='fa-solid fa-map' style='font-size:13px'></i> Localização GPS" +
         (op._temGps ? " <span style='color:var(--verde);font-size:11px;font-weight:600'>● ao vivo</span>" : "") +
       "</span>" +
       (op._temGps ? "<span class='det-mapa-atualizado'>Atualizado há " + formatarTempo(minGps) + "</span>" : "") +
     "</div>" +
     (op._temGps
       ? "<div id='mapaOperador'></div>"
-      : "<div class='det-mapa-vazio'><div class='det-mapa-vazio-icon'>📵</div><span>GPS não disponível para este operador</span></div>"
+      : "<div class='det-mapa-vazio'><div class='det-mapa-vazio-icon'><i class='fa-solid fa-map-pin' style='font-size:28px;opacity:.4'></i></div><span>GPS não disponível para este operador</span></div>"
     ) +
   "</div>";
 
   /* Histórico do dia */
   var histHtml = "<div class='det-section'>" +
-    "<div class='det-section-title'>📋 Histórico do dia</div>";
+    "<div class='det-section-title'><i class='fa-solid fa-clock-rotate-left' style='font-size:10px'></i> Histórico do dia</div>";
 
   if (op._historico && op._historico.length > 0) {
     op._historico.forEach(function(h) {
@@ -588,7 +592,7 @@ function renderDetalhe() {
         "<div class='hist-end'>" + safeText(op._protocolo.endereco || "—") + "</div>" +
         "<div class='hist-meta'>" + safeText(op._protocolo.protocolo) + " · em execução</div>" +
       "</div>" +
-      "<div class='hist-dur' style='color:var(--exec)'>⏱ em andamento</div>" +
+      "<div class='hist-dur' style='color:var(--exec)'><i class='fa-solid fa-spinner fa-spin' style='font-size:10px'></i> em andamento</div>" +
     "</div>";
   }
 
@@ -703,7 +707,7 @@ function _renderMapaOp(op) {
 
   var minGps = minutosDesde(op.gpsTs);
   var execInfo = op._executando && op._protocolo
-    ? "<div style='color:#7C3AED;font-weight:600;margin-top:4px;font-size:11px'>🚧 " + safeText(op._protocolo.protocolo) + " — " + safeText((op._protocolo.endereco||"").split(",")[0]) + "</div>"
+    ? "<div style='color:#7C3AED;font-weight:600;margin-top:4px;font-size:11px'><i class='fa-solid fa-play' style='font-size:9px'></i> " + safeText(op._protocolo.protocolo) + " — " + safeText((op._protocolo.endereco||"").split(",")[0]) + "</div>"
     : "";
   var iw = new google.maps.InfoWindow({
     content: "<div style='font-family:DM Sans,sans-serif;padding:2px'>" +
@@ -718,15 +722,19 @@ function _renderMapaOp(op) {
 
 function iniciarRefresh() {
   clearInterval(_refreshTimer);
-  _refreshTimer = setInterval(atualizar, REFRESH_MS);
+  var intervalo = document.visibilityState === "visible" ? REFRESH_MS_ATIVO : REFRESH_MS_FUNDO;
+  _refreshTimer = setInterval(atualizar, intervalo);
 }
 
 atualizar();
 iniciarRefresh();
 
 document.addEventListener("visibilitychange", function() {
-  if (document.visibilityState === "visible") { atualizar(); iniciarRefresh(); }
-  else { clearInterval(_refreshTimer); }
+  clearInterval(_refreshTimer);
+  if (document.visibilityState === "visible") {
+    atualizar();
+  }
+  iniciarRefresh();
 });
 </script>
 </body>
