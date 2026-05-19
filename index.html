@@ -900,6 +900,7 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
   .btn-header, .btn-perto, .chip-operador { height: 30px; font-size: 11px; padding: 0 10px; border-radius: 6px; }
   #refreshBar { top: 52px; }
   .search-wrap { top: 54px; }
+  .btn-dark-mode { display: none; }
 }
 /* ══ ESTATÍSTICAS SIDEBAR ══ */
 .sb-stats-section { border-bottom: 1px solid var(--borda); flex-shrink: 0; }
@@ -1003,6 +1004,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
       <input class="search-input" id="buscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
       <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()">☰</button>
+      <button class="btn-compacto" id="btnDarkModeMobile" title="Modo noturno" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i></button>      
     </div>
   </div>
 
@@ -1519,7 +1521,18 @@ function setFiltroTab(f,btn){ftFiltro=f;document.querySelectorAll(".filtro-tab")
 
 /* ══ MODO COMPACTO ══ */
 var _modoCompacto=false;
-(function(){try{_modoCompacto=localStorage.getItem("hyd_compacto")==="1";if(_modoCompacto)document.body.classList.add("modo-compacto");}catch(e){}})();
+(function(){
+  try {
+    if(localStorage.getItem("hyd_dark")==="1") {
+      document.body.classList.add("dark-mode");
+      var btn = document.getElementById("btnDarkMode");
+      if(btn){ btn.classList.add("ativo"); btn.innerHTML='<i class="fa-solid fa-sun"></i>'; }
+      // novo: sincroniza botão mobile
+      var btnM = document.getElementById("btnDarkModeMobile");
+      if(btnM){ btnM.classList.add("ativo"); btnM.innerHTML='<i class="fa-solid fa-sun"></i>'; }
+    }
+  } catch(e){}
+})();
 function toggleCompacto(){_modoCompacto=!_modoCompacto;document.body.classList.toggle("modo-compacto",_modoCompacto);document.getElementById("btnCompacto").classList.toggle("ativo",_modoCompacto);try{localStorage.setItem("hyd_compacto",_modoCompacto?"1":"0");}catch(e){}toast(_modoCompacto?"☰ Modo compacto ativado":"☷ Modo normal","");renderFiltrado(_ultimaLista);}
 window.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("btnCompacto");if(b&&_modoCompacto)b.classList.add("ativo");});
 
@@ -3091,11 +3104,21 @@ function abrirLightbox(u) {
 
 function toggleDarkMode(){
   var ativo = document.body.classList.toggle("dark-mode");
+  
+  // botão do header (desktop)
   var btn = document.getElementById("btnDarkMode");
   if(btn){
     btn.classList.toggle("ativo", ativo);
     btn.innerHTML = ativo ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
   }
+  
+  // botão mobile (barra de busca)
+  var btnM = document.getElementById("btnDarkModeMobile");
+  if(btnM){
+    btnM.classList.toggle("ativo", ativo);
+    btnM.innerHTML = ativo ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+  }
+  
   try{ localStorage.setItem("hyd_dark", ativo ? "1" : "0"); }catch(e){}
   toast(ativo ? "🌙 Modo noturno ativado" : "☀️ Modo claro ativado", "");
 }
