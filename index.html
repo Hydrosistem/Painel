@@ -1699,8 +1699,66 @@ function pararHeartbeat(protocolo){if(meusLocks[protocolo]){clearInterval(meusLo
 /* ══ MODAL INICIAR ══ */
 function abrirModal(protocolo,endereco){protocoloPendente=protocolo;enderecoPendente=endereco;document.getElementById("modalTitulo").textContent="Iniciar execução?";document.getElementById("modalSub").textContent="Protocolo "+protocolo+"\n📍 "+endereco+"\n\nOperador: "+(getOperador()||"não identificado")+"\n\nO serviço ficará marcado como Em Execução.";document.getElementById("modalOverlay").classList.add("open");}
 function fecharModal(){document.getElementById("modalOverlay").classList.remove("open");protocoloPendente=null;}
-function confirmarExecucao(){   var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;   if(!protocolo)return;   var locksAtivos=Object.keys(meusLocks);   if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}   if(navigator.vibrate)navigator.vibrate(50);   fecharModal();   var operador=getOperador()||"Operador";   var lockOtimista={sessionId:SESSION_ID,usuario:operador,timestamp:new Date().toISOString(),iniciadoEm:new Date().toISOString(),_otimista:true};   _optimisticLocks[protocolo]=lockOtimista;   for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=lockOtimista;break;}}   renderFiltrado(_ultimaLista);   renderTablet(_ultimaLista);   var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}   if(pSel)selecionarProtocolo(pSel);   renderOperadoresOnline(_presencasCache);   toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");   postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){     if(!res.ok){       delete _optimisticLocks[protocolo];       for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){var l=_ultimaLista[i].lock;if(l&&l._otimista&&l.sessionId===SESSION_ID)_ultimaLista[i].lock=null;break;}}       renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);       toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");       carregarDados();return;     }     delete _optimisticLocks[protocolo];     for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo&&_ultimaLista[i].lock){delete _ultimaLista[i].lock._otimista;break;}}     iniciarHeartbeat(protocolo);     carregarDados();   }).catch(function(err){     console.error("[confirmarExecucao]",err);     delete _optimisticLocks[protocolo];     iniciarHeartbeat(protocolo);     setTimeout(carregarDados,2000);   }); }
+
+/* ── cancelamentos pendentes: protocolo → true quando cancelado antes do adquirir retornar ── */
+var _cancelamentosPendentes = {};
+
+function confirmarExecucao(){
+  var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;
+  if(!protocolo)return;
+  var locksAtivos=Object.keys(meusLocks);
+  if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}
+  if(navigator.vibrate)navigator.vibrate(50);
+  fecharModal();
+  var operador=getOperador()||"Operador";
+  /* limpa flag de cancelamento caso exista de tentativa anterior */
+  delete _cancelamentosPendentes[protocolo];
+  var lockOtimista={sessionId:SESSION_ID,usuario:operador,timestamp:new Date().toISOString(),iniciadoEm:new Date().toISOString(),_otimista:true};
+  _optimisticLocks[protocolo]=lockOtimista;
+  for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=lockOtimista;break;}}
+  renderFiltrado(_ultimaLista);
+  renderTablet(_ultimaLista);
+  var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}
+  if(pSel)selecionarProtocolo(pSel);
+  renderOperadoresOnline(_presencasCache);
+  toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");
+  postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){
+    /* se o operador já cancelou enquanto o fetch corria, libera imediatamente */
+    if(_cancelamentosPendentes[protocolo]){
+      delete _cancelamentosPendentes[protocolo];
+      delete _optimisticLocks[protocolo];
+      liberarLockApi(protocolo).catch(function(){});
+      carregarDados();
+      return;
+    }
+    if(!res.ok){
+      delete _optimisticLocks[protocolo];
+      for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){var l=_ultimaLista[i].lock;if(l&&l._otimista&&l.sessionId===SESSION_ID)_ultimaLista[i].lock=null;break;}}
+      renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);
+      toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");
+      carregarDados();return;
+    }
+    delete _optimisticLocks[protocolo];
+    for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo&&_ultimaLista[i].lock){delete _ultimaLista[i].lock._otimista;break;}}
+    iniciarHeartbeat(protocolo);
+    carregarDados();
+  }).catch(function(err){
+    if(_cancelamentosPendentes[protocolo]){
+      delete _cancelamentosPendentes[protocolo];
+      delete _optimisticLocks[protocolo];
+      return;
+    }
+    console.error("[confirmarExecucao]",err);
+    delete _optimisticLocks[protocolo];
+    iniciarHeartbeat(protocolo);
+    setTimeout(carregarDados,2000);
+  });
+}
+
 function cancelarMinhaExecucao(protocolo){
+  /* marca cancelamento pendente para o caso do adquirir ainda estar em voo */
+  _cancelamentosPendentes[protocolo] = true;
+  delete _optimisticLocks[protocolo];
   pararHeartbeat(protocolo);
   for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=null;break;}}
   renderFiltrado(_ultimaLista);
@@ -1793,6 +1851,9 @@ function _preencherDetalhe(p){
   else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";}
 }
 function cancelarMinhaExecucaoPainel(protocolo){
+  /* mesma lógica do cancelarMinhaExecucao — marca pendente para o caso do adquirir ainda estar em voo */
+  _cancelamentosPendentes[protocolo] = true;
+  delete _optimisticLocks[protocolo];
   pararHeartbeat(protocolo);
   for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){_ultimaLista[i].lock=null;break;}}
   renderFiltrado(_ultimaLista);
