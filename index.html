@@ -1045,7 +1045,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
 
 <!-- ══ LIGHTBOX ══ -->
 <div class="lb" id="lb" onclick="fecharFoto()">
-  <button class="lb-close" onclick="fecharFoto()">✕</button>
+  <button class="lb-close" onclick="event.stopPropagation();fecharFoto()">✕</button>
   <img id="lbImg" src="" alt="Foto">
 </div>
 
@@ -2931,11 +2931,15 @@ function abrirLightbox(u) {
   var m = u.match(/[?&]id=([a-zA-Z0-9_-]+)/) || u.match(/\/d\/([a-zA-Z0-9_-]+)/);
   if (m) src = "https://lh3.googleusercontent.com/d/" + m[1];
   var img = document.getElementById("lbImg");
+  img.onerror = null; // limpa onerror anterior
+  img.src = "";
   img.src = src;
   img.onerror = function() {
-    // fallback: abre em nova aba se não carregar no lightbox
-    document.getElementById("lb").classList.remove("open");
-    window.open(u, '_blank', 'noopener');
+    img.onerror = null;
+    if (document.getElementById("lb").classList.contains("open")) {
+      document.getElementById("lb").classList.remove("open");
+      window.open(u, '_blank', 'noopener');
+    }
   };
   document.getElementById("lb").classList.add("open");
 }
