@@ -693,90 +693,123 @@ function filtrarProtos(filtro, btn) {
 }
 
 function exportarXLSX() {
-  if (!_todosProtos.length) { alert("Nenhum protocolo para exportar."); return; }
+  var btn = document.querySelector(".btn-exportar");
+
+  if (!_todosProtos || !_todosProtos.length) {
+    if (btn) { btn.textContent = "Sem dados"; setTimeout(function(){ btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; }, 2000); }
+    return;
+  }
+
+  if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:12px"></i> Gerando…'; btn.disabled = true; }
+
   var dia = getDiaAtual();
-  var dataStr = dia.toLocaleDateString("pt-BR");
+
+  function _restaurarBtn() {
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; btn.disabled = false; }
+  }
 
   function _gerar() {
-    var workbook = new ExcelJS.Workbook();
-    var ws = workbook.addWorksheet("Relatório " + dataStr);
-    var AZUL = "1469C7", BRANCO = "FFFFFF";
-    var corStatus = { "Concluído":"DCFCE7", "Atrasado":"FEE2E2", "Pendente":"FEF9C3", "Em execução":"EDE9FE" };
+    try {
+      var EJS = window.ExcelJS;
+      if (!EJS) { alert("Biblioteca XLSX não carregou. Tente novamente."); _restaurarBtn(); return; }
 
-    ws.columns = [
-      { key:"prot",  width: 13 },
-      { key:"data",  width: 18 },
-      { key:"end",   width: 48 },
-      { key:"reg",   width: 24 },
-      { key:"sts",   width: 14 },
-      { key:"resp",  width: 24 },
-      { key:"conc",  width: 18 },
-      { key:"dur",   width: 14 },
-    ];
+      var workbook = new EJS.Workbook();
+      var ws = workbook.addWorksheet("Relatorio");
+      var AZUL = "1469C7", BRANCO = "FFFFFF";
+      var corStatus = { "Concluído":"DCFCE7", "Atrasado":"FEE2E2", "Pendente":"FEF9C3", "Em execução":"EDE9FE" };
 
-    /* Linha 1 — título */
-    var r1 = ws.addRow(["HYDROSISTEM — Relatório Diário · " + formatarDataLonga(dia)]);
-    ws.mergeCells(1,1,1,8);
-    r1.height = 28;
-    r1.getCell(1).font = { bold:true, size:12, color:{argb:"FF"+AZUL} };
-    r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
+      ws.columns = [
+        { key:"prot", width:13 },
+        { key:"data", width:18 },
+        { key:"end",  width:48 },
+        { key:"reg",  width:24 },
+        { key:"sts",  width:14 },
+        { key:"resp", width:24 },
+        { key:"conc", width:18 },
+        { key:"dur",  width:14 },
+      ];
 
-    /* Linha 2 — espaço */
-    ws.addRow([]);
+      /* Linha 1 — título */
+      var r1 = ws.addRow(["HYDROSISTEM — Relatorio Diario · " + formatarDataLonga(dia)]);
+      ws.mergeCells(1,1,1,8);
+      r1.height = 28;
+      r1.getCell(1).font = { bold:true, size:12, color:{argb:"FF"+AZUL} };
+      r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
 
-    /* Linha 3 — cabeçalhos */
-    var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Duração"];
-    var rH = ws.addRow(cols);
-    rH.height = 20;
-    rH.eachCell(function(cell) {
-      cell.font = { bold:true, size:10, color:{argb:"FF"+BRANCO} };
-      cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF"+AZUL} };
-      cell.alignment = { horizontal:"center", vertical:"middle" };
-    });
+      /* Linha 2 — espaço */
+      ws.addRow([]);
 
-    /* Dados */
-    var labels = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
-    _todosProtos.forEach(function(p, i) {
-      var statusLabel = labels[p._tipo] || p._tipo;
-      var bgHex = "FF" + (corStatus[statusLabel] || (i%2===0?"F8FAFC":BRANCO));
-      var row = ws.addRow([
-        p.protocolo || "",
-        p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
-        p.endereco || "",
-        p.registradoPor || "—",
-        statusLabel,
-        p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
-        p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
-        p._duracaoMin != null ? formatarMin(p._duracaoMin) : "—"
-      ]);
-      row.eachCell(function(cell) {
-        cell.font = { size:10 };
-        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:bgHex} };
-        cell.alignment = { vertical:"middle" };
-        cell.border = { bottom:{style:"hair",color:{argb:"FFE2E8F0"}} };
+      /* Linha 3 — cabeçalhos */
+      var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Duração"];
+      var rH = ws.addRow(cols);
+      rH.height = 20;
+      rH.eachCell(function(cell) {
+        cell.font = { bold:true, size:10, color:{argb:"FF"+BRANCO} };
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF"+AZUL} };
+        cell.alignment = { horizontal:"center", vertical:"middle" };
       });
-      row.getCell(3).alignment = { vertical:"middle", wrapText:true };
-    });
 
-    workbook.xlsx.writeBuffer().then(function(buffer) {
-      var blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-      var url = URL.createObjectURL(blob);
-      var a = document.createElement("a");
-      a.href = url;
-      a.download = "relatorio_" + dia.toLocaleDateString("pt-BR").replace(/\//g,"-") + ".xlsx";
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-    });
+      /* Dados */
+      var labelsMap = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
+      _todosProtos.forEach(function(p, i) {
+        var statusLabel = labelsMap[p._tipo] || p._tipo;
+        var bgHex = "FF" + (corStatus[statusLabel] || (i%2===0?"F8FAFC":BRANCO));
+        var row = ws.addRow([
+          p.protocolo || "",
+          p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
+          p.endereco || "",
+          p.registradoPor || "—",
+          statusLabel,
+          p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
+          p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
+          p._duracaoMin != null ? formatarMin(p._duracaoMin) : "—"
+        ]);
+        row.eachCell(function(cell) {
+          cell.font = { size:10 };
+          cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:bgHex} };
+          cell.alignment = { vertical:"middle" };
+          cell.border = { bottom:{style:"hair",color:{argb:"FFE2E8F0"}} };
+        });
+        row.getCell(3).alignment = { vertical:"middle", wrapText:true };
+      });
+
+      workbook.xlsx.writeBuffer().then(function(buffer) {
+        var blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = "relatorio_" + dia.toLocaleDateString("pt-BR").replace(/\//g,"-") + ".xlsx";
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        _restaurarBtn();
+      }).catch(function(err) {
+        console.error("[exportarXLSX]", err);
+        alert("Erro ao gerar o arquivo. Tente novamente.");
+        _restaurarBtn();
+      });
+    } catch(err) {
+      console.error("[exportarXLSX _gerar]", err);
+      alert("Erro ao gerar o arquivo: " + err.message);
+      _restaurarBtn();
+    }
   }
 
   if (window.ExcelJS) {
     _gerar();
   } else {
     var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js";
-    s.onload = _gerar;
-    s.onerror = function(){ alert("Erro ao carregar biblioteca XLSX."); };
+    s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+    s.onload = function() {
+      /* aguarda o global ficar disponível */
+      var tentativas = 0;
+      var espera = setInterval(function() {
+        tentativas++;
+        if (window.ExcelJS) { clearInterval(espera); _gerar(); }
+        else if (tentativas > 20) { clearInterval(espera); alert("Biblioteca XLSX não carregou."); _restaurarBtn(); }
+      }, 100);
+    };
+    s.onerror = function() { alert("Erro ao carregar biblioteca XLSX."); _restaurarBtn(); };
     document.head.appendChild(s);
   }
 }
