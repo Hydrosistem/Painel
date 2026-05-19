@@ -1875,7 +1875,13 @@ function removerFotoConcl(){_fotoConclBase64=null;document.getElementById("fotoC
 function enviarConclusao(){
   if(!_protocoloConcluindo)return;
   var btn=document.getElementById("btnEnviarConclusao");
-  btn.disabled=true;btn.textContent="⏳ Enviando…";
+  var btnCancelar=document.querySelector("#modalConclusao .btn-cancelar");
+
+  /* ── ESTADO DE ENVIO: bloqueia UI e mostra progresso ── */
+  btn.disabled=true;
+  btn.innerHTML="<i class='fa-solid fa-spinner fa-spin'></i> Enviando foto…";
+  if(btnCancelar) btnCancelar.disabled=true;
+
   var operador=getOperador()||"Operador",protocolo=_protocoloConcluindo,fotoBase64=_fotoConclBase64||"";
   var p=_ultimaLista.filter(function(x){return x.protocolo===protocolo;})[0];
   var sid=SESSION_ID;
@@ -1883,49 +1889,56 @@ function enviarConclusao(){
     if((p.lock.usuario||"").trim().toLowerCase()===operador.trim().toLowerCase())sid=p.lock.sessionId;
   }
 
-  // ── OPTIMISTIC UPDATE ──
   var agora=new Date().toISOString();
-  for(var i=0;i<_ultimaLista.length;i++){
-    if(_ultimaLista[i].protocolo===protocolo){
-      _ultimaLista[i].status="CONCLUÍDO";
-      _ultimaLista[i].dataConclusao=agora;
-      _ultimaLista[i].operadorConclusao=operador;
-      _ultimaLista[i].lock=null;
-      break;
-    }
-  }
-  pararHeartbeat(protocolo);
-  fecharModalConclusao();
-  renderFiltrado(_ultimaLista);
-  renderTablet(_ultimaLista);
-  if(navigator.vibrate)navigator.vibrate([50,30,50]);
-  toast("<i class='fa-solid fa-circle-check'></i> Protocolo concluído!","ok");
 
-  // ── ENVIO EM BACKGROUND ──
+  /* ── ENVIO — fecha modal e aplica update só após confirmação ── */
   fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"})
     .then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});})
     .then(function(res){
       if(res.ok===false){
-        // servidor recusou — reverte
-        for(var i=0;i<_ultimaLista.length;i++){
-          if(_ultimaLista[i].protocolo===protocolo){
-            _ultimaLista[i].status="EM ANDAMENTO";
-            _ultimaLista[i].dataConclusao="";
-            _ultimaLista[i].operadorConclusao="";
-            _ultimaLista[i].lock={sessionId:sid,usuario:operador,timestamp:agora};
-            break;
-          }
-        }
-        iniciarHeartbeat(protocolo);
-        renderFiltrado(_ultimaLista);
-        renderTablet(_ultimaLista);
+        /* servidor recusou — restaura botão para o operador tentar de novo */
+        btn.disabled=false;
+        btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Tentar novamente";
+        if(btnCancelar) btnCancelar.disabled=false;
         toast("❌ "+(res.erro||"Erro ao concluir — tente novamente"),"erro");
-      } else {
-        setTimeout(carregarDados,1500);
+        return;
       }
+      /* ── SUCESSO: agora aplica update otimista e fecha modal ── */
+      for(var i=0;i<_ultimaLista.length;i++){
+        if(_ultimaLista[i].protocolo===protocolo){
+          _ultimaLista[i].status=STATUS.CONCLUIDO;
+          _ultimaLista[i].dataConclusao=agora;
+          _ultimaLista[i].operadorConclusao=operador;
+          _ultimaLista[i].lock=null;
+          break;
+        }
+      }
+      pararHeartbeat(protocolo);
+      fecharModalConclusao();
+      renderFiltrado(_ultimaLista);
+      renderTablet(_ultimaLista);
+      if(navigator.vibrate)navigator.vibrate([50,30,50]);
+      toast("<i class='fa-solid fa-circle-check'></i> Protocolo concluído!","ok");
+      setTimeout(carregarDados,1500);
     })
     .catch(function(){
-      // erro de rede — mantém concluído, servidor provavelmente processou
+      /* erro de rede — aplica update otimista igual ao comportamento anterior
+         e tenta reenviar em no-cors como fallback */
+      for(var i=0;i<_ultimaLista.length;i++){
+        if(_ultimaLista[i].protocolo===protocolo){
+          _ultimaLista[i].status=STATUS.CONCLUIDO;
+          _ultimaLista[i].dataConclusao=agora;
+          _ultimaLista[i].operadorConclusao=operador;
+          _ultimaLista[i].lock=null;
+          break;
+        }
+      }
+      pararHeartbeat(protocolo);
+      fecharModalConclusao();
+      renderFiltrado(_ultimaLista);
+      renderTablet(_ultimaLista);
+      if(navigator.vibrate)navigator.vibrate([50,30,50]);
+      toast("⚠️ Concluído localmente — verificando envio…","");
       try{
         fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});
       }catch(e2){}
