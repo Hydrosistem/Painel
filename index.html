@@ -1295,7 +1295,7 @@ body.modo-lote .centro-scroll { padding-bottom:80px; }
     <div class="modal-sub" id="modalSub"></div>
     <div class="modal-btns">
       <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
-      <button class="btn-confirmar" id="btnConfirmar" onclick="confirmarExecucao()">▶ Iniciar</button>
+      <button class="btn-confirmar" id="btnConfirmar" onclick="confirmarExecucao()"><i class="fa-solid fa-play"></i> Iniciar</button>
     </div>
   </div>
 </div>
@@ -1721,7 +1721,7 @@ function confirmarExecucao(){
   var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}
   if(pSel)selecionarProtocolo(pSel);
   renderOperadoresOnline(_presencasCache);
-  toast("▶ Execução iniciada! Vá ao local e conclua pelo painel.","exec");
+  toast("<i class='fa-solid fa-play'></i> Execução iniciada! Vá ao local e conclua pelo painel.","exec");
   postLock({acao:"adquirir",protocolo:protocolo,sessionId:SESSION_ID,usuario:operador}).then(function(res){
     /* se o operador já cancelou enquanto o fetch corria, libera imediatamente */
     if(_cancelamentosPendentes[protocolo]){
@@ -1848,7 +1848,7 @@ function _preencherDetalhe(p){
     footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
   }
   else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";}
-  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'>▶ Iniciar execução</button>";}
+  else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'><i class='fa-solid fa-play'></i> Iniciar execução</button>";}
 }
 function cancelarMinhaExecucaoPainel(protocolo){
   /* mesma lógica do cancelarMinhaExecucao — marca pendente para o caso do adquirir ainda estar em voo */
@@ -1954,7 +1954,7 @@ function renderCard(p,idx,isNovo){
   if(concluido){btnHtml="<div class='btn-concluido-info'><i class='fa-solid fa-circle-check'></i> Concluído em "+fdt(p.dataConclusao)+"</div>";}
   else if(outraExecucao){btnHtml="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
   else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
-  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'>▶ Iniciar execução</button>";}
+  else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'><i class='fa-solid fa-play'></i> Iniciar execução</button>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
   var delay=isNovo?Math.min(idx*50,380):0;
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>";
@@ -3235,7 +3235,7 @@ function _renderTimeline(p) {
   if (iniciadoTs && (concluido || lock)) {
     items.push({
       dot:   "execucao",
-      icon:  "▶",
+      icon:  "<i class='fa-solid fa-play' style='font-size:8px'></i>",
       label: "Execução iniciada",
       val:   fdt(iniciadoTs),
       sub:   lock && lock.usuario ? "por " + safeText(lock.usuario) : (p.operadorConclusao ? "por " + safeText(p.operadorConclusao) : "")
@@ -3243,7 +3243,7 @@ function _renderTimeline(p) {
   } else if (!concluido && lock) {
     items.push({
       dot:   "execucao",
-      icon:  "▶",
+      icon:  "<i class='fa-solid fa-play' style='font-size:8px'></i>",
       label: "Em execução",
       val:   "Em andamento",
       sub:   lock.usuario ? "por " + safeText(lock.usuario) : ""
