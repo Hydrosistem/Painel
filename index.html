@@ -2312,8 +2312,9 @@ function fecharModalConfirmacaoGenerica() {
 }
 
 function _confirmarGenerica() {
+  var cb = _cbConfirmacaoGenerica;
   fecharModalConfirmacaoGenerica();
-  if (_cbConfirmacaoGenerica) _cbConfirmacaoGenerica();
+  if (cb) cb();
 }
 
 /* ══ CARREGAR DADOS — com retry backoff exponencial ══ */
