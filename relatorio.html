@@ -787,12 +787,47 @@ function abrirDetalheRelatorio(p, itemEl) {
 
   /* Linha do tempo */
   var tlHtml = "<div class='rd-timeline'>";
-  tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot abertura'>📋</div><div class='rd-tl-body'><div class='rd-tl-label'>Abertura</div><div class='rd-tl-val'>"+fdt(p.dataHora)+"</div>"+(p.registradoPor?"<div class='rd-tl-sub'>por "+safeText(p.registradoPor)+"</div>":"")+"</div></div>";
-  if (p._tipo === "concluido") {
-    tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot concluido'><i class='fa-solid fa-check' style='font-size:9px'></i></div><div class='rd-tl-body'><div class='rd-tl-label'>Concluído</div><div class='rd-tl-val'>"+fdt(p.dataConclusao)+"</div>"+(p.operadorConclusao?"<div class='rd-tl-sub'>por "+safeText(p.operadorConclusao)+"</div>":"")+"</div></div>";
-  } else {
-    tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot pendente'><i class='fa-solid fa-clock' style='font-size:9px'></i></div><div class='rd-tl-body'><div class='rd-tl-label'>Prazo previsto</div><div class='rd-tl-val'>"+prazoHora+"</div></div></div>";
+
+  /* 1. Abertura */
+  tlHtml += "<div class='rd-tl-item'>" +
+    "<div class='rd-tl-dot abertura'><i class='fa-solid fa-clipboard' style='font-size:9px'></i></div>" +
+    "<div class='rd-tl-body'>" +
+      "<div class='rd-tl-label'>Abertura</div>" +
+      "<div class='rd-tl-val'>"+fdt(p.dataHora)+"</div>" +
+      (p.registradoPor ? "<div class='rd-tl-sub'>por "+safeText(p.registradoPor)+"</div>" : "") +
+    "</div></div>";
+
+  /* 2. Execução iniciada — usa iniciadoEm se disponível */
+  var tsIniciado = p.iniciadoEm || (p.lock ? p.lock.iniciadoEm : null);
+  if (tsIniciado || p._tipo === "execucao" || p._tipo === "concluido") {
+    var quemExec = p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "";
+    tlHtml += "<div class='rd-tl-item'>" +
+      "<div class='rd-tl-dot execucao'><i class='fa-solid fa-play' style='font-size:8px'></i></div>" +
+      "<div class='rd-tl-body'>" +
+        "<div class='rd-tl-label'>Execução iniciada</div>" +
+        "<div class='rd-tl-val'>"+(tsIniciado ? fdt(tsIniciado) : "Em andamento")+"</div>" +
+        (quemExec ? "<div class='rd-tl-sub'>por "+safeText(quemExec)+"</div>" : "") +
+      "</div></div>";
   }
+
+  /* 3. Concluído ou Prazo previsto */
+  if (p._tipo === "concluido") {
+    tlHtml += "<div class='rd-tl-item'>" +
+      "<div class='rd-tl-dot concluido'><i class='fa-solid fa-check' style='font-size:9px'></i></div>" +
+      "<div class='rd-tl-body'>" +
+        "<div class='rd-tl-label'>Concluído</div>" +
+        "<div class='rd-tl-val'>"+fdt(p.dataConclusao)+"</div>" +
+        (p.operadorConclusao ? "<div class='rd-tl-sub'>por "+safeText(p.operadorConclusao)+"</div>" : "") +
+      "</div></div>";
+  } else {
+    tlHtml += "<div class='rd-tl-item'>" +
+      "<div class='rd-tl-dot pendente'><i class='fa-solid fa-clock' style='font-size:9px'></i></div>" +
+      "<div class='rd-tl-body'>" +
+        "<div class='rd-tl-label'>"+(p._tipo === "atrasado" ? "Prazo vencido" : "Prazo previsto")+"</div>" +
+        "<div class='rd-tl-val'>"+prazoHora+"</div>" +
+      "</div></div>";
+  }
+
   tlHtml += "</div>";
 
   /* Foto de abertura */
