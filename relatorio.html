@@ -1068,16 +1068,21 @@ function exportarHistoricoXLSX() {
         return;
       }
 
-      /* Calcula stats para exibição */
-      var mins = concluidos.map(function(p) {
-        if (!p.dataHora || !p.dataConclusao) return null;
-        return Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000);
-      }).filter(function(m){ return m != null && m > 0; });
+      /* Tempo de execução = iniciadoEm → dataConclusao (não dataHora → dataConclusao) */
+      function _calcMinutos(p) {
+        var tsInicio = p.iniciadoEm || null;
+        if (!tsInicio || !p.dataConclusao) return null;
+        var m = Math.round((new Date(p.dataConclusao) - new Date(tsInicio)) / 60000);
+        return m > 0 ? m : null;
+      }
 
+      /* Calcula stats para exibição */
+      var mins = concluidos.map(_calcMinutos).filter(function(m){ return m != null; });
       var mediaMins = mins.length ? Math.round(mins.reduce(function(a,b){return a+b;},0) / mins.length) : null;
+      var PRAZO_HORAS = 24;
       var foraCount = concluidos.filter(function(p) {
         if (!p.dataHora || !p.dataConclusao) return false;
-        return (new Date(p.dataConclusao) - new Date(p.dataHora)) > 24 * 3600000;
+        return (new Date(p.dataConclusao) - new Date(p.dataHora)) > PRAZO_HORAS * 3600000;
       }).length;
 
       document.getElementById("histTotal").textContent = concluidos.length;
@@ -1126,10 +1131,10 @@ function exportarHistoricoXLSX() {
           concluidos.sort(function(a,b){ return new Date(a.dataConclusao) - new Date(b.dataConclusao); });
 
           concluidos.forEach(function(p, i) {
-            var minutos = (p.dataHora && p.dataConclusao)
-              ? Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000)
-              : null;
-            var foraStr = minutos != null ? (minutos > 1440 ? "Sim" : "Não") : "—";
+            var minutos = _calcMinutos(p);
+            var foraStr = (p.dataHora && p.dataConclusao)
+              ? ((new Date(p.dataConclusao) - new Date(p.dataHora)) > 1440 * 60000 ? "Sim" : "Não")
+              : "—";
             var iniciadoEm = p.iniciadoEm || "";
             var bgHex = i % 2 === 0 ? "FFF8EBF3FD" : "FFFFFFFF";
             bgHex = i % 2 === 0 ? "FFEBF3FD" : "FFFFFFFF";
