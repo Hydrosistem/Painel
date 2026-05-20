@@ -2738,7 +2738,13 @@ function carregarOperadoresOnline() {
     .then(function(res){
       if (res.ok) {
         _presencasCache = res.presencas || [];
-        renderOperadoresOnline(_presencasCache);
+        /* Se _ultimaLista ainda está vazia (dados ainda carregando),
+           aguarda o carregarDados terminar para ter os locks corretos */
+        if (_ultimaLista.length === 0) {
+          setTimeout(function(){ renderOperadoresOnline(_presencasCache); }, 1500);
+        } else {
+          renderOperadoresOnline(_presencasCache);
+        }
       }
     })
     .catch(function(){});
@@ -2747,7 +2753,12 @@ function carregarOperadoresOnline() {
 function renderOperadoresOnline(presencas) {
   var locks = {};
   _ultimaLista.forEach(function(p) {
-    if (p.lock) locks[p.lock.sessionId] = { protocolo: p.protocolo, endereco: p.endereco, timestamp: p.lock.timestamp };
+    if (p.lock) locks[p.lock.sessionId] = {
+      protocolo:  p.protocolo,
+      endereco:   p.endereco,
+      timestamp:  p.lock.timestamp,
+      iniciadoEm: p.iniciadoEm || p.lock.iniciadoEm || p.lock.timestamp
+    };
   });
 
   var equipe = presencas.filter(function(p) { return !p.supervisor; });
@@ -2782,8 +2793,9 @@ function renderOperadoresOnline(presencas) {
 
       /* Timer de execução */
       var timerHtml = "";
-      if (lock && lock.timestamp) {
-        var minExec = Math.round((new Date() - new Date(lock.timestamp)) / 60000);
+      if (lock) {
+        var _tsTimer = lock.iniciadoEm || lock.timestamp;
+        var minExec = Math.round((new Date() - new Date(_tsTimer)) / 60000);
         var timerTxt = minExec < 1 ? "<1min" : minExec + "min";
         timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
           '<span style="width:6px;height:6px;border-radius:50%;background:var(--exec);display:inline-block;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0;"></span>' +
