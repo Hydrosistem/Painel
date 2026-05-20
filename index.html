@@ -158,6 +158,13 @@ body.dark-mode .empty-tablet { color: var(--texto2); }
 body.dark-mode .btn-bloqueado { background: #1E293B; color: var(--texto3); border-color: var(--borda); }
 body.dark-mode .btn-lote-cancelar { background: #1E293B; color: var(--texto2); border-color: var(--borda); }
 
+/* ══ BOTÕES INICIAR NO DARK MODE ══ */
+body.dark-mode .btn-iniciar                  { background: var(--azul); color: #fff; }
+body.dark-mode .card.t-atrasado .btn-iniciar { background: #7F1D1D; color: #FCA5A5; }
+body.dark-mode .card.t-urgente  .btn-iniciar { background: #7F1D1D; color: #FCA5A5; }
+body.dark-mode .btn-detail-iniciar.t-atrasado { background: #7F1D1D; color: #FCA5A5; }
+body.dark-mode .btn-detail-iniciar.t-urgente  { background: #7F1D1D; color: #FCA5A5; }
+
 /* ══ BOTÃO MODO NOTURNO ══ */
 .btn-dark-mode {
   background: rgba(255,255,255,.08);
@@ -754,6 +761,10 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 #toast.erro { background: var(--vermelho); }
 #toast.exec { background: var(--exec); }
 #toast.ok   { background: var(--verde); }
+body.dark-mode #toast        { background: #1E293B; color: var(--texto); border-color: var(--borda-md); }
+body.dark-mode #toast.erro   { background: #7F1D1D; color: #FCA5A5; border-color: #991B1B; }
+body.dark-mode #toast.exec   { background: #4C1D95; color: #C4B5FD; border-color: #6D28D9; }
+body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color: #166534; }
 
 /* ══ MODAL CONCLUSÃO ══ */
 .foto-concl-preview-wrap { width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--borda); margin-bottom: 10px; position: relative; display: none; }
