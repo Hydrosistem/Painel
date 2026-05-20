@@ -1641,7 +1641,47 @@ function togglePerto(){
 function _aplicarProximidade(lista){if(!_modoPerto||!_posAtual) return lista;var cd=[];lista.forEach(function(p){var st=(p.status||"").toUpperCase().trim();if(st==="CONCLUÍDO"||st==="CONCLUIDO") return;if(p.lat==null||p.lng==null){p._distKm=null;cd.push(p);return;}var d=_haversine(_posAtual.lat,_posAtual.lng,p.lat,p.lng);if(d<=RAIO_KM){p._distKm=d;cd.push(p);}});cd.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});return cd;}
 function _formatarDist(km){if(km==null)return "";if(km<1)return Math.round(km*1000)+"m";return km.toFixed(1)+"km";}
 
-/* ══ SESSION ══ */
+/* ══ CACHE LOCAL DE iniciadoEm — preserva hora real de início entre renders ══ */
+var _iniciadoEmCache = {};
+
+function _getIniciadoEm(lock, p) {
+  /* Prioridade:
+     1. p.iniciadoEm — vem da coluna 12 da planilha, gravado uma vez, nunca sobrescrito
+     2. lock.iniciadoEm — vem do cache, correto se o lock foi criado com a versão atual
+     3. _iniciadoEmCache — fallback local para locks antigos sem iniciadoEm
+     4. lock.timestamp — último recurso (atualizado pelo heartbeat, impreciso)
+  */
+  var sid = lock ? lock.sessionId : null;
+
+  /* Fonte 1: planilha — mais confiável */
+  if (p && p.iniciadoEm) {
+    if (sid) _iniciadoEmCache[sid] = p.iniciadoEm;
+    return p.iniciadoEm;
+  }
+
+  /* Fonte 2: lock.iniciadoEm do cache */
+  if (lock && lock.iniciadoEm) {
+    if (sid) _iniciadoEmCache[sid] = lock.iniciadoEm;
+    return lock.iniciadoEm;
+  }
+
+  /* Fonte 3: cache local (preservado entre renders) */
+  if (sid && _iniciadoEmCache[sid]) return _iniciadoEmCache[sid];
+
+  /* Fonte 4: timestamp do lock (impreciso — atualizado pelo heartbeat) */
+  if (lock && lock.timestamp) return lock.timestamp;
+
+  return null;
+}
+
+/* limpa entradas antigas do cache quando o lock some */
+function _limparCacheLocksAntigos(lista) {
+  var sidsAtivos = {};
+  lista.forEach(function(p) { if (p.lock) sidsAtivos[p.lock.sessionId] = true; });
+  Object.keys(_iniciadoEmCache).forEach(function(sid) {
+    if (!sidsAtivos[sid]) delete _iniciadoEmCache[sid];
+  });
+}
 var SESSION_ID=(function(){var k="hyd_session_id";try{var s=localStorage.getItem(k);if(!s){s="s_"+Math.random().toString(36).slice(2)+"_"+Date.now();localStorage.setItem(k,s);}return s;}catch(e){return "s_"+Math.random().toString(36).slice(2)+"_"+Date.now();}})();
 var meusLocks={},protocoloPendente=null,enderecoPendente=null,_protocoloSelecionado=null,_lockIniciadoEm={},_aguardandoConclusao={},_optimisticLocks={};
 
@@ -1831,7 +1871,7 @@ function _preencherDetalhe(p){
   var prazoHora=concluido?(p.dataConclusao?new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—"):(t.horaVence||"—");
   var prazoLbl=concluido?"CONCLUSÃO":"PRAZO";
   var execInfoHtml="";
-  if(outraExecucao){var minEx=Math.round((new Date()-new Date(lock.timestamp))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
+  if(outraExecucao){var _tsExecD=_getIniciadoEm(lock,p);var minEx=Math.round((new Date()-new Date(_tsExecD))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
   else if(minhaExecucao){execInfoHtml="<div class='exec-info-box meu'>✔ Você está executando — vá ao local e conclua aqui</div>";}
   var fotoHtml="",src=fotoSrc(p.fotoId);
   if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
@@ -1994,7 +2034,7 @@ function renderCard(p,idx,isNovo){
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
   var protEsc=esc(p.protocolo),endEsc=esc(p.endereco);
   var execInfoHtml="";
-  if(outraExecucao){var min=Math.round((new Date()-new Date(lock.timestamp))/60000),quem=lock.usuario?" por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info'>⏱ Iniciado há "+(min<1?"<1 min":min+" min")+quem+"</div>";}
+  if(outraExecucao){var _tsExecM=_getIniciadoEm(lock,p);var min=Math.round((new Date()-new Date(_tsExecM))/60000),quem=lock.usuario?" por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info'>⏱ Iniciado há "+(min<1?"<1 min":min+" min")+quem+"</div>";}
   else if(minhaExecucao){execInfoHtml="<div class='exec-info' style='background:#DCFCE7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando</div>";}
   var btnHtml;
   if(concluido){btnHtml="<div class='btn-concluido-info'><i class='fa-solid fa-circle-check'></i> Concluído em "+fdt(p.dataConclusao)+"</div>";}
@@ -2034,7 +2074,7 @@ function renderCardTablet(p,idx,isNovo){
   else{var labels={urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};badgeHtml="<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";}
   var execSub="";
   if(concluido)execSub="<span style='color:var(--verde)'>"+fdt(p.dataConclusao)+"</span>";
-  else if(outraExecucao){var min=Math.round((new Date()-new Date(lock.timestamp))/60000),quem=lock.usuario?" · "+safeText(lock.usuario):"";execSub="<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";}
+  else if(outraExecucao){var _tsExec=_getIniciadoEm(lock,p);var min=Math.round((new Date()-new Date(_tsExec))/60000),quem=lock.usuario?" · "+safeText(lock.usuario):"";execSub="<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";}
   else if(minhaExecucao)execSub="<span style='color:#166534'>Você executando</span>";
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>",prazoLabel=concluido?"100%":pct+"%";
   var delay=isNovo?Math.min((idx||0)*45,320):0;
@@ -2141,6 +2181,7 @@ function render(lista){
   }
 
   _ultimaLista = lista;
+  _limparCacheLocksAntigos(lista);
 
   /* ── Alerta de novo protocolo e prioridade máxima ── */
   if (_protocolosConhecidos !== null) {
