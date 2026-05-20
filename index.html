@@ -1781,8 +1781,41 @@ function isMinhaExecucao(lock, concluido) {
 
 /* ══ PAINEL DETALHE ══ */
 var _detailFadeTimer=null;
-function selecionarProtocolo(p){var content=document.getElementById("detailContent");if(content.classList.contains("show")){_preencherDetalhe(p);}else{_preencherDetalhe(p);}}
+function selecionarProtocolo(p){
+  if (_protocoloSelecionado !== p.protocolo) {
+    /* troca de protocolo — força reconstrução completa */
+    _hashDetalheAtual = "";
+  }
+  var content=document.getElementById("detailContent");
+  if(content.classList.contains("show")){_preencherDetalhe(p);}else{_preencherDetalhe(p);}
+}
+
+var _hashDetalheAtual = "";
+
+function _hashDetalhe(p) {
+  return (p.protocolo||"") + "|" +
+         (p.status||"") + "|" +
+         (p.lock ? (p.lock.sessionId + p.lock.timestamp) : "") + "|" +
+         (p.obs||"") + "|" +
+         (p.fotoId||"") + "|" +
+         (p.fotoConcId||p.fotoConclusaoId||"") + "|" +
+         (p.prioridade?"1":"0") + "|" +
+         (p.dataConclusao||"") + "|" +
+         (p.operadorConclusao||"");
+}
 function _preencherDetalhe(p){
+  /* ── Evita reconstruir o painel se nada mudou — impede piscar da foto ── */
+  var novoHash = _hashDetalhe(p);
+  var mesmoProt = _protocoloSelecionado === p.protocolo;
+  if (mesmoProt && novoHash === _hashDetalheAtual) {
+    /* apenas atualiza a seleção visual do card sem recriar o HTML */
+    document.querySelectorAll(".card-t").forEach(function(c){c.classList.remove("selected");});
+    var cardElFast = document.getElementById("card-t-"+p.protocolo.replace(/[^a-z0-9]/gi,"_"));
+    if(cardElFast) cardElFast.classList.add("selected");
+    return;
+  }
+  _hashDetalheAtual = novoHash;
+
   _protocoloSelecionado=p.protocolo;
   document.querySelectorAll(".card-t").forEach(function(c){c.classList.remove("selected");});
   var cardEl=document.getElementById("card-t-"+p.protocolo.replace(/[^a-z0-9]/gi,"_"));
