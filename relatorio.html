@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <title>Hydrosistem — Relatório Diário</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -477,6 +478,25 @@ function getDiaChip(d) {
   if (diff === 1) return { txt: "Ontem", cls: "ontem" };
   if (diff > 1)  return { txt: diff + " dias atrás", cls: "antigo" };
   return null;
+}
+
+function abrirDatePicker() {
+  var inp = document.getElementById("inputData");
+  var hoje = new Date();
+  inp.max = hoje.getFullYear() + "-" +
+    String(hoje.getMonth()+1).padStart(2,"0") + "-" +
+    String(hoje.getDate()).padStart(2,"0");
+  try {
+    inp.showPicker();
+  } catch(e) {
+    inp.style.pointerEvents = "auto";
+    inp.style.opacity = "1";
+    inp.style.position = "absolute";
+    inp.style.width = "1px";
+    inp.style.height = "1px";
+    inp.click();
+    setTimeout(function(){ inp.style.pointerEvents = "none"; inp.style.opacity = "0"; }, 1000);
+  }
 }
 
 function irParaData(val) {
@@ -1068,11 +1088,20 @@ function exportarHistoricoXLSX() {
         return;
       }
 
-      /* Tempo de execução = iniciadoEm → dataConclusao (não dataHora → dataConclusao) */
+      /* Tempo de execução = iniciadoEm → dataConclusao
+         Se iniciadoEm for igual ou próximo de dataHora (< 2min de diferença),
+         considera que o campo foi preenchido incorretamente e retorna null */
       function _calcMinutos(p) {
-        var tsInicio = p.iniciadoEm || null;
-        if (!tsInicio || !p.dataConclusao) return null;
-        var m = Math.round((new Date(p.dataConclusao) - new Date(tsInicio)) / 60000);
+        if (!p.iniciadoEm || !p.dataConclusao) return null;
+        var tsInicio = new Date(p.iniciadoEm);
+        var tsFim    = new Date(p.dataConclusao);
+        /* Valida: iniciadoEm deve ser posterior à abertura por pelo menos 2 min */
+        if (p.dataHora) {
+          var tsAbertura = new Date(p.dataHora);
+          var diffAberturaInicio = (tsInicio - tsAbertura) / 60000;
+          if (diffAberturaInicio < 2) return null; /* iniciadoEm inválido */
+        }
+        var m = Math.round((tsFim - tsInicio) / 60000);
         return m > 0 ? m : null;
       }
 
