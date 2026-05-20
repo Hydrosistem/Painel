@@ -249,6 +249,21 @@ header {
 .vazio-icon { font-size: 36px; margin-bottom: 10px; }
 .vazio-txt { font-size: 14px; font-weight: 600; }
 
+/* ══ HISTÓRICO EXPORTAÇÃO ══ */
+.hist-section { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
+.hist-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.hist-label { font-size: 13px; color: var(--texto2); white-space: nowrap; }
+.hist-input { height: 36px; padding: 0 12px; border: 1px solid var(--borda); border-radius: var(--radius-sm); font-size: 13px; font-family: "DM Sans", sans-serif; color: var(--texto); background: var(--branco); min-width: 140px; outline: none; transition: border-color .15s, box-shadow .15s; }
+.hist-input:focus { border-color: var(--azul); box-shadow: 0 0 0 3px rgba(20,105,199,.1); }
+.btn-hist-exportar { background: var(--azul); color: #fff; border: none; border-radius: var(--radius-sm); padding: 0 16px; height: 36px; font-size: 13px; font-family: "DM Sans", sans-serif; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; transition: background .15s; }
+.btn-hist-exportar:hover { background: #1058a8; }
+.btn-hist-exportar:disabled { opacity: .5; cursor: not-allowed; }
+.hist-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 14px; display: none; }
+.hist-stats.show { display: grid; }
+.hist-stat { background: var(--cinza-md); border-radius: var(--radius-sm); padding: 12px; text-align: center; }
+.hist-stat-val { font-size: 20px; font-weight: 700; font-family: "DM Mono", monospace; line-height: 1; color: var(--azul); }
+.hist-stat-lbl { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: var(--texto3); margin-top: 3px; }
+
 /* ══ FOOTER ══ */
 .relatorio-footer { text-align: center; font-size: 12px; color: var(--texto3); margin-top: 32px; }
 
@@ -297,7 +312,7 @@ header {
 
       <!-- Seletor de data -->
       <div class="date-picker-wrap">
-        <button class="btn-data">
+        <button class="btn-data" onclick="abrirDatePicker()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Ir para data
         </button>
@@ -306,7 +321,7 @@ header {
 
       <button class="btn-nav" id="btnHoje" onclick="mudarDia(0)" style="display:none">Hoje</button>
       <button class="btn-nav" id="btnProximo" onclick="mudarDia(1)" style="display:none">Próximo →</button>
-      <button class="btn-exportar" onclick="exportarPDF()">⬇ PDF</button>
+      <button class="btn-exportar" onclick="exportarXLSX()"><i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX</button>
     </div>
   </div>
 
@@ -389,6 +404,25 @@ header {
   </div>
 
   <div class="relatorio-footer" id="relatorioFooter"></div>
+
+  <!-- SEÇÃO HISTÓRICO -->
+  <div class="sec-titulo" style="margin-top:8px">Exportar histórico por período</div>
+  <div class="hist-section">
+    <div class="hist-row">
+      <span class="hist-label">Data Inicial:</span>
+      <input type="date" class="hist-input" id="histIni">
+      <span class="hist-label">Data Final:</span>
+      <input type="date" class="hist-input" id="histFim">
+      <button class="btn-hist-exportar" onclick="exportarHistoricoXLSX()">
+        <i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX
+      </button>
+    </div>
+    <div class="hist-stats" id="histStats">
+      <div class="hist-stat"><div class="hist-stat-val" id="histTotal">—</div><div class="hist-stat-lbl">Concluídos</div></div>
+      <div class="hist-stat"><div class="hist-stat-val" id="histMedio">—</div><div class="hist-stat-lbl">Tempo médio</div></div>
+      <div class="hist-stat"><div class="hist-stat-val" id="histFora" style="color:var(--vermelho)">—</div><div class="hist-stat-lbl">Fora do prazo</div></div>
+    </div>
+  </div>
 
   </div><!-- /relatorio-content -->
 
@@ -479,6 +513,14 @@ var _filtroAtual = "todos";
 var _cacheData = null;
 
 window.addEventListener("DOMContentLoaded", function() {
+  /* Inicializa datas do histórico com o mês atual */
+  var hoje = new Date();
+  var primeiroDia = new Date(hoje.getFullYear(), hoje.getMonth(), 1);
+  var fmt = function(d) {
+    return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+  };
+  document.getElementById("histIni").value = fmt(primeiroDia);
+  document.getElementById("histFim").value = fmt(hoje);
   carregarRelatorio();
 });
 
@@ -896,7 +938,258 @@ function _corTipo(tipo) {
   return mapa[tipo] || "azul";
 }
 
-function exportarPDF() { window.print(); }
+function exportarPDF() { exportarXLSX(); }
+
+/* ══ UTILITÁRIOS XLSX ══ */
+function _formatarTempoHoras(minutos) {
+  if (minutos == null || isNaN(minutos) || minutos < 0) return "—";
+  var h = Math.floor(minutos / 60);
+  var m = minutos % 60;
+  return h + ":" + String(m).padStart(2,"0") + ":00";
+}
+
+function _carregarExcelJS(callback) {
+  if (window.ExcelJS) { callback(); return; }
+  var s = document.createElement("script");
+  s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
+  s.onload = function() {
+    var tentativas = 0;
+    var espera = setInterval(function() {
+      tentativas++;
+      if (window.ExcelJS) { clearInterval(espera); callback(); }
+      else if (tentativas > 20) { clearInterval(espera); alert("Biblioteca XLSX não carregou."); }
+    }, 100);
+  };
+  s.onerror = function() { alert("Erro ao carregar biblioteca XLSX."); };
+  document.head.appendChild(s);
+}
+
+/* ══ EXPORTAR DIA ATUAL ══ */
+function exportarXLSX() {
+  var btn = document.querySelector(".btn-exportar");
+  if (!_todosProtos || !_todosProtos.length) {
+    if (btn) { btn.innerHTML = "Sem dados"; setTimeout(function(){ btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; }, 2000); }
+    return;
+  }
+  if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:12px"></i> Gerando…'; btn.disabled = true; }
+  var dia = getDiaAtual();
+
+  function _restaurarBtn() {
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; btn.disabled = false; }
+  }
+
+  _carregarExcelJS(function() {
+    try {
+      var EJS = window.ExcelJS;
+      var workbook = new EJS.Workbook();
+      var ws = workbook.addWorksheet("Relatorio");
+      var AZUL = "1469C7", BRANCO = "FFFFFF";
+      var corStatus = { "Concluído":"DCFCE7", "Atrasado":"FEE2E2", "Pendente":"FEF9C3", "Em execução":"EDE9FE" };
+      ws.columns = [
+        { key:"prot", width:13 }, { key:"data", width:18 }, { key:"end", width:48 },
+        { key:"reg", width:24 }, { key:"sts", width:14 }, { key:"resp", width:24 },
+        { key:"conc", width:18 }, { key:"dur", width:14 },
+      ];
+      var r1 = ws.addRow(["HYDROSISTEM — Relatório Diário · " + formatarDataLonga(dia)]);
+      ws.mergeCells(1,1,1,8); r1.height = 28;
+      r1.getCell(1).font = { bold:true, size:12, color:{argb:"FF"+AZUL} };
+      r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
+      ws.addRow([]);
+      var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Duração"];
+      var rH = ws.addRow(cols); rH.height = 20;
+      rH.eachCell(function(cell) {
+        cell.font = { bold:true, size:10, color:{argb:"FF"+BRANCO} };
+        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF"+AZUL} };
+        cell.alignment = { horizontal:"center", vertical:"middle" };
+      });
+      var labelsMap = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
+      _todosProtos.forEach(function(p, i) {
+        var statusLabel = labelsMap[p._tipo] || p._tipo;
+        var bgHex = "FF" + (corStatus[statusLabel] || (i%2===0?"F8FAFC":BRANCO));
+        var row = ws.addRow([
+          p.protocolo || "", p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
+          p.endereco || "", p.registradoPor || "—", statusLabel,
+          p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
+          p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
+          p._duracaoMin != null ? formatarMin(p._duracaoMin) : "—"
+        ]);
+        row.eachCell(function(cell) {
+          cell.font = { size:10 }; cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:bgHex} };
+          cell.alignment = { vertical:"middle" }; cell.border = { bottom:{style:"hair",color:{argb:"FFE2E8F0"}} };
+        });
+        row.getCell(3).alignment = { vertical:"middle", wrapText:true };
+      });
+      workbook.xlsx.writeBuffer().then(function(buffer) {
+        var blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement("a");
+        a.href = url; a.download = "relatorio_" + dia.toLocaleDateString("pt-BR").replace(/\//g,"-") + ".xlsx";
+        document.body.appendChild(a); a.click();
+        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+        _restaurarBtn();
+      }).catch(function(){ alert("Erro ao gerar arquivo."); _restaurarBtn(); });
+    } catch(err) { alert("Erro: " + err.message); _restaurarBtn(); }
+  });
+}
+
+/* ══ EXPORTAR HISTÓRICO POR PERÍODO ══ */
+function exportarHistoricoXLSX() {
+  var iniVal = document.getElementById("histIni").value;
+  var fimVal = document.getElementById("histFim").value;
+  if (!iniVal || !fimVal) { alert("Selecione a data inicial e a data final."); return; }
+
+  var dtIni = new Date(iniVal + "T00:00:00");
+  var dtFim = new Date(fimVal + "T23:59:59");
+  if (dtIni > dtFim) { alert("Data inicial deve ser anterior à data final."); return; }
+
+  var btn = document.querySelector(".btn-hist-exportar");
+  if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:12px"></i> Buscando…'; btn.disabled = true; }
+
+  function _restaurarBtnHist() {
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; btn.disabled = false; }
+  }
+
+  /* Busca todos os dados — sem filtro de data no fetch */
+  fetch(API + "&t=" + Date.now(), { redirect: "follow" })
+    .then(function(r){ return r.json(); })
+    .then(function(lista) {
+      /* Filtra apenas concluídos dentro do período */
+      var concluidos = lista.filter(function(p) {
+        var s = (p.status||"").toUpperCase().trim();
+        var concluido = s === "CONCLUÍDO" || s === "CONCLUIDO";
+        if (!concluido || !p.dataConclusao) return false;
+        var dc = new Date(p.dataConclusao);
+        return dc >= dtIni && dc <= dtFim;
+      });
+
+      if (!concluidos.length) {
+        alert("Nenhum protocolo concluído no período selecionado.");
+        _restaurarBtnHist();
+        return;
+      }
+
+      /* Calcula stats para exibição */
+      var mins = concluidos.map(function(p) {
+        if (!p.dataHora || !p.dataConclusao) return null;
+        return Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000);
+      }).filter(function(m){ return m != null && m > 0; });
+
+      var mediaMins = mins.length ? Math.round(mins.reduce(function(a,b){return a+b;},0) / mins.length) : null;
+      var foraCount = concluidos.filter(function(p) {
+        if (!p.dataHora || !p.dataConclusao) return false;
+        return (new Date(p.dataConclusao) - new Date(p.dataHora)) > 24 * 3600000;
+      }).length;
+
+      document.getElementById("histTotal").textContent = concluidos.length;
+      document.getElementById("histMedio").textContent = mediaMins ? formatarMin(mediaMins) : "—";
+      document.getElementById("histFora").textContent = foraCount;
+      document.getElementById("histStats").classList.add("show");
+
+      if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:12px"></i> Gerando…'; }
+
+      _carregarExcelJS(function() {
+        try {
+          var EJS = window.ExcelJS;
+          var workbook = new EJS.Workbook();
+          var ws = workbook.addWorksheet("Historico");
+          var AZUL = "1469C7", BRANCO = "FFFFFF";
+
+          ws.columns = [
+            { key:"prot",   width:14 },
+            { key:"end",    width:48 },
+            { key:"op",     width:22 },
+            { key:"abertura", width:20 },
+            { key:"iniExec",  width:20 },
+            { key:"fimExec",  width:20 },
+            { key:"tempo",    width:18 },
+            { key:"fora",     width:14 },
+          ];
+
+          /* Título */
+          var periodo = dtIni.toLocaleDateString("pt-BR") + " a " + dtFim.toLocaleDateString("pt-BR");
+          var r1 = ws.addRow(["HYDROSISTEM — Histórico de Concluídos · " + periodo]);
+          ws.mergeCells(1,1,1,8); r1.height = 28;
+          r1.getCell(1).font = { bold:true, size:12, color:{argb:"FF"+AZUL} };
+          r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
+          ws.addRow([]);
+
+          /* Cabeçalhos */
+          var cols = ["Protocolo","Endereço","Concluído por","Data Abertura","Data Ini. Exec.","Data Fim Exec.","Tempo Execução Horas","Fora Do Prazo"];
+          var rH = ws.addRow(cols); rH.height = 22;
+          rH.eachCell(function(cell) {
+            cell.font = { bold:true, size:10, color:{argb:"FF"+BRANCO} };
+            cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF"+AZUL} };
+            cell.alignment = { horizontal:"center", vertical:"middle" };
+          });
+
+          /* Dados */
+          concluidos.sort(function(a,b){ return new Date(a.dataConclusao) - new Date(b.dataConclusao); });
+
+          concluidos.forEach(function(p, i) {
+            var minutos = (p.dataHora && p.dataConclusao)
+              ? Math.round((new Date(p.dataConclusao) - new Date(p.dataHora)) / 60000)
+              : null;
+            var foraStr = minutos != null ? (minutos > 1440 ? "Sim" : "Não") : "—";
+            var iniciadoEm = p.iniciadoEm || "";
+            var bgHex = i % 2 === 0 ? "FFF8EBF3FD" : "FFFFFFFF";
+            bgHex = i % 2 === 0 ? "FFEBF3FD" : "FFFFFFFF";
+
+            var row = ws.addRow([
+              p.protocolo || "",
+              p.endereco || "",
+              p.operadorConclusao || "—",
+              p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
+              iniciadoEm ? new Date(iniciadoEm).toLocaleString("pt-BR") : "—",
+              p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
+              minutos != null ? _formatarTempoHoras(minutos) : "—",
+              foraStr
+            ]);
+
+            var corFora = foraStr === "Sim" ? "FFFEE2E2" : "FFDCFCE7";
+
+            row.eachCell(function(cell, colNum) {
+              cell.font = { size:10 };
+              cell.alignment = { vertical:"middle" };
+              cell.border = { bottom:{style:"hair",color:{argb:"FFE2E8F0"}} };
+              if (colNum === 8) {
+                cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:corFora} };
+                cell.font = { size:10, bold:true, color:{argb: foraStr==="Sim"?"FFB91C1C":"FF15803D"} };
+              } else {
+                cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:bgHex} };
+              }
+            });
+            row.getCell(2).alignment = { vertical:"middle", wrapText:true };
+          });
+
+          /* Linha de totais */
+          ws.addRow([]);
+          var rTot = ws.addRow([
+            "TOTAL: " + concluidos.length + " protocolo(s)",
+            "", "", "", "", "",
+            "Média: " + (mediaMins ? _formatarTempoHoras(mediaMins) : "—"),
+            "Fora: " + foraCount
+          ]);
+          rTot.eachCell(function(cell) {
+            cell.font = { bold:true, size:10, color:{argb:"FF"+AZUL} };
+            cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FFEBF3FD"} };
+          });
+
+          workbook.xlsx.writeBuffer().then(function(buffer) {
+            var blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement("a");
+            a.href = url;
+            a.download = "historico_" + iniVal + "_a_" + fimVal + ".xlsx";
+            document.body.appendChild(a); a.click();
+            setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
+            _restaurarBtnHist();
+          }).catch(function(err){ alert("Erro ao gerar: " + err.message); _restaurarBtnHist(); });
+
+        } catch(err) { alert("Erro: " + err.message); _restaurarBtnHist(); }
+      });
+    })
+    .catch(function(){ alert("Erro ao buscar dados. Verifique a conexão."); _restaurarBtnHist(); });
+}
 
 function safeText(s) {
   var d = document.createElement("div");
