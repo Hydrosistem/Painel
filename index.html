@@ -3016,10 +3016,13 @@ function _renderMapaMarcadores(lista) {
     _mapaMarcadores.push(marcador);
   });
 
+  var _mapaAtivosCount = lista.filter(function(p){ return !isConcluido(p); });
   ["todos","atrasado","urgente","execucao","pendente","concluido"].forEach(function(t) {
     var el = document.getElementById("mfc-"+t);
     if (!el) return;
-    el.textContent = t==="todos" ? lista.length : lista.filter(function(p){return _getTipoMapa(p)===t;}).length;
+    el.textContent = t==="todos"
+      ? _mapaAtivosCount.length
+      : _mapaAtivosCount.filter(function(p){return _getTipoMapa(p)===t;}).length;
   });
 }
 
