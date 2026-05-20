@@ -3489,7 +3489,7 @@ function toggleDarkMode(){
   }
   
   try{ localStorage.setItem("hyd_dark", ativo ? "1" : "0"); }catch(e){}
-  toast(ativo ? "🌙 Modo noturno ativado" : "☀️ Modo claro ativado", "");
+  toast(ativo ? "<i class='fa-solid fa-moon'></i> Modo noturno ativado" : "<i class='fa-solid fa-sun'></i> Modo claro ativado", "");
 }
   
 </script>
