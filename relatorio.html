@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <title>Hydrosistem — Relatório Diário</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -88,9 +87,8 @@ header {
 .btn-data:hover { background: var(--cinza-md); border-color: #CBD5E1; }
 .btn-data svg { flex-shrink: 0; }
 #inputData {
-  position: absolute; top: 100%; left: 0;
-  opacity: 0; pointer-events: none; width: 1px; height: 1px;
-  border: none;
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  opacity: 0; cursor: pointer; border: none;
 }
 
 .btn-nav { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius-sm); padding: 0 14px; height: 36px; font-size: 13px; font-family: "DM Sans",sans-serif; font-weight: 600; cursor: pointer; color: var(--texto2); display: flex; align-items: center; gap: 5px; transition: background .15s, border-color .15s; }
@@ -114,12 +112,21 @@ header {
 .sec-titulo { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--texto3); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
 .sec-titulo::after { content: ""; flex: 1; height: 1px; background: var(--borda); }
 
-/* ══ GRÁFICO CHART.JS ══ */
+/* ══ GRÁFICO DUPLO ══ */
 .chart-card { background: var(--branco); border: 1px solid var(--borda); border-radius: var(--radius); padding: 20px; margin-bottom: 20px; }
 .chart-legend { display: flex; gap: 16px; margin-bottom: 16px; }
 .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--texto2); }
 .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-.chart-canvas-wrap { position: relative; height: 220px; }
+
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+.bar-hora { font-size: 11px; color: var(--texto3); width: 36px; text-align: right; flex-shrink: 0; font-family: "DM Mono", monospace; }
+.bar-track-wrap { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+.bar-track { height: 14px; background: var(--cinza-md); border-radius: 4px; overflow: hidden; position: relative; }
+.bar-fill-abertura { height: 100%; background: #CBD5E1; border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; transition: width .6s cubic-bezier(.22,1,.36,1); min-width: 0; }
+.bar-fill-conclusao { height: 100%; background: var(--azul); border-radius: 4px; display: flex; align-items: center; justify-content: flex-end; padding-right: 6px; transition: width .6s cubic-bezier(.22,1,.36,1); min-width: 0; }
+.bar-val { font-size: 10px; font-weight: 700; color: #fff; white-space: nowrap; }
+.bar-val-cinza { font-size: 10px; font-weight: 700; color: var(--texto2); white-space: nowrap; }
+.bar-total { font-size: 10px; color: var(--texto3); width: 24px; text-align: right; flex-shrink: 0; font-family: "DM Mono", monospace; }
 
 /* ══ DUAS COLUNAS ══ */
 .dois-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
@@ -165,7 +172,74 @@ header {
 .proto-badge.t-execucao  { background: var(--exec-bg); color: var(--exec); }
 .proto-tempo { font-size: 11px; font-family: "DM Mono", monospace; color: var(--texto3); margin-left: 8px; flex-shrink: 0; }
 
-/* ══ LOADING ══ */
+/* ══ LAYOUT COM PAINEL LATERAL ══ */
+.relatorio-main { display: flex; gap: 0; align-items: flex-start; }
+.relatorio-content { flex: 1; min-width: 0; }
+.relatorio-detail { 
+  width: 320px; flex-shrink: 0;
+  background: var(--branco); border: 1px solid var(--borda);
+  border-radius: var(--radius); position: sticky; top: 76px;
+  max-height: calc(100vh - 96px); overflow-y: auto;
+  display: none; margin-left: 20px;
+}
+.relatorio-detail.show { display: block; }
+.rd-header { 
+  padding: 16px 16px 12px; border-bottom: 1px solid var(--borda);
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 8px;
+}
+.rd-prot { font-family: "DM Mono", monospace; font-size: 11px; color: var(--texto3); letter-spacing: 1px; }
+.rd-end  { font-size: 14px; font-weight: 700; color: var(--texto); line-height: 1.4; margin-top: 2px; }
+.rd-close { 
+  width: 26px; height: 26px; border-radius: 50%; border: 1px solid var(--borda);
+  background: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  color: var(--texto3); font-size: 13px; flex-shrink: 0; transition: background .15s;
+}
+.rd-close:hover { background: var(--cinza-md); }
+.rd-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.rd-badge { display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; border: 1px solid transparent; }
+.rd-badge.t-concluido { background: var(--verde-bg); color: var(--verde); border-color: var(--verde-b); }
+.rd-badge.t-atrasado  { background: var(--vermelho-bg); color: var(--vermelho); border-color: var(--vermelho-b); }
+.rd-badge.t-pendente  { background: var(--amarelo-bg); color: var(--amarelo); border-color: #FDE047; }
+.rd-badge.t-execucao  { background: var(--exec-bg); color: var(--exec); border-color: #A78BFA; }
+.rd-mini-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
+.rd-mini { background: var(--cinza-md); border-radius: var(--radius-sm); padding: 10px 8px; text-align: center; border: 1px solid var(--borda); }
+.rd-mini-val { font-family: "DM Mono", monospace; font-size: 16px; font-weight: 700; line-height: 1; }
+.rd-mini-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .9px; color: var(--texto3); margin-top: 3px; }
+.rd-divider { height: 1px; background: var(--borda); }
+.rd-row { display: flex; flex-direction: column; gap: 2px; }
+.rd-row-lbl { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--texto3); }
+.rd-row-val { font-size: 13px; color: var(--texto); line-height: 1.4; }
+.rd-foto-wrap { width: 100%; aspect-ratio: 4/3; border-radius: var(--radius-sm); overflow: hidden; border: 1px solid var(--borda); background: var(--cinza-md); position: relative; }
+.rd-foto { width: 100%; height: 100%; object-fit: cover; cursor: pointer; display: block; }
+.rd-foto-sk { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-md) 25%, #e4eaf2 50%, var(--cinza-md) 75%); background-size: 200% 100%; animation: rdShimmer 1.4s ease-in-out infinite; }
+@keyframes rdShimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.rd-timeline { display: flex; flex-direction: column; gap: 0; }
+.rd-tl-item { display: flex; gap: 8px; position: relative; }
+.rd-tl-item:not(:last-child)::before { content:""; position:absolute; left:10px; top:20px; width:2px; bottom:-4px; background:var(--borda); }
+.rd-tl-dot { width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; border:2px solid; margin-top:1px; }
+.rd-tl-dot.abertura  { background:var(--amarelo-bg); border-color:#FDE047; color:var(--amarelo); }
+.rd-tl-dot.execucao  { background:var(--exec-bg); border-color:#A78BFA; color:var(--exec); }
+.rd-tl-dot.concluido { background:var(--verde-bg); border-color:var(--verde-b); color:var(--verde); }
+.rd-tl-dot.pendente  { background:var(--cinza-md); border-color:var(--borda); color:var(--texto3); }
+.rd-tl-body { flex:1; padding-bottom:10px; }
+.rd-tl-label { font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--texto3); }
+.rd-tl-val   { font-size:12px; font-weight:600; color:var(--texto); margin-top:1px; }
+.rd-tl-sub   { font-size:11px; color:var(--texto2); margin-top:1px; }
+.rd-maps-btn {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 9px; border-radius: var(--radius-sm);
+  background: var(--azul-bg); border: 1.5px solid #B8D4F4;
+  color: var(--azul); font-family: "DM Sans", sans-serif;
+  font-size: 12px; font-weight: 700; text-decoration: none;
+  transition: background .15s;
+}
+.rd-maps-btn:hover { background: #D6E8FA; }
+
+/* Card clicável */
+.proto-item { cursor: pointer; transition: background .12s; }
+.proto-item:hover { background: var(--cinza-md); }
+.proto-item.selected { background: var(--azul-bg); border-left: 3px solid var(--azul); }
+
 .loading-wrap { text-align: center; padding: 60px 20px; color: var(--texto2); }
 .spinner { width: 32px; height: 32px; border: 2.5px solid var(--borda); border-top-color: var(--azul); border-radius: 50%; animation: rot .8s linear infinite; margin: 0 auto 14px; }
 @keyframes rot { to { transform: rotate(360deg); } }
@@ -223,7 +297,7 @@ header {
 
       <!-- Seletor de data -->
       <div class="date-picker-wrap">
-        <button class="btn-data" onclick="abrirDatePicker()">
+        <button class="btn-data">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
           Ir para data
         </button>
@@ -232,9 +306,12 @@ header {
 
       <button class="btn-nav" id="btnHoje" onclick="mudarDia(0)" style="display:none">Hoje</button>
       <button class="btn-nav" id="btnProximo" onclick="mudarDia(1)" style="display:none">Próximo →</button>
-      <button class="btn-exportar" onclick="exportarXLSX()"><i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX</button>
+      <button class="btn-exportar" onclick="exportarPDF()">⬇ PDF</button>
     </div>
   </div>
+
+  <div class="relatorio-main">
+  <div class="relatorio-content">
 
   <!-- STATS -->
   <div class="stat-grid">
@@ -267,9 +344,7 @@ header {
       <div class="legend-item"><div class="legend-dot" style="background:#CBD5E1"></div> Abertos</div>
       <div class="legend-item"><div class="legend-dot" style="background:var(--azul)"></div> Concluídos</div>
     </div>
-    <div class="chart-canvas-wrap">
-      <canvas id="chartHoras"></canvas>
-    </div>
+    <div id="barrasHora"></div>
   </div>
 
   <!-- OPERADORES + TEMPOS -->
@@ -315,6 +390,23 @@ header {
 
   <div class="relatorio-footer" id="relatorioFooter"></div>
 
+  </div><!-- /relatorio-content -->
+
+  <!-- PAINEL DE DETALHES LATERAL -->
+  <div class="relatorio-detail" id="relatorioDetail">
+    <div class="rd-header">
+      <div style="flex:1;min-width:0">
+        <div class="rd-prot" id="rdProt">—</div>
+        <div class="rd-end"  id="rdEnd">—</div>
+        <div style="margin-top:6px" id="rdBadge"></div>
+      </div>
+      <button class="rd-close" onclick="fecharDetalheRelatorio()" title="Fechar"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="rd-body" id="rdBody"></div>
+  </div>
+
+  </div><!-- /relatorio-main -->
+
 </div>
 
 <script>
@@ -359,34 +451,12 @@ function irParaData(val) {
   var d = new Date(parseInt(partes[0]), parseInt(partes[1])-1, parseInt(partes[2]));
   d.setHours(0,0,0,0);
   var hoje = new Date(); hoje.setHours(0,0,0,0);
-  if (d > hoje) return;
+  if (d > hoje) return; // não permite datas futuras
   _dataCustom = d;
   _diaOffset = Math.round((hoje - d) / 86400000) * -1;
   _filtroAtual = "todos";
   document.querySelectorAll(".proto-filtro").forEach(function(b,i){b.classList.toggle("active",i===0);});
   carregarRelatorio();
-}
-
-function abrirDatePicker() {
-  var inp = document.getElementById("inputData");
-  /* Define o max sempre atualizado */
-  var hoje = new Date();
-  inp.max = hoje.getFullYear() + "-" +
-    String(hoje.getMonth()+1).padStart(2,"0") + "-" +
-    String(hoje.getDate()).padStart(2,"0");
-  /* showPicker() é o método correto para desktop no Chrome/Edge modernos */
-  try {
-    inp.showPicker();
-  } catch(e) {
-    /* fallback para browsers que não suportam showPicker */
-    inp.style.pointerEvents = "auto";
-    inp.style.opacity = "0";
-    inp.style.position = "absolute";
-    inp.style.width = "1px";
-    inp.style.height = "1px";
-    inp.click();
-    setTimeout(function(){ inp.style.pointerEvents = "none"; }, 1000);
-  }
 }
 
 function mudarDia(dir) {
@@ -507,7 +577,7 @@ function renderRelatorio(dia) {
   document.getElementById("sAtrasados").textContent = atrasados.length;
   document.getElementById("sTaxa").textContent = taxa + "%";
 
-  /* ── Gráfico por hora com Chart.js ── */
+  /* ── Gráfico duplo por hora ── */
   var horasAb  = {}, horasConc = {};
   for (var h = 6; h <= 18; h++) { horasAb[h] = 0; horasConc[h] = 0; }
 
@@ -523,79 +593,41 @@ function renderRelatorio(dia) {
     if (horasConc[hr] !== undefined) horasConc[hr]++;
   });
 
-  var labels = [], dadosAb = [], dadosConc = [];
+  var maxVal = 1;
   for (var hh = 6; hh <= 18; hh++) {
-    labels.push((hh < 10 ? "0"+hh : hh) + "h");
-    dadosAb.push(horasAb[hh]);
-    dadosConc.push(horasConc[hh]);
+    if (horasAb[hh]   > maxVal) maxVal = horasAb[hh];
+    if (horasConc[hh] > maxVal) maxVal = horasConc[hh];
   }
 
-  var ctx = document.getElementById("chartHoras").getContext("2d");
-  if (window._chartHorasInst) { window._chartHorasInst.destroy(); }
-  window._chartHorasInst = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: labels,
-      datasets: [
-        {
-          label: "Abertos",
-          data: dadosAb,
-          backgroundColor: "#CBD5E1",
-          borderRadius: 4,
-          borderSkipped: false,
-          barPercentage: 0.55,
-          categoryPercentage: 0.8
-        },
-        {
-          label: "Concluídos",
-          data: dadosConc,
-          backgroundColor: "#1469C7",
-          borderRadius: 4,
-          borderSkipped: false,
-          barPercentage: 0.55,
-          categoryPercentage: 0.8
-        }
-      ]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      interaction: { mode: "index", intersect: false },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: "#0F172A",
-          titleColor: "#94A3B8",
-          bodyColor: "#F1F5F9",
-          padding: 10,
-          cornerRadius: 6,
-          callbacks: {
-            title: function(items) { return items[0].label; },
-            label: function(item) {
-              var labels = ["Abertos", "Concluídos"];
-              return " " + labels[item.datasetIndex] + ": " + item.raw;
-            }
-          }
-        }
-      },
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { font: { family: "DM Mono", size: 11 }, color: "#94A3B8" }
-        },
-        y: {
-          beginAtZero: true,
-          ticks: {
-            stepSize: 1,
-            precision: 0,
-            font: { family: "DM Mono", size: 11 },
-            color: "#94A3B8"
-          },
-          grid: { color: "#F1F5F9" }
-        }
-      }
-    }
-  });
+  var barHTML = "";
+  for (var h = 6; h <= 18; h++) {
+    var vAb   = horasAb[h];
+    var vConc = horasConc[h];
+    var pAb   = Math.round(vAb   / maxVal * 100);
+    var pConc = Math.round(vConc / maxVal * 100);
+    var label = (h < 10 ? "0"+h : h) + "h";
+    var temAlgo = vAb > 0 || vConc > 0;
+
+    barHTML += '<div class="bar-row">' +
+      '<span class="bar-hora">'+label+'</span>' +
+      '<div class="bar-track-wrap">' +
+        '<div class="bar-track">' +
+          (vAb > 0
+            ? '<div class="bar-fill-abertura" style="width:'+pAb+'%"><span class="bar-val-cinza">'+(vAb>0?vAb:"")+'</span></div>'
+            : '<div style="height:100%"></div>') +
+        '</div>' +
+        '<div class="bar-track">' +
+          (vConc > 0
+            ? '<div class="bar-fill-conclusao" style="width:'+pConc+'%"><span class="bar-val">'+(vConc>0?vConc:"")+'</span></div>'
+            : '<div style="height:100%"></div>') +
+        '</div>' +
+      '</div>' +
+      '<span class="bar-total" style="color:'+(temAlgo?"var(--texto2)":"var(--borda)")+'">'+
+        (temAlgo ? (vConc+"/"+vAb) : "") +
+      '</span>' +
+    '</div>';
+  }
+  document.getElementById("barrasHora").innerHTML = barHTML;
 
   /* ── Operadores ── */
   var ops = {};
@@ -671,15 +703,17 @@ function renderProtos() {
     var mapsUrl = (p.lat && p.lng)
       ? "https://maps.google.com/?q=" + p.lat + "," + p.lng
       : "https://maps.google.com/?q=" + encodeURIComponent((p.endereco||"") + ", Arapongas, PR");
-    html += '<div class="proto-item">' +
+    var selecionado = _protoSelecionado === p.protocolo ? " selected" : "";
+    var protEsc = p.protocolo.replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+    html += '<div class="proto-item'+selecionado+'" onclick="abrirDetalheRelatorio(_todosProtos.filter(function(x){return x.protocolo===\''+protEsc+'\';})[0],this)">' +
       '<div class="proto-stripe" style="background:'+cores[p._tipo]+'"></div>' +
       '<div style="flex:1;min-width:0">' +
         '<div class="proto-end">'+safeText(p.endereco||"—")+'</div>' +
         '<div class="proto-meta">'+safeText(p.protocolo)+(p.registradoPor?" · "+safeText(p.registradoPor):"")+'</div>' +
       '</div>' +
       (durStr ? '<span class="proto-tempo">'+durStr+'</span>' : '') +
-      '<a href="'+mapsUrl+'" target="_blank" rel="noopener" title="Ver no Maps" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:var(--radius-xs);border:1px solid var(--borda);color:var(--texto3);text-decoration:none;flex-shrink:0;transition:background .12s,color .12s;margin-left:4px;" onmouseover="this.style.background=\'var(--azul-bg)\';this.style.color=\'var(--azul)\';this.style.borderColor=\'#B8D4F4\'" onmouseout="this.style.background=\'\';this.style.color=\'var(--texto3)\';this.style.borderColor=\'var(--borda)\'"><i class="fa-solid fa-map-pin" style="font-size:11px"></i></a>' +
-      '<span class="proto-badge '+badgeCls[p._tipo]+'">'+labels[p._tipo]+'</span>' +
+      '<a href="'+mapsUrl+'" target="_blank" rel="noopener" title="Ver no Maps" onclick="event.stopPropagation()" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid var(--borda);color:var(--texto3);text-decoration:none;flex-shrink:0;transition:background .12s,color .12s;margin-left:4px;" onmouseover="this.style.background=\'var(--azul-bg)\';this.style.color=\'var(--azul)\'" onmouseout="this.style.background=\'\';this.style.color=\'var(--texto3)\'"><i class="fa-solid fa-map-pin" style="font-size:11px"></i></a>' +
+      '<span class="proto-badge '+badgeCls[p._tipo]+'" style="margin-left:6px">'+labels[p._tipo]+'</span>' +
     '</div>';
   });
   document.getElementById("listaProtos").innerHTML = html;
@@ -692,129 +726,142 @@ function filtrarProtos(filtro, btn) {
   renderProtos();
 }
 
-function exportarXLSX() {
-  var btn = document.querySelector(".btn-exportar");
+/* ══ LIGHTBOX FOTO ══ */
+function abrirFotoRelatorio(url) { window.open(url, "_blank", "noopener"); }
 
-  if (!_todosProtos || !_todosProtos.length) {
-    if (btn) { btn.textContent = "Sem dados"; setTimeout(function(){ btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; }, 2000); }
-    return;
+/* ══ PAINEL DE DETALHES ══ */
+var _protoSelecionado = null;
+
+function fecharDetalheRelatorio() {
+  _protoSelecionado = null;
+  document.getElementById("relatorioDetail").classList.remove("show");
+  document.querySelectorAll(".proto-item").forEach(function(el){ el.classList.remove("selected"); });
+}
+
+function fdt(iso) {
+  if (!iso) return "—";
+  return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+}
+
+function extrairFileId(url) {
+  if (!url) return "";
+  var m;
+  m = url.match(/\/d\/([a-zA-Z0-9_-]+)/); if (m) return m[1];
+  m = url.match(/[?&]id=([a-zA-Z0-9_-]+)/); if (m) return m[1];
+  return "";
+}
+
+function fotoSrc(id) {
+  if (!id) return null;
+  return "https://lh3.googleusercontent.com/d/" + encodeURIComponent(id);
+}
+
+function abrirDetalheRelatorio(p, itemEl) {
+  _protoSelecionado = p.protocolo;
+  document.querySelectorAll(".proto-item").forEach(function(el){ el.classList.remove("selected"); });
+  if (itemEl) itemEl.classList.add("selected");
+  document.getElementById("relatorioDetail").classList.add("show");
+
+  var badgeLabels = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
+  var badgeIcons  = { concluido:"fa-circle-check", atrasado:"fa-circle-exclamation", pendente:"fa-clock", execucao:"fa-play" };
+
+  document.getElementById("rdProt").textContent = p.protocolo;
+  document.getElementById("rdEnd").innerHTML = "<i class='fa-solid fa-map-pin' style='font-size:12px'></i> " + safeText(p.endereco || "—");
+  document.getElementById("rdBadge").innerHTML = "<span class='rd-badge t-"+p._tipo+"'><i class='fa-solid "+badgeIcons[p._tipo]+"' style='font-size:9px'></i> "+badgeLabels[p._tipo]+"</span>";
+
+  var abertura = p.dataHora ? new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
+  var prazoHora = p.dataConclusao
+    ? new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})
+    : p.dataHora ? new Date(new Date(p.dataHora).getTime()+24*36e5).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}) : "—";
+  var prazoLbl = p._tipo === "concluido" ? "CONCLUSÃO" : "PRAZO";
+  var deltaVal = p._duracaoMin != null ? formatarMin(p._duracaoMin) : (p._tipo === "concluido" ? "✔" : "—");
+  var deltaLbl = p._tipo === "concluido" ? "DURAÇÃO" : "RESTANTE";
+
+  /* Mini cards */
+  var miniHtml =
+    "<div class='rd-mini-cards'>" +
+      "<div class='rd-mini'><div class='rd-mini-val t-"+p._tipo+"' style='color:var(--"+_corTipo(p._tipo)+")'>"+deltaVal+"</div><div class='rd-mini-lbl'>"+deltaLbl+"</div></div>" +
+      "<div class='rd-mini'><div class='rd-mini-val'>"+abertura+"</div><div class='rd-mini-lbl'>Abertura</div></div>" +
+      "<div class='rd-mini'><div class='rd-mini-val'>"+prazoHora+"</div><div class='rd-mini-lbl'>"+prazoLbl+"</div></div>" +
+    "</div>";
+
+  /* Linha do tempo */
+  var tlHtml = "<div class='rd-timeline'>";
+  tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot abertura'>📋</div><div class='rd-tl-body'><div class='rd-tl-label'>Abertura</div><div class='rd-tl-val'>"+fdt(p.dataHora)+"</div>"+(p.registradoPor?"<div class='rd-tl-sub'>por "+safeText(p.registradoPor)+"</div>":"")+"</div></div>";
+  if (p._tipo === "concluido") {
+    tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot concluido'><i class='fa-solid fa-check' style='font-size:9px'></i></div><div class='rd-tl-body'><div class='rd-tl-label'>Concluído</div><div class='rd-tl-val'>"+fdt(p.dataConclusao)+"</div>"+(p.operadorConclusao?"<div class='rd-tl-sub'>por "+safeText(p.operadorConclusao)+"</div>":"")+"</div></div>";
+  } else {
+    tlHtml += "<div class='rd-tl-item'><div class='rd-tl-dot pendente'><i class='fa-solid fa-clock' style='font-size:9px'></i></div><div class='rd-tl-body'><div class='rd-tl-label'>Prazo previsto</div><div class='rd-tl-val'>"+prazoHora+"</div></div></div>";
+  }
+  tlHtml += "</div>";
+
+  /* Foto de abertura */
+  var fotoAbHtml = "";
+  var fotoAbId = extrairFileId(p.fotoUrl || "");
+  if (fotoAbId) {
+    var srcAb = fotoSrc(fotoAbId);
+    fotoAbHtml = "<div><div class='rd-row-lbl' style='margin-bottom:6px'>Foto de abertura</div>" +
+      "<div class='rd-foto-wrap'><div class='rd-foto-sk' id='rdFotoSkAb'></div>" +
+      "<img class='rd-foto' src='"+srcAb+"' loading='lazy' " +
+      "onload='this.previousElementSibling.style.display=\"none\"' " +
+      "onclick='abrirFotoRelatorio(\""+srcAb+"\")' " +
+      "onerror='this.closest(\".rd-foto-wrap\").style.display=\"none\"' alt='Foto abertura'>" +
+      "</div></div>";
   }
 
-  if (btn) { btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin" style="font-size:12px"></i> Gerando…'; btn.disabled = true; }
-
-  var dia = getDiaAtual();
-
-  function _restaurarBtn() {
-    if (btn) { btn.innerHTML = '<i class="fa-solid fa-download" style="font-size:12px"></i> Exportar XLSX'; btn.disabled = false; }
+  /* Foto de conclusão */
+  var fotoConcHtml = "";
+  var fotoConcId = extrairFileId(p.fotoConcUrl || p.fotoConclusaoUrl || "");
+  if (fotoConcId) {
+    var srcConc = fotoSrc(fotoConcId);
+    fotoConcHtml = "<div><div class='rd-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>" +
+      "<div class='rd-foto-wrap'><div class='rd-foto-sk'></div>" +
+      "<img class='rd-foto' src='"+srcConc+"' loading='lazy' " +
+      "onload='this.previousElementSibling.style.display=\"none\"' " +
+      "onclick='abrirFotoRelatorio(\""+srcConc+"\")' " +
+      "onerror='this.closest(\".rd-foto-wrap\").style.display=\"none\"' alt='Foto conclusão'>" +
+      "</div></div>";
   }
 
-  function _gerar() {
-    try {
-      var EJS = window.ExcelJS;
-      if (!EJS) { alert("Biblioteca XLSX não carregou. Tente novamente."); _restaurarBtn(); return; }
-
-      var workbook = new EJS.Workbook();
-      var ws = workbook.addWorksheet("Relatorio");
-      var AZUL = "1469C7", BRANCO = "FFFFFF";
-      var corStatus = { "Concluído":"DCFCE7", "Atrasado":"FEE2E2", "Pendente":"FEF9C3", "Em execução":"EDE9FE" };
-
-      ws.columns = [
-        { key:"prot", width:13 },
-        { key:"data", width:18 },
-        { key:"end",  width:48 },
-        { key:"reg",  width:24 },
-        { key:"sts",  width:14 },
-        { key:"resp", width:24 },
-        { key:"conc", width:18 },
-        { key:"dur",  width:14 },
-      ];
-
-      /* Linha 1 — título */
-      var r1 = ws.addRow(["HYDROSISTEM — Relatorio Diario · " + formatarDataLonga(dia)]);
-      ws.mergeCells(1,1,1,8);
-      r1.height = 28;
-      r1.getCell(1).font = { bold:true, size:12, color:{argb:"FF"+AZUL} };
-      r1.getCell(1).alignment = { horizontal:"center", vertical:"middle" };
-
-      /* Linha 2 — espaço */
-      ws.addRow([]);
-
-      /* Linha 3 — cabeçalhos */
-      var cols = ["Protocolo","Data/Hora","Endereço","Registrado por","Status","Responsável","Data Conclusão","Duração"];
-      var rH = ws.addRow(cols);
-      rH.height = 20;
-      rH.eachCell(function(cell) {
-        cell.font = { bold:true, size:10, color:{argb:"FF"+BRANCO} };
-        cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:"FF"+AZUL} };
-        cell.alignment = { horizontal:"center", vertical:"middle" };
-      });
-
-      /* Dados */
-      var labelsMap = { concluido:"Concluído", atrasado:"Atrasado", pendente:"Pendente", execucao:"Em execução" };
-      _todosProtos.forEach(function(p, i) {
-        var statusLabel = labelsMap[p._tipo] || p._tipo;
-        var bgHex = "FF" + (corStatus[statusLabel] || (i%2===0?"F8FAFC":BRANCO));
-        var row = ws.addRow([
-          p.protocolo || "",
-          p.dataHora ? new Date(p.dataHora).toLocaleString("pt-BR") : "—",
-          p.endereco || "",
-          p.registradoPor || "—",
-          statusLabel,
-          p.operadorConclusao || (p.lock ? p.lock.usuario : "") || "—",
-          p.dataConclusao ? new Date(p.dataConclusao).toLocaleString("pt-BR") : "—",
-          p._duracaoMin != null ? formatarMin(p._duracaoMin) : "—"
-        ]);
-        row.eachCell(function(cell) {
-          cell.font = { size:10 };
-          cell.fill = { type:"pattern", pattern:"solid", fgColor:{argb:bgHex} };
-          cell.alignment = { vertical:"middle" };
-          cell.border = { bottom:{style:"hair",color:{argb:"FFE2E8F0"}} };
-        });
-        row.getCell(3).alignment = { vertical:"middle", wrapText:true };
-      });
-
-      workbook.xlsx.writeBuffer().then(function(buffer) {
-        var blob = new Blob([buffer], { type:"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
-        var url = URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "relatorio_" + dia.toLocaleDateString("pt-BR").replace(/\//g,"-") + ".xlsx";
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-        _restaurarBtn();
-      }).catch(function(err) {
-        console.error("[exportarXLSX]", err);
-        alert("Erro ao gerar o arquivo. Tente novamente.");
-        _restaurarBtn();
-      });
-    } catch(err) {
-      console.error("[exportarXLSX _gerar]", err);
-      alert("Erro ao gerar o arquivo: " + err.message);
-      _restaurarBtn();
+  /* Observação */
+  var obsHtml = "";
+  if (p.obs && p.obs !== "—") {
+    var _mm = p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
+    var _mapsUrl = _mm ? _mm[0] : null;
+    var _obsTexto = p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/Via Bot Telegram\s*[•·]?\s*/gi,"").replace(/•\s*$/,"").trim();
+    if (_obsTexto && _obsTexto !== "—") {
+      obsHtml += "<div class='rd-row'><div class='rd-row-lbl'>Observação</div><div class='rd-row-val'>"+safeText(_obsTexto)+"</div></div>";
+    }
+    if (_mapsUrl) {
+      obsHtml += "<a href='"+_mapsUrl+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";
     }
   }
 
-  if (window.ExcelJS) {
-    _gerar();
-  } else {
-    var s = document.createElement("script");
-    s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js";
-    s.onload = function() {
-      /* aguarda o global ficar disponível */
-      var tentativas = 0;
-      var espera = setInterval(function() {
-        tentativas++;
-        if (window.ExcelJS) { clearInterval(espera); _gerar(); }
-        else if (tentativas > 20) { clearInterval(espera); alert("Biblioteca XLSX não carregou."); _restaurarBtn(); }
-      }, 100);
-    };
-    s.onerror = function() { alert("Erro ao carregar biblioteca XLSX."); _restaurarBtn(); };
-    document.head.appendChild(s);
-  }
+  /* Link Maps por coordenadas */
+  var mapsUrl = (p.lat && p.lng)
+    ? "https://maps.google.com/?q=" + p.lat + "," + p.lng
+    : "https://maps.google.com/?q=" + encodeURIComponent((p.endereco||"") + ", Arapongas, PR");
+
+  var body =
+    miniHtml +
+    "<div class='rd-divider'></div>" +
+    "<div class='rd-row'><div class='rd-row-lbl'>Linha do tempo</div>" + tlHtml + "</div>" +
+    "<div class='rd-row'><div class='rd-row-lbl'>Registrado por</div><div class='rd-row-val'>"+safeText(p.registradoPor||"—")+"</div></div>" +
+    "<div class='rd-row'><div class='rd-row-lbl'>Data/hora abertura</div><div class='rd-row-val'>"+fdt(p.dataHora)+"</div></div>" +
+    obsHtml +
+    "<a href='"+mapsUrl+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" +
+    fotoAbHtml +
+    fotoConcHtml;
+
+  document.getElementById("rdBody").innerHTML = body;
 }
 
-function exportarPDF() { exportarXLSX(); }
+function _corTipo(tipo) {
+  var mapa = { concluido:"verde", atrasado:"vermelho", pendente:"amarelo", execucao:"exec" };
+  return mapa[tipo] || "azul";
+}
+
+function exportarPDF() { window.print(); }
 
 function safeText(s) {
   var d = document.createElement("div");
@@ -823,6 +870,5 @@ function safeText(s) {
 }
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </body>
 </html>
