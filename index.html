@@ -2738,13 +2738,10 @@ function carregarOperadoresOnline() {
     .then(function(res){
       if (res.ok) {
         _presencasCache = res.presencas || [];
-        /* Se _ultimaLista ainda está vazia (dados ainda carregando),
-           aguarda o carregarDados terminar para ter os locks corretos */
-        if (_ultimaLista.length === 0) {
-          setTimeout(function(){ renderOperadoresOnline(_presencasCache); }, 1500);
-        } else {
-          renderOperadoresOnline(_presencasCache);
-        }
+        /* Sempre renderiza — se _ultimaLista já tem dados, os locks estarão corretos.
+           Se ainda está vazia, o render() que chega depois vai chamar
+           renderOperadoresOnline(_presencasCache) de qualquer forma. */
+        renderOperadoresOnline(_presencasCache);
       }
     })
     .catch(function(){});
