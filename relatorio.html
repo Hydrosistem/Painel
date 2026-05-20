@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <title>Hydrosistem — Relatório Diário</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
@@ -633,21 +634,36 @@ function renderRelatorio(dia) {
     dadosAb.push(horasAb[hh]);
     dadosConc.push(horasConc[hh]);
   }
-  var ctx = document.getElementById("chartHoras").getContext("2d");
-  if (window._chartHorasInst) { window._chartHorasInst.destroy(); }
-  window._chartHorasInst = new Chart(ctx, {
-    type:"bar",
-    data:{ labels:labels, datasets:[
-      { label:"Abertos",    data:dadosAb,   backgroundColor:"#CBD5E1", borderRadius:4, borderSkipped:false, barPercentage:.55, categoryPercentage:.8 },
-      { label:"Concluídos", data:dadosConc, backgroundColor:"#1469C7", borderRadius:4, borderSkipped:false, barPercentage:.55, categoryPercentage:.8 }
-    ]},
-    options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
-      plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#0F172A", titleColor:"#94A3B8", bodyColor:"#F1F5F9", padding:10, cornerRadius:6,
-        callbacks:{ title:function(i){return i[0].label;}, label:function(i){return " "+["Abertos","Concluídos"][i.datasetIndex]+": "+i.raw;} }
-      }},
-      scales:{ x:{grid:{display:false},ticks:{font:{family:"DM Mono",size:11},color:"#94A3B8"}}, y:{beginAtZero:true,ticks:{stepSize:1,precision:0,font:{family:"DM Mono",size:11},color:"#94A3B8"},grid:{color:"#F1F5F9"}} }
-    }
-  });
+  /* ── Gráfico Chart.js — aguarda biblioteca estar disponível ── */
+  function _renderizarGrafico() {
+    var ctx = document.getElementById("chartHoras").getContext("2d");
+    if (window._chartHorasInst) { window._chartHorasInst.destroy(); }
+    window._chartHorasInst = new Chart(ctx, {
+      type:"bar",
+      data:{ labels:labels, datasets:[
+        { label:"Abertos",    data:dadosAb,   backgroundColor:"#CBD5E1", borderRadius:4, borderSkipped:false, barPercentage:.55, categoryPercentage:.8 },
+        { label:"Concluídos", data:dadosConc, backgroundColor:"#1469C7", borderRadius:4, borderSkipped:false, barPercentage:.55, categoryPercentage:.8 }
+      ]},
+      options:{ responsive:true, maintainAspectRatio:false, interaction:{mode:"index",intersect:false},
+        plugins:{ legend:{display:false}, tooltip:{ backgroundColor:"#0F172A", titleColor:"#94A3B8", bodyColor:"#F1F5F9", padding:10, cornerRadius:6,
+          callbacks:{ title:function(i){return i[0].label;}, label:function(i){return " "+["Abertos","Concluídos"][i.datasetIndex]+": "+i.raw;} }
+        }},
+        scales:{ x:{grid:{display:false},ticks:{font:{family:"DM Mono",size:11},color:"#94A3B8"}}, y:{beginAtZero:true,ticks:{stepSize:1,precision:0,font:{family:"DM Mono",size:11},color:"#94A3B8"},grid:{color:"#F1F5F9"}} }
+      }
+    });
+  }
+
+  if (window.Chart) {
+    _renderizarGrafico();
+  } else {
+    /* Chart.js ainda carregando — aguarda até 3s */
+    var _tentativas = 0;
+    var _espera = setInterval(function() {
+      _tentativas++;
+      if (window.Chart) { clearInterval(_espera); _renderizarGrafico(); }
+      else if (_tentativas > 30) { clearInterval(_espera); }
+    }, 100);
+  }
 
   /* ── Operadores ── */
   var ops = {};
@@ -857,6 +873,5 @@ function safeText(s) {
 }
 </script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 </body>
 </html>
