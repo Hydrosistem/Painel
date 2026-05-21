@@ -5,7 +5,6 @@
   "start_url": "/Painel/index.html?utm_source=pwa",
   "scope": "/Painel/",
   "display": "standalone",
-  "orientation": "natural",
   "background_color": "#0A3F7F",
   "theme_color": "#0A3F7F",
   "lang": "pt-BR",
