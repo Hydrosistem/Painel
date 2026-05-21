@@ -15,17 +15,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc&language=pt-BR&region=BR&loading=async"></script>
 <style>
-/* ══ DETECÇÃO DE TABLET — aplicada antes do render ══ */
-(function(){
-  var menorDim = Math.min(screen.width, screen.height);
-  var maiorDim = Math.max(screen.width, screen.height);
-  var ua = navigator.userAgent.toLowerCase();
-  var isTabletUA = /tablet|ipad/.test(ua) || (/android/.test(ua) && !/mobile/.test(ua));
-  var isTabletDim = menorDim >= 600 && maiorDim >= 960;
-  if (isTabletUA || isTabletDim) {
-    document.documentElement.classList.add("is-tablet");
-  }
-})();
+/* ══ TOKENS ══ */
 :root {
   --azul:        #1469C7;
   --azul-esc:    #0A3F7F;
@@ -906,14 +896,6 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 /* centro-busca oculto por padrão no mobile (só desktop) */
 .centro-busca { display: none; }
 @media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } .centro-busca { display: flex; } }
-html.is-tablet .sidebar,
-html.is-tablet .centro,
-html.is-tablet .detail-panel { display: flex !important; }
-html.is-tablet .centro-busca { display: flex !important; }
-html.is-tablet .search-wrap  { display: none !important; }
-html.is-tablet .stats        { display: none !important; }
-html.is-tablet .main         { display: none !important; }
-html.is-tablet .layout-root  { flex-direction: row !important; align-items: stretch !important; height: calc(100vh - var(--header-h) - 2px) !important; overflow: hidden !important; }
 
 /* ══ EXEC INFO ══ */
 .exec-info-box { font-size: 11px; padding: 7px 10px; border-radius: var(--radius-xs); border: 1px solid; }
