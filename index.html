@@ -14,37 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">  
 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBHwJyS2kSsu7MwOX1xARMIPz4QEXPQofc&language=pt-BR&region=BR&loading=async"></script>
-<script>
-/* Detecção antecipada de tablet — roda antes do CSS renderizar */
-(function(){
-  var ua = navigator.userAgent.toLowerCase();
-  /* Galaxy Tab A7 Lite: Android sem "mobile" no UA */
-  var isTabletUA = /tablet|ipad/.test(ua) || (/android/.test(ua) && !/mobile/.test(ua));
-  /* Dimensões físicas reais — independe de rotação ou zoom */
-  var menorDim = Math.min(screen.width, screen.height);
-  var maiorDim = Math.max(screen.width, screen.height);
-  var isTabletDim = menorDim >= 540 && maiorDim >= 800;
-  if (isTabletUA || isTabletDim) {
-    document.documentElement.classList.add("is-tablet");
-  }
-})();
-</script>
 <style>
-/* ══ FORÇAR LAYOUT TABLET via JS (antes do CSS) ══ */
-html.is-tablet .sidebar,
-html.is-tablet .centro,
-html.is-tablet .detail-panel { display: flex !important; }
-html.is-tablet .centro-busca  { display: flex !important; }
-html.is-tablet .search-wrap   { display: none !important; }
-html.is-tablet .stats         { display: none !important; }
-html.is-tablet .main          { display: none !important; }
-html.is-tablet .layout-root   {
-  flex-direction: row !important;
-  align-items: stretch !important;
-  height: calc(100vh - var(--header-h) - 2px) !important;
-  overflow: hidden !important;
-}
-
 /* ══ TOKENS ══ */
 :root {
   --azul:        #1469C7;
