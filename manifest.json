@@ -4,7 +4,7 @@
   "description": "Painel de controle de entulhos e protocolos de serviço",
   "start_url": "/Painel/index.html?utm_source=pwa",
   "scope": "/Painel/",
-  "display": "standalone",
+  "display": "landscape",
   "orientation": "natural",
   "background_color": "#0A3F7F",
   "theme_color": "#0A3F7F",
