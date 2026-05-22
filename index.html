@@ -2027,6 +2027,14 @@ function enviarConclusao(){
       }
       pararHeartbeat(protocolo);
       fecharModalConclusao();
+      /* ── Reseta painel de detalhes ── */
+      _protocoloSelecionado = null;
+      _hashDetalheAtual = "";
+      document.getElementById("detailVazio").style.display = "";
+      var _dc = document.getElementById("detailContent");
+      _dc.classList.remove("show"); _dc.innerHTML = "";
+      var _df = document.getElementById("detailFooter");
+      _df.classList.remove("show"); _df.innerHTML = "";
       renderFiltrado(_ultimaLista);
       renderTablet(_ultimaLista);
       if(navigator.vibrate)navigator.vibrate([50,30,50]);
