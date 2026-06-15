@@ -964,9 +964,266 @@ body.modo-lote .card-t.lote-selecionado { border:2px solid var(--azul) !importan
 .btn-lote-remover { padding:8px 16px;border-radius:var(--radius-sm);background:var(--vermelho);border:none;color:#fff;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:700;cursor:pointer; }
 body.modo-lote .main { padding-bottom:80px; }
 body.modo-lote .centro-scroll { padding-bottom:80px; }
+
+/* ══ BANNER NOVIDADE — PERTO DE MIM ══ */
+#overlayNovidade {
+  position: fixed; inset: 0; z-index: 2000;
+  background: rgba(15, 23, 42, .55);
+  backdrop-filter: blur(3px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: novFadeIn .25s ease;
+}
+#overlayNovidade.fechado { display: none; }
+
+@keyframes novFadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes novPopIn {
+  from { opacity: 0; transform: scale(.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.nov-card {
+  background: var(--branco);
+  border-radius: var(--radius);
+  box-shadow: var(--sombra-lg);
+  width: 100%;
+  max-width: 560px;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+  animation: novPopIn .3s ease;
+  font-family: "DM Sans", sans-serif;
+  color: var(--texto);
+}
+
+.nov-fechar {
+  position: absolute; top: 16px; right: 16px;
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: var(--branco);
+  border: 1px solid var(--borda);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--texto2);
+  font-size: 16px;
+  transition: background .15s, color .15s;
+  z-index: 2;
+}
+.nov-fechar:hover { background: #F1F5F9; color: var(--texto); }
+
+.nov-conteudo { padding: 32px 28px 24px; }
+
+.nov-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--azul);
+  color: #fff;
+  font-size: 11px; font-weight: 700; letter-spacing: .6px;
+  padding: 6px 14px; border-radius: 999px;
+  margin-bottom: 16px;
+}
+
+.nov-titulo {
+  font-size: 28px; font-weight: 800; color: var(--azul-esc);
+  line-height: 1.2; margin-bottom: 8px;
+}
+
+.nov-subtitulo {
+  font-size: 14px; color: var(--texto2); line-height: 1.6;
+  margin-bottom: 24px;
+}
+
+.nov-passos { display: flex; flex-direction: column; gap: 16px; margin-bottom: 20px; }
+.nov-passo {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--azul-bg);
+  border: 1px solid var(--azul-borda);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+}
+.nov-passo-num {
+  flex-shrink: 0;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: var(--azul);
+  color: #fff;
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.nov-passo-texto { font-size: 13px; line-height: 1.55; color: var(--texto); padding-top: 4px; }
+.nov-passo-texto b { color: var(--azul-esc); }
+.nov-passo-texto .nov-destaque {
+  background: var(--azul);
+  color: #fff;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: var(--radius-sm);
+  display: inline-flex; align-items: center; gap: 5px;
+  margin: 0 2px;
+  white-space: nowrap;
+}
+
+.nov-beneficios {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 10px; margin-bottom: 20px;
+}
+.nov-beneficio {
+  text-align: center;
+  background: #F8FAFC;
+  border: 1px solid var(--borda);
+  border-radius: var(--radius-sm);
+  padding: 14px 8px;
+}
+.nov-beneficio i { color: var(--azul); font-size: 18px; margin-bottom: 8px; display: block; }
+.nov-beneficio span { font-size: 11.5px; color: var(--texto); line-height: 1.4; font-weight: 600; display: block; }
+
+.nov-rodape {
+  background: var(--azul-bg);
+  border: 1px solid var(--azul-borda);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  display: flex; gap: 10px; align-items: flex-start;
+  margin-bottom: 20px;
+}
+.nov-rodape i { color: var(--azul); font-size: 16px; margin-top: 2px; }
+.nov-rodape-texto strong { font-size: 13px; color: var(--azul-esc); display: block; margin-bottom: 2px; }
+.nov-rodape-texto span { font-size: 12px; color: var(--texto2); line-height: 1.5; }
+
+.nov-btn-entendi {
+  width: 100%; height: 50px;
+  background: var(--azul);
+  color: #fff; border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px; font-weight: 700;
+  font-family: "DM Sans", sans-serif;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.nov-btn-entendi:hover { background: var(--azul-md); }
+.nov-btn-entendi:active { opacity: .85; }
+
+body.dark-mode .nov-card { background: #111827; border: 1px solid var(--borda); }
+body.dark-mode .nov-fechar { background: #1E293B; border-color: var(--borda); color: var(--texto2); }
+body.dark-mode .nov-fechar:hover { background: #334155; color: var(--texto); }
+body.dark-mode .nov-beneficio { background: #1E293B; border-color: var(--borda); }
+
+@media (max-width: 640px) {
+  #overlayNovidade { padding: 0; align-items: flex-end; }
+  .nov-card {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: var(--radius) var(--radius) 0 0;
+    position: fixed;
+    left: 0; right: 0; bottom: 0;
+    animation: novSlideUp .3s ease;
+  }
+  @keyframes novSlideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .nov-conteudo { padding: 28px 20px 20px; }
+  .nov-titulo { font-size: 22px; }
+  .nov-beneficios { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .nov-beneficio { padding: 10px 4px; }
+  .nov-beneficio i { font-size: 16px; }
+  .nov-beneficio span { font-size: 10.5px; }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  #overlayNovidade { align-items: center; }
+  .nov-card { max-width: 480px; }
+}
 </style>
 </head>
 <body>
+
+<!-- ══ BANNER NOVIDADE — PERTO DE MIM ══ -->
+<div id="overlayNovidade">
+  <div class="nov-card">
+    <button class="nov-fechar" onclick="fecharBannerNovidade()" aria-label="Fechar">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+
+    <div class="nov-conteudo">
+      <span class="nov-tag"><i class="fa-solid fa-wand-magic-sparkles"></i> NOVIDADE</span>
+
+      <h1 class="nov-titulo">Nova atualização!</h1>
+      <p class="nov-subtitulo">
+        Mais agilidade para você atender onde é mais urgente. Veja como usar o novo botão
+        <b>"Perto de mim"</b>.
+      </p>
+
+      <div class="nov-passos">
+        <div class="nov-passo">
+          <div class="nov-passo-num">1</div>
+          <div class="nov-passo-texto">
+            Primeiro, vá até o <b>protocolo mais urgente</b> da lista.
+          </div>
+        </div>
+        <div class="nov-passo">
+          <div class="nov-passo-num">2</div>
+          <div class="nov-passo-texto">
+            Depois, basta clicar no botão
+            <span class="nov-destaque"><i class="fa-solid fa-map-pin"></i> Perto de mim</span>
+            no <b>canto superior direito</b> da tela.
+          </div>
+        </div>
+        <div class="nov-passo">
+          <div class="nov-passo-num">3</div>
+          <div class="nov-passo-texto">
+            Automaticamente, os cards serão <b>ordenados por distância</b>, do mais próximo
+            ao mais distante de você, dentro de um <b>raio de 7 km</b>.
+          </div>
+        </div>
+      </div>
+
+      <div class="nov-beneficios">
+        <div class="nov-beneficio">
+          <i class="fa-solid fa-bullseye"></i>
+          <span>Atenda primeiro o que é mais urgente</span>
+        </div>
+        <div class="nov-beneficio">
+          <i class="fa-solid fa-route"></i>
+          <span>Menos deslocamento, mais eficiência</span>
+        </div>
+        <div class="nov-beneficio">
+          <i class="fa-solid fa-clock"></i>
+          <span>Economize tempo e atenda mais ocorrências</span>
+        </div>
+      </div>
+
+      <div class="nov-rodape">
+        <i class="fa-solid fa-rocket"></i>
+        <div class="nov-rodape-texto">
+          <strong>Mais rapidez. Mais controle. Mais resultados.</strong>
+          <span>Atualizamos para facilitar o que realmente importa: você no comando.</span>
+        </div>
+      </div>
+
+      <button class="nov-btn-entendi" onclick="fecharBannerNovidade()">
+        Entendi! <i class="fa-solid fa-circle-check"></i>
+      </button>
+    </div>
+  </div>
+</div>
+<script>
+var CHAVE_BANNER_NOVIDADE = 'hydrosistem_novidade_perto_de_mim_v1';
+
+function fecharBannerNovidade() {
+  var overlay = document.getElementById('overlayNovidade');
+  if (overlay) {
+    overlay.classList.add('fechado');
+    try { localStorage.setItem(CHAVE_BANNER_NOVIDADE, '1'); } catch(e) {}
+  }
+}
+
+(function () {
+  try {
+    if (localStorage.getItem(CHAVE_BANNER_NOVIDADE) === '1') {
+      var ov = document.getElementById('overlayNovidade');
+      if (ov) ov.classList.add('fechado');
+    }
+  } catch(e) {}
+})();
+</script>
 
 <!-- ══ MODAL OPERADOR ══ -->
 <div id="modalOperador">
