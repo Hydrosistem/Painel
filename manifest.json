@@ -11,12 +11,6 @@
   "dir": "ltr",
   "categories": ["utilities", "productivity"],
   "prefer_related_applications": false,
-  "related_applications": [
-    {
-      "platform": "webapp",
-      "url": "https://hydrosistem.github.io/Painel/manifest.json"
-    }
-  ],
   "icons": [
     { "src": "icons/icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any" },
     { "src": "icons/icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any" },
