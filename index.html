@@ -1578,6 +1578,13 @@ function fecharBannerNovidade() {
    CONFIG — adapte conforme necessário
 ══════════════════════════════════════════ */
 var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8TFNwwp1svZ1icHvrPjcs4R7zGN4IyrFCIfTu2n0wvQ0x/exec";
+// ✅ NOVO: token compartilhado exigido pelo backend (codigo.gs) em toda
+// ação que ALTERA dados (iniciar/concluir/remover/etc). Precisa ser
+// EXATAMENTE igual ao valor salvo em Script Properties como API_TOKEN
+// (veja configurarSegredosPrimeiraVez() no codigo.gs).
+// Ações somente-leitura (dados/foto/lockInfo/presencas) não exigem token.
+var API_TOKEN = "f4367852f1b769897432f674b2a8026e501a7bb35f333f28";
+function tok(qs) { return qs + "&token=" + encodeURIComponent(API_TOKEN); }
 var PRAZO = 24, LOCK_TTL = 3600, REFRESH_INTERVAL = 10000;
 var API = API_BASE + "?acao=dados";
 var CACHE_KEY = "hyd_cache_dados", CACHE_TS = "hyd_cache_ts";
@@ -2014,7 +2021,7 @@ var _liveTimerInterval=null;
 function iniciarTimerAoVivo(){if(_liveTimerInterval)clearInterval(_liveTimerInterval);_liveTimerInterval=setInterval(function(){document.querySelectorAll("[data-iso]").forEach(function(el){var iso=el.getAttribute("data-iso"),concluido=el.getAttribute("data-concluido")==="1";if(concluido)return;var t=tempo(iso),prazoEl=el.querySelector(".prazo-live-txt"),barEl=el.querySelector(".prazo-fill,.card-t-prazo-fill");if(prazoEl){var novo=t.txt;if(prazoEl.textContent!==novo)prazoEl.textContent=novo;}if(barEl)barEl.style.width=t.pct.toFixed(0)+"%";var card=el.closest(".card,.card-t");if(card){var ta=card.getAttribute("data-tipo");if(ta&&t.tipo!==ta&&!card.classList.contains("t-execucao")&&!card.classList.contains("t-concluido")){card.setAttribute("data-tipo",t.tipo);["t-pendente","t-urgente","t-atrasado"].forEach(function(c){card.classList.remove(c);});card.classList.add("t-"+t.tipo);}}});var detEl=document.querySelector("#detailContent [data-iso-detalhe]");if(detEl){var iso=detEl.getAttribute("data-iso-detalhe"),conc=detEl.getAttribute("data-concluido-detalhe")==="1";if(!conc){var t=tempo(iso),val=detEl.querySelector(".detail-delta-val");if(val)val.textContent=t.r<=0?"−"+ar(t.delta):ar(t.delta);var fill=detEl.querySelector(".detail-prazo-fill");if(fill)fill.style.width=t.pct.toFixed(0)+"%";}}},60000);}
 
 /* ══ LOCK API ══ */
-function postLock(payload){var params=Object.keys(payload).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]);}).join("&");return fetch(API_BASE+"?"+params,{redirect:"follow"}).then(function(r){return r.json();}).catch(function(err){console.error("[postLock]",err);return{ok:false};});}
+function postLock(payload){payload.token=API_TOKEN;var params=Object.keys(payload).map(function(k){return encodeURIComponent(k)+"="+encodeURIComponent(payload[k]);}).join("&");return fetch(API_BASE+"?"+params,{redirect:"follow"}).then(function(r){return r.json();}).catch(function(err){console.error("[postLock]",err);return{ok:false};});}
 function liberarLockApi(protocolo){
   var p = _ultimaLista.filter(function(x){ return x.protocolo === protocolo; })[0];
   var sidParaLiberar = SESSION_ID;
@@ -2198,7 +2205,7 @@ function _preencherDetalhe(p){
       html += "<div class='detail-row'><div class='detail-row-lbl'>Observação</div><div class='detail-row-val'>"+safeText(textoLimpo)+"</div></div>";
     }
     if(mapsUrl){
-      html += "<a href='"+mapsUrl+"' target='_blank' rel='noopener' style='display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:var(--azul-bg);border:1.5px solid var(--azul-borda);border-radius:var(--radius-sm);color:var(--azul);font-size:12px;font-weight:700;text-decoration:none;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";
+      html += "<a href='"+esc(mapsUrl)+"' target='_blank' rel='noopener' style='display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 12px;background:var(--azul-bg);border:1.5px solid var(--azul-borda);border-radius:var(--radius-sm);color:var(--azul);font-size:12px;font-weight:700;text-decoration:none;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";
     }
     return html;
   }
@@ -2289,7 +2296,7 @@ function enviarConclusao(){
   var agora=new Date().toISOString();
 
   /* ── ENVIO — fecha modal e aplica update só após confirmação ── */
-  fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid}),redirect:"follow"})
+  fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid,token:API_TOKEN}),redirect:"follow"})
     .then(function(r){return r.text().then(function(txt){try{return JSON.parse(txt);}catch(e){return{ok:true};}});})
     .then(function(res){
       if(res.ok===false){
@@ -2347,7 +2354,7 @@ function enviarConclusao(){
       tocarSomConclusao();
       toast("⚠️ Concluído localmente — verificando envio…","");
       try{
-        fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64}),mode:"no-cors"});
+        fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,token:API_TOKEN}),mode:"no-cors"});
       }catch(e2){}
       setTimeout(carregarDados,3000);
     });
@@ -2361,7 +2368,7 @@ function renderCard(p,idx,isNovo){
   var _mapsUrl = _mm ? _mm[0] : null;
   var _obsTexto = p.obs ? p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim() : "";
   var obs=(_obsTexto&&_obsTexto!=="—"&&!_mapsUrl)?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
-  var obsMaps = _mapsUrl ? "<a href='"+_mapsUrl+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
+  var obsMaps = _mapsUrl ? "<a href='"+esc(_mapsUrl)+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",src=fotoSrc(p.fotoId);
   if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
@@ -2600,11 +2607,8 @@ function renderFiltrado(lista){
   _prevHashes=novoHashes;_prevHashes.__secoes__=secaoAtual;_prevHashes.__ordem__=gridList.map(function(p){return p.protocolo;}).join(",");
 }
 
-/* ══ PROGRESS BAR ══ */
-var _barEl=null,_wrapEl=null;
-function startBar(){}
-function flashBar(){}
-function initProgressBar(){}
+/* ══ PROGRESS BAR — removida; stubs vazios (startBar/flashBar/
+   initProgressBar) e suas chamadas foram removidos por serem código morto. ══ */
 
 /* ══ MODAL CONFIRMAÇÃO GENÉRICO (substitui confirm() nativo) ══ */
 var _cbConfirmacaoGenerica = null;
@@ -2667,8 +2671,7 @@ function carregarDados(){
       var cache=lerCache();
       if(cache){render(cache);mostrarBannerOffline("cache");}
       else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
-    })
-    .finally(function(){ flashBar(); });
+    });
 }
 
 /* ══ LIBERAR LOCKS AO FECHAR — com aviso se lock ativo ══ */
@@ -2680,13 +2683,12 @@ window.addEventListener("beforeunload",function(e){
   }
   protsAtivos.forEach(function(prot){
     pararHeartbeat(prot);
-    var params="acao=liberar&protocolo="+encodeURIComponent(prot)+"&sessionId="+encodeURIComponent(SESSION_ID);
+    var params=tok("acao=liberar&protocolo="+encodeURIComponent(prot)+"&sessionId="+encodeURIComponent(SESSION_ID));
     try{if(navigator.sendBeacon)navigator.sendBeacon(API_BASE+"?"+params);}catch(e){}
   });
 });
 
 /* ══ INICIAR ══ */
-initProgressBar();
 carregarDados();
 iniciarTimerAoVivo();
 setInterval(carregarDados,REFRESH_INTERVAL);
@@ -2733,7 +2735,7 @@ function confirmarEditarEndereco() {
   if (!novoEndereco || novoEndereco.length < 5 || !_editEndProtocolo) return;
   var btn = document.getElementById("btnConfirmarEndereco");
   btn.disabled = true; btn.textContent = "⏳ Salvando…";
-  fetch(API_BASE + "?acao=editarEndereco&protocolo=" + encodeURIComponent(_editEndProtocolo) + "&endereco=" + encodeURIComponent(novoEndereco) + "&t=" + Date.now(), { redirect: "follow" })
+  fetch(tok(API_BASE + "?acao=editarEndereco&protocolo=" + encodeURIComponent(_editEndProtocolo) + "&endereco=" + encodeURIComponent(novoEndereco) + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalEditarEndereco();
@@ -2766,7 +2768,7 @@ function confirmarObs() {
   if (!_obsProtocolo) return;
   var btn = document.getElementById("btnConfirmarObs");
   btn.disabled = true; btn.textContent = "⏳ Salvando…";
-  fetch(API_BASE + "?acao=adicionarObs&protocolo=" + encodeURIComponent(_obsProtocolo) + "&obs=" + encodeURIComponent(obs || "—") + "&t=" + Date.now(), { redirect: "follow" })
+  fetch(tok(API_BASE + "?acao=adicionarObs&protocolo=" + encodeURIComponent(_obsProtocolo) + "&obs=" + encodeURIComponent(obs || "—") + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalObs();
@@ -2788,7 +2790,7 @@ function forcarConclusaoSupervisor(protocolo) {
     labelConfirmar: "✔ Confirmar",
     corConfirmar: "var(--verde)",
     onConfirmar: function() {
-      fetch(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now(), { redirect: "follow" })
+      fetch(tok(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now()), { redirect: "follow" })
         .then(function(r){ return r.json(); })
         .then(function(res){
           if (res.ok) {
@@ -2890,7 +2892,7 @@ function confirmarRemover() {
   btn.disabled = true;
   btn.textContent = "⏳ Removendo…";
 
-  fetch(API_BASE + "?acao=remover&protocolo=" + encodeURIComponent(protocolo) + "&t=" + Date.now(), { redirect: "follow" })
+  fetch(tok(API_BASE + "?acao=remover&protocolo=" + encodeURIComponent(protocolo) + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalRemover();
@@ -2995,7 +2997,7 @@ function confirmarRedistribuir() {
 function togglePrioridade(protocolo, ativaAtual) {
   if (!isSupervisor()) return;
   var novaAtiva = !ativaAtual;
-  fetch(API_BASE + "?acao=prioridade&protocolo=" + encodeURIComponent(protocolo) + "&ativa=" + (novaAtiva ? "1" : "0") + "&t=" + Date.now(), { redirect: "follow" })
+  fetch(tok(API_BASE + "?acao=prioridade&protocolo=" + encodeURIComponent(protocolo) + "&ativa=" + (novaAtiva ? "1" : "0") + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       if (res.ok) {
@@ -3061,7 +3063,7 @@ function _enviarPingComGps(operador, lat, lng, accuracy) {
   var params = "acao=ping&operador=" + encodeURIComponent(operador) + "&sessionId=" + encodeURIComponent(SESSION_ID) + "&t=" + Date.now();
   if (lat != null) params += "&lat=" + lat + "&lng=" + lng + "&accuracy=" + (accuracy || 0);
   if (isSupervisor()) params += "&supervisor=1";
-  fetch(API_BASE + "?" + params, { redirect: "follow" }).catch(function(){});
+  fetch(tok(API_BASE + "?" + params), { redirect: "follow" }).catch(function(){});
 }
 
 function carregarOperadoresOnline() {
@@ -3741,9 +3743,9 @@ function loteAcao(tipo){
       var operador = isSupervisor() ? "" : (getOperador() || "Operador");
       var promises=prots.map(function(protocolo){
         if(tipo==="remover"){
-          return fetch(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now(),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});
+          return fetch(tok(API_BASE+"?acao=remover&protocolo="+encodeURIComponent(protocolo)+"&t="+Date.now()),{redirect:"follow"}).then(function(r){return r.json();}).catch(function(){return{ok:false};});
         } else {
-          return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});
+          return fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:"",sessionId:SESSION_ID,token:API_TOKEN}),redirect:"follow"}).then(function(r){return r.text().then(function(t){try{return JSON.parse(t);}catch(e){return{ok:true};}});}).catch(function(){return{ok:false};});
         }
       });
       Promise.all(promises).then(function(resultados){
