@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
 <link rel="manifest" href="./manifest.json">
-<meta name="theme-color" content="#36353F">
+<meta name="theme-color" content="#0A3F7F">
 <link rel="icon" type="image/png" href="./icons/icon-192.png">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -207,31 +207,6 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
-
-/* ══ INTRO SPLASH (vídeo) — só aparece em mobile/tablet, controlado via JS ══ */
-#introSplash {
-  display: none; /* padrão: oculto (PC) — o JS libera se for mobile/tablet */
-  position: fixed; inset: 0; z-index: 99999;
-  background: #36353F;
-  align-items: center; justify-content: center;
-  overflow: hidden;
-  opacity: 1;
-  transition: opacity .6s ease;
-}
-#introSplash.intro-show { display: flex; }
-#introSplash.intro-hide { opacity: 0; pointer-events: none; }
-#introSplash video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: contain;
-}
-#introSplash .intro-fallback {
-  position: relative; z-index: 1;
-  display: flex; flex-direction: column; align-items: center; gap: 10px;
-}
-#introSplash .intro-fallback img { width: 84px; height: 84px; border-radius: 18px; }
-#introSplash .intro-fallback .intro-nome { font-size: 20px; font-weight: 700; color: #fff; letter-spacing: .6px; }
-#introSplash .intro-fallback .intro-sub { font-size: 12px; color: rgba(255,255,255,.6); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
 
 /* ══ HEADER ══ */
 header {
@@ -1167,65 +1142,6 @@ body.dark-mode .nov-beneficio { background: #1E293B; border-color: var(--borda);
 </style>
 </head>
 <body>
-
-<!-- ══ INTRO SPLASH (vídeo em loop enquanto o sistema carrega ao fundo) ══ -->
-<div id="introSplash">
-  <video id="introVideo" src="./icons/intro-video.mp4" autoplay muted loop playsinline webkit-playsinline preload="auto">
-    <!-- fallback caso o navegador não suporte vídeo -->
-  </video>
-  <div class="intro-fallback" id="introFallback" style="display:none">
-    <img src="./icons/icon-192.png" alt="Hydrosistem" onerror="this.style.display='none'">
-    <div class="intro-nome">HYDROSISTEM</div>
-    <div class="intro-sub">Painel de Entulhos</div>
-  </div>
-</div>
-<script>
-(function(){
-  var splash = document.getElementById('introSplash');
-  if (!splash) return;
-
-  // ══ detecta mobile/tablet (a intro NÃO deve aparecer no PC) ══
-  var ua = navigator.userAgent || "";
-  var isMobileUA = /Android|iPhone|iPod|iPad|Mobile|Tablet|Silk|BlackBerry|Windows Phone/i.test(ua);
-  var isIPadOS = /Macintosh/.test(ua) && navigator.maxTouchPoints > 1; // iPad moderno se identifica como Mac
-  var isMobileOuTablet = isMobileUA || isIPadOS;
-
-  if (!isMobileOuTablet) {
-    // PC / desktop: remove a intro sem exibir nada, carrega só os cards
-    splash.parentNode.removeChild(splash);
-    return;
-  }
-  splash.classList.add('intro-show');
-
-  var vid = document.getElementById('introVideo');
-  var fallback = document.getElementById('introFallback');
-  var jaEscondeu = false;
-
-  function esconderIntro(){
-    if (jaEscondeu) return;
-    jaEscondeu = true;
-    if (splash) splash.classList.add('intro-hide');
-    setTimeout(function(){ if (splash && splash.parentNode) splash.parentNode.removeChild(splash); }, 650);
-  }
-  // exposta globalmente: carregarDados() chama isso assim que os
-  // protocolos terminam de carregar (sucesso, erro ou cache) pela 1ª vez
-  window.esconderIntroSplash = esconderIntro;
-
-  if (vid) {
-    vid.addEventListener('error', function(){
-      // vídeo falhou: mostra logo/texto estático em loop visual simples
-      vid.style.display = 'none';
-      fallback.style.display = 'flex';
-    });
-    var p = vid.play();
-    if (p && p.catch) p.catch(function(){ /* autoplay bloqueado, segue com o fallback abaixo */ });
-  }
-
-  // trava de segurança: nunca deixa a intro presa na tela mesmo se
-  // carregarDados() falhar silenciosamente por algum motivo
-  setTimeout(esconderIntro, 12000);
-})();
-</script>
 
 <!-- ══ BANNER NOVIDADE — PERTO DE MIM ══ -->
 <div id="overlayNovidade">
@@ -2827,20 +2743,18 @@ async function _fetchComRetry(url, tentativas) {
 }
 
 function carregarDados(){
-  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}if(window.esconderIntroSplash)window.esconderIntroSplash();return;}
+  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
   _fetchComRetry(API+"&t="+Date.now(), 3)
     .then(function(lista){
       salvarCache(lista);
       mostrarBannerOffline(null);
       render(lista);
-      if(window.esconderIntroSplash)window.esconderIntroSplash();
     })
     .catch(function(err){
       console.error("[carregarDados] falhou após 3 tentativas",err);
       var cache=lerCache();
       if(cache){render(cache);mostrarBannerOffline("cache");}
       else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
-      if(window.esconderIntroSplash)window.esconderIntroSplash();
     });
 }
 
