@@ -761,6 +761,12 @@ body.modo-compacto .card { border-radius: var(--radius-sm); }
 #toast.erro { background: var(--vermelho); }
 #toast.exec { background: var(--exec); }
 #toast.ok   { background: var(--verde); }
+/* ✅ NOVO: badge de ações pendentes de sincronizar (fila offline) */
+#filaBadge { position: fixed; bottom: 24px; right: 20px; background: var(--amarelo-bg); color: var(--amarelo); border: 1px solid #FDE68A; border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 700; box-shadow: var(--sombra-md); z-index: 999; display: none; align-items: center; gap: 8px; cursor: pointer; }
+#filaBadge.show { display: flex; }
+#filaBadge i { font-size: 11px; }
+#filaBadge .fila-retry { text-decoration: underline; }
+body.dark-mode #filaBadge { background: #422006; color: #FDE68A; border-color: #78350F; }
 body.dark-mode #toast        { background: #1E293B; color: var(--texto); border-color: var(--borda-md); }
 body.dark-mode #toast.erro   { background: #7F1D1D; color: #FCA5A5; border-color: #991B1B; }
 body.dark-mode #toast.exec   { background: #4C1D95; color: #C4B5FD; border-color: #6D28D9; }
@@ -1545,6 +1551,7 @@ function fecharBannerNovidade() {
 
 <!-- ══ TOAST ══ -->
 <div id="toast"></div>
+<div id="filaBadge" onclick="_processarFilaPendente(true)"><i class="fa-solid fa-cloud-arrow-up fa-spin"></i> <span id="filaBadgeTxt"></span> <span class="fila-retry">reenviar agora</span></div>
 
 <!-- ══ MODAL CONFIRMAÇÃO GENÉRICO (substitui confirm() nativo) ══ -->
 <div class="modal-overlay" id="modalConfirmacaoGenerica">
@@ -2335,8 +2342,11 @@ function enviarConclusao(){
       setTimeout(carregarDados,1500);
     })
     .catch(function(){
-      /* erro de rede — aplica update otimista igual ao comportamento anterior
-         e tenta reenviar em no-cors como fallback */
+      /* erro de rede — aplica update otimista igual ao comportamento anterior,
+         mas agora ✅ GUARDA a ação numa fila persistente (localStorage) em vez
+         de só disparar uma tentativa única em no-cors (que nunca confirmava
+         se realmente chegou no servidor e se perdia se a página fechasse).
+         A fila é reenviada automaticamente quando a conexão voltar. */
       for(var i=0;i<_ultimaLista.length;i++){
         if(_ultimaLista[i].protocolo===protocolo){
           _ultimaLista[i].status=STATUS.CONCLUIDO;
@@ -2352,13 +2362,87 @@ function enviarConclusao(){
       renderTablet(_ultimaLista);
       if(navigator.vibrate)navigator.vibrate([50,30,50]);
       tocarSomConclusao();
-      toast("⚠️ Concluído localmente — verificando envio…","");
-      try{
-        fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,token:API_TOKEN}),mode:"no-cors"});
-      }catch(e2){}
-      setTimeout(carregarDados,3000);
+      toast("⚠️ Sem conexão — conclusão será enviada quando a rede voltar","");
+      _filaAdicionar({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid,token:API_TOKEN});
     });
 }
+
+/* ══ FILA DE AÇÕES PENDENTES (OFFLINE) ══════════════════════
+   Guarda ações críticas (hoje: concluir) que falharam por falta de
+   conexão, e reenvia automaticamente quando a rede voltar — em vez de
+   perder a ação silenciosamente se o app for fechado antes de reconectar. */
+var _FILA_KEY = "hyd_fila_pendente";
+var _filaProcessando = false;
+
+function _filaLer(){
+  try{ return JSON.parse(localStorage.getItem(_FILA_KEY)||"[]"); }catch(e){ return []; }
+}
+function _filaSalvar(fila){
+  try{ localStorage.setItem(_FILA_KEY, JSON.stringify(fila)); }
+  catch(e){ toast("⚠️ Armazenamento local cheio — libere espaço no dispositivo","erro"); }
+  _atualizarBadgeFila(fila);
+}
+function _atualizarBadgeFila(fila){
+  fila = fila || _filaLer();
+  var badge = document.getElementById("filaBadge");
+  var txt   = document.getElementById("filaBadgeTxt");
+  if(!badge) return;
+  if(fila.length > 0){
+    txt.textContent = fila.length + (fila.length===1 ? " ação pendente" : " ações pendentes");
+    badge.classList.add("show");
+  } else {
+    badge.classList.remove("show");
+  }
+}
+function _filaAdicionar(payload){
+  var fila = _filaLer();
+  fila.push({ id: payload.protocolo+"_"+Date.now(), payload: payload, criadoEm: Date.now(), tentativas: 0 });
+  _filaSalvar(fila);
+}
+function _processarFilaPendente(manual){
+  if(_filaProcessando) return;
+  var fila = _filaLer();
+  if(!fila.length){ if(manual) toast("✅ Nada pendente para enviar",""); return; }
+  if(!navigator.onLine && !manual){ return; }
+  _filaProcessando = true;
+  if(manual) toast("📡 Reenviando "+fila.length+" ação(ões)…","");
+
+  var restantes = fila.slice();
+  function proximo(){
+    if(!restantes.length){ _filaProcessando=false; _atualizarBadgeFila(); return; }
+    var item = restantes.shift();
+    fetch(API_BASE,{method:"POST",headers:{"Content-Type":"text/plain"},body:JSON.stringify(item.payload),redirect:"follow"})
+      .then(function(r){ return r.text().then(function(t){ try{ return JSON.parse(t); }catch(e){ return {ok:true}; } }); })
+      .then(function(res){
+        /* ✅ chegou resposta do servidor (sucesso OU rejeição explícita) —
+           remove da fila. Rejeição explícita não se resolve tentando de novo. */
+        var atual = _filaLer().filter(function(f){ return f.id !== item.id; });
+        _filaSalvar(atual);
+        if(res && res.ok===false){
+          toast("❌ Ação pendente falhou: "+(res.erro||"erro desconhecido"),"erro");
+        } else {
+          carregarDados();
+        }
+        proximo();
+      })
+      .catch(function(){
+        /* ainda sem conexão — mantém na fila e tenta de novo depois */
+        item.tentativas = (item.tentativas||0) + 1;
+        var atual = _filaLer();
+        for(var k=0;k<atual.length;k++){ if(atual[k].id===item.id){ atual[k].tentativas=item.tentativas; break; } }
+        _filaSalvar(atual);
+        proximo();
+      });
+  }
+  proximo();
+}
+
+window.addEventListener("online", function(){ _processarFilaPendente(false); });
+document.addEventListener("visibilitychange", function(){
+  if(document.visibilityState === "visible") _processarFilaPendente(false);
+});
+setInterval(function(){ _processarFilaPendente(false); }, 20000);
+_atualizarBadgeFila();
 
 /* ══ RENDER MOBILE ══ */
 function renderCard(p,idx,isNovo){
