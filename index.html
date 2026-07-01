@@ -208,6 +208,14 @@ body {
   overflow-x: hidden;
 }
 
+/* ══ SCROLLBAR ══ */
+* { scrollbar-width: thin; scrollbar-color: var(--borda-md) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb { background: var(--borda-md); border-radius: 10px; border: 2px solid var(--cinza-bg); }
+*::-webkit-scrollbar-thumb:hover { background: var(--texto3); }
+body.dark-mode *::-webkit-scrollbar-thumb { border-color: #171717; }
+
 /* ══ HEADER ══ */
 header {
   background: var(--azul-esc);
