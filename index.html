@@ -2462,8 +2462,10 @@ function renderCard(p,idx,isNovo){
   var obs=(_obsTexto&&_obsTexto!=="—"&&!_mapsUrl)?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
   var obsMaps = _mapsUrl ? "<a href='"+esc(_mapsUrl)+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
-  var foto="",src=fotoSrc(p.fotoId);
-  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div>";
+  var foto="",_fotoId=p.fotoId,_fotoUrl=p.fotoUrl;
+  if(concluido){var _fcIdM=p.fotoConcId||p.fotoConclusaoId||"",_fcUrlM=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcIdM||_fcUrlM){_fotoId=_fcIdM;_fotoUrl=_fcUrlM;}}
+  var src=_fotoId?fotoSrc(_fotoId):(_fotoUrl||null);
+  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(_fotoUrl||"")+"\",\""+esc(_fotoId||"")+"\")' alt='Foto'></div>";
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
   var protEsc=esc(p.protocolo),endEsc=esc(p.endereco);
   var execInfoHtml="";
