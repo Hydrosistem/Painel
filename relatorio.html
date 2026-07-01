@@ -745,7 +745,7 @@ function renderProtos() {
       '<div class="proto-stripe" style="background:'+cores[p._tipo]+'"></div>' +
       '<div style="flex:1;min-width:0"><div class="proto-end">'+safeText(p.endereco||"—")+'</div><div class="proto-meta">'+safeText(p.protocolo)+(p.registradoPor?" · "+safeText(p.registradoPor):"")+'</div></div>' +
       (durStr?'<span class="proto-tempo">'+durStr+'</span>':'') +
-      '<a href="'+mapsUrl+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Ver no Maps" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid var(--borda);color:var(--texto3);text-decoration:none;flex-shrink:0;margin-left:4px;transition:background .12s,color .12s" onmouseover="this.style.background=\'var(--azul-bg)\';this.style.color=\'var(--azul)\'" onmouseout="this.style.background=\'\';this.style.color=\'var(--texto3)\'"><i class="fa-solid fa-map-pin" style="font-size:11px"></i></a>' +
+      '<a href="'+esc(mapsUrl)+'" target="_blank" rel="noopener" onclick="event.stopPropagation()" title="Ver no Maps" style="display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:6px;border:1px solid var(--borda);color:var(--texto3);text-decoration:none;flex-shrink:0;margin-left:4px;transition:background .12s,color .12s" onmouseover="this.style.background=\'var(--azul-bg)\';this.style.color=\'var(--azul)\'" onmouseout="this.style.background=\'\';this.style.color=\'var(--texto3)\'"><i class="fa-solid fa-map-pin" style="font-size:11px"></i></a>' +
       '<span class="proto-badge '+badgeCls[p._tipo]+'" style="margin-left:6px">'+labels[p._tipo]+'</span>' +
     '</div>';
   });
@@ -804,9 +804,9 @@ function abrirDetalheRelatorio(p, itemEl) {
   var fAId=extrairFileId(p.fotoUrl||"");if(fAId){var sA=fotoSrc(fAId);fotoAbHtml="<div><div class='rd-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='rd-foto-wrap'><div class='rd-foto-sk'></div><img class='rd-foto' src='"+sA+"' loading='lazy' onload='this.previousElementSibling.style.display=\"none\"' onclick='abrirFotoRelatorio(\""+sA+"\")' onerror='this.closest(\".rd-foto-wrap\").style.display=\"none\"' alt='Foto abertura'></div></div>";}
   var fCId=extrairFileId(p.fotoConcUrl||p.fotoConclusaoUrl||"");if(fCId){var sC=fotoSrc(fCId);fotoConcHtml="<div><div class='rd-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div><div class='rd-foto-wrap'><div class='rd-foto-sk'></div><img class='rd-foto' src='"+sC+"' loading='lazy' onload='this.previousElementSibling.style.display=\"none\"' onclick='abrirFotoRelatorio(\""+sC+"\")' onerror='this.closest(\".rd-foto-wrap\").style.display=\"none\"' alt='Foto conclusão'></div></div>";}
   var obsHtml="";
-  if(p.obs&&p.obs!=="—"){var _mm=p.obs.match(/https:\/\/maps\.google\.[^\s]+/),_mu=_mm?_mm[0]:null,_ot=p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/Via Bot Telegram\s*[•·]?\s*/gi,"").replace(/•\s*$/,"").trim();if(_ot&&_ot!=="—")obsHtml+="<div class='rd-row'><div class='rd-row-lbl'>Observação</div><div class='rd-row-val'>"+safeText(_ot)+"</div></div>";if(_mu)obsHtml+="<a href='"+_mu+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";}
+  if(p.obs&&p.obs!=="—"){var _mm=p.obs.match(/https:\/\/maps\.google\.[^\s]+/),_mu=_mm?_mm[0]:null,_ot=p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/Via Bot Telegram\s*[•·]?\s*/gi,"").replace(/•\s*$/,"").trim();if(_ot&&_ot!=="—")obsHtml+="<div class='rd-row'><div class='rd-row-lbl'>Observação</div><div class='rd-row-val'>"+safeText(_ot)+"</div></div>";if(_mu)obsHtml+="<a href='"+esc(_mu)+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>";}
   var mapsUrl=(p.lat&&p.lng)?"https://maps.google.com/?q="+p.lat+","+p.lng:"https://maps.google.com/?q="+encodeURIComponent((p.endereco||"")+", Arapongas, PR");
-  document.getElementById("rdBody").innerHTML=miniHtml+"<div class='rd-divider'></div><div class='rd-row'><div class='rd-row-lbl'>Linha do tempo</div>"+tlHtml+"</div><div class='rd-row'><div class='rd-row-lbl'>Registrado por</div><div class='rd-row-val'>"+safeText(p.registradoPor||"—")+"</div></div><div class='rd-row'><div class='rd-row-lbl'>Data/hora abertura</div><div class='rd-row-val'>"+fdt(p.dataHora)+"</div></div>"+obsHtml+"<a href='"+mapsUrl+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>"+fotoAbHtml+fotoConcHtml;
+  document.getElementById("rdBody").innerHTML=miniHtml+"<div class='rd-divider'></div><div class='rd-row'><div class='rd-row-lbl'>Linha do tempo</div>"+tlHtml+"</div><div class='rd-row'><div class='rd-row-lbl'>Registrado por</div><div class='rd-row-val'>"+safeText(p.registradoPor||"—")+"</div></div><div class='rd-row'><div class='rd-row-lbl'>Data/hora abertura</div><div class='rd-row-val'>"+fdt(p.dataHora)+"</div></div>"+obsHtml+"<a href='"+esc(mapsUrl)+"' target='_blank' rel='noopener' class='rd-maps-btn'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>"+fotoAbHtml+fotoConcHtml;
 }
 
 /* ══ UTILITÁRIOS XLSX ══ */
@@ -873,6 +873,9 @@ function safeText(s) {
   d.textContent = String(s||"");
   return d.innerHTML;
 }
+// ✅ NOVO: safeText() não escapa aspas — inseguro dentro de atributos como
+// href='...'. esc() escapa backslash/aspas simples/duplas para esse uso.
+function esc(s){return String(s||"").replace(/\\/g,"\\\\").replace(/"/g,"&quot;").replace(/'/g,"&#39;");}
 </script>
 
 </body>
