@@ -1274,8 +1274,8 @@ function fecharBannerNovidade() {
   </div>
   <div class="header-btns">
     <button class="btn-header hidden" id="btnOperador"></button>
-    <button class="btn-header hidden" id="btnInstall">📲 Instalar</button>
-    <button class="btn-header hidden" id="btnUpdate">↺ Atualizar</button>
+    <button class="btn-header hidden" id="btnInstall"><i class='fa-solid fa-mobile-screen-button'></i> Instalar</button>
+    <button class="btn-header hidden" id="btnUpdate"><i class='fa-solid fa-arrows-rotate'></i> Atualizar</button>
     <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
     <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
     <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
@@ -1285,8 +1285,8 @@ function fecharBannerNovidade() {
   </div>
 </header>
 
-<div id="bannerOffline">📵 Sem conexão — exibindo dados salvos anteriormente</div>
-<div id="bannerCache">⚠️ Dados offline — última atualização: <span id="cacheHora">—</span></div>
+<div id="bannerOffline"><i class='fa-solid fa-wifi'></i> Sem conexão — exibindo dados salvos anteriormente</div>
+<div id="bannerCache"><i class='fa-solid fa-triangle-exclamation'></i> Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
 <div class="layout-root">
 
@@ -1296,7 +1296,7 @@ function fecharBannerNovidade() {
       <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
       <input class="search-input" id="buscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" autocorrect="off" spellcheck="false">
       <button class="search-clear" id="buscaClear" onclick="limparBusca()">×</button>
-      <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()">☰</button>
+      <button class="btn-compacto" id="btnCompacto" title="Modo compacto" onclick="toggleCompacto()"><i class='fa-solid fa-bars'></i></button>
       <button class="btn-compacto" id="btnDarkModeMobile" title="Modo noturno" onclick="toggleDarkMode()"><i class="fa-solid fa-moon"></i></button>      
     </div>
   </div>
@@ -1467,21 +1467,21 @@ function fecharBannerNovidade() {
 </div>
 <div id="barraLote">
   <div class="barra-lote-info"><span id="loteContador">0</span> selecionados</div>
-  <button class="btn-lote-cancelar" onclick="cancelarLote()">✕ Cancelar</button>
+  <button class="btn-lote-cancelar" onclick="cancelarLote()"><i class='fa-solid fa-xmark'></i> Cancelar</button>
   <button class="btn-lote-concluir" id="btnLoteConcluir" onclick="loteAcao('concluir')" disabled><i class="fa-solid fa-circle-check"></i> Concluir</button>
-  <button class="btn-lote-remover" id="btnLoteRemover" onclick="loteAcao('remover')" disabled>🗑️ Remover</button>
+  <button class="btn-lote-remover" id="btnLoteRemover" onclick="loteAcao('remover')" disabled><i class='fa-solid fa-trash'></i> Remover</button>
 </div>
 
 <!-- ══ LIGHTBOX ══ -->
 <div class="lb" id="lb" onclick="fecharFoto()">
-  <button class="lb-close" onclick="event.stopPropagation();fecharFoto()">✕</button>
+  <button class="lb-close" onclick="event.stopPropagation();fecharFoto()"><i class='fa-solid fa-xmark'></i></button>
   <img id="lbImg" src="" alt="Foto">
 </div>
 
 <!-- ══ MODAL INSTALAÇÃO ══ -->
 <div class="modal-overlay" id="modalInstall">
   <div class="modal" style="max-width:360px">
-    <div class="modal-icon">📲</div>
+    <div class="modal-icon"><i class='fa-solid fa-mobile-screen-button'></i></div>
     <div class="modal-title" id="modalInstallTitulo">Instalar app</div>
     <div class="modal-sub" id="modalInstallSub"></div>
     <div class="modal-btns"><button class="btn-cancelar" onclick="fecharModalInstall()">Fechar</button></div>
@@ -1496,10 +1496,10 @@ function fecharBannerNovidade() {
     <div class="modal-sub" id="modalConclusaoSub"></div>
     <div class="foto-concl-preview-wrap" id="fotoConclPreview">
       <img id="fotoConclImg" src="" alt="Foto conclusão">
-      <button class="foto-concl-remove" onclick="removerFotoConcl()">✕</button>
+      <button class="foto-concl-remove" onclick="removerFotoConcl()"><i class='fa-solid fa-xmark'></i></button>
     </div>
     <label class="label-foto-concl" id="btnFotoConcl">
-      📷 Tirar ou escolher foto
+      <i class='fa-solid fa-camera'></i> Tirar ou escolher foto
       <input type="file" id="inputFotoConcl" accept="image/*" capture="environment" style="display:none" onchange="onFotoConclChange(this)">
     </label>
     <div class="modal-btns" style="margin-top:14px">
@@ -1889,7 +1889,7 @@ var _modoCompacto=false;
     }
   } catch(e){}
 })();
-function toggleCompacto(){_modoCompacto=!_modoCompacto;document.body.classList.toggle("modo-compacto",_modoCompacto);document.getElementById("btnCompacto").classList.toggle("ativo",_modoCompacto);try{localStorage.setItem("hyd_compacto",_modoCompacto?"1":"0");}catch(e){}toast(_modoCompacto?"☰ Modo compacto ativado":"☷ Modo normal","");renderFiltrado(_ultimaLista);}
+function toggleCompacto(){_modoCompacto=!_modoCompacto;document.body.classList.toggle("modo-compacto",_modoCompacto);document.getElementById("btnCompacto").classList.toggle("ativo",_modoCompacto);try{localStorage.setItem("hyd_compacto",_modoCompacto?"1":"0");}catch(e){}toast(_modoCompacto?"<i class='fa-solid fa-bars'></i> Modo compacto ativado":"<i class='fa-solid fa-table-cells'></i> Modo normal","");renderFiltrado(_ultimaLista);}
 window.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("btnCompacto");if(b&&_modoCompacto)b.classList.add("ativo");});
 
 /* ══ PWA ══ */
@@ -1902,13 +1902,13 @@ function instalarPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferre
 function ativarBotaoNativo(){clearTimeout(_promptWaitTimer);mostrarBtnInstall(instalarPWA);}
 function fecharModalInstall(){document.getElementById("modalInstall").classList.remove("open");}
 function abrirModalInstall(t,h){document.getElementById("modalInstallTitulo").textContent=t;document.getElementById("modalInstallSub").innerHTML=h;document.getElementById("modalInstall").classList.add("open");}
-function ativarBotaoFallback(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){mostrarBtnInstall(function(){abrirModalInstall("Instalar no iPhone","<div style='text-align:left;line-height:1.8;font-size:13px'>1. Toque em <strong>📤 Compartilhar</strong><br>2. Toque em <strong>Adicionar à Tela de Início</strong><br>3. Confirme com <strong>Adicionar</strong></div>");});return;}if(ua.isAndroid){mostrarBtnInstall(function(){abrirModalInstall("Instalar no Android","<div style='text-align:left;line-height:1.8;font-size:13px'>1. Menu <strong>⋮</strong> no canto superior<br>2. <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong></div>");});return;}mostrarBtnInstall(function(){abrirModalInstall("Instalar no computador","<div style='text-align:left;line-height:1.8;font-size:13px'>Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>");});}
+function ativarBotaoFallback(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){mostrarBtnInstall(function(){abrirModalInstall("Instalar no iPhone","<div style='text-align:left;line-height:1.8;font-size:13px'>1. Toque em <strong><i class='fa-solid fa-arrow-up-from-bracket'></i> Compartilhar</strong><br>2. Toque em <strong>Adicionar à Tela de Início</strong><br>3. Confirme com <strong>Adicionar</strong></div>");});return;}if(ua.isAndroid){mostrarBtnInstall(function(){abrirModalInstall("Instalar no Android","<div style='text-align:left;line-height:1.8;font-size:13px'>1. Menu <strong>⋮</strong> no canto superior<br>2. <strong>Instalar app</strong> ou <strong>Adicionar à tela inicial</strong></div>");});return;}mostrarBtnInstall(function(){abrirModalInstall("Instalar no computador","<div style='text-align:left;line-height:1.8;font-size:13px'>Clique no ícone <strong>⊕</strong> na barra de endereços do Chrome ou Edge.</div>");});}
 window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();deferredPrompt=e;clearTimeout(_promptWaitTimer);if(!estaInstalado())ativarBotaoNativo();});
-window.addEventListener("appinstalled",function(){deferredPrompt=null;ocultarBtnInstall();toast("📲 Hydrosistem instalado!","ok");});
+window.addEventListener("appinstalled",function(){deferredPrompt=null;ocultarBtnInstall();toast("<i class='fa-solid fa-mobile-screen-button'></i> Hydrosistem instalado!","ok");});
 function iniciarEsperaPrompt(){if(estaInstalado()||deferredPrompt)return;clearTimeout(_promptWaitTimer);_promptWaitTimer=setTimeout(function(){if(!deferredPrompt)ativarBotaoFallback();},15000);}
 window.addEventListener("load",function(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){ativarBotaoFallback();return;}if("serviceWorker"in navigator){var ok=false,ini=function(){if(!ok){ok=true;iniciarEsperaPrompt();}};navigator.serviceWorker.ready.then(ini).catch(ini);setTimeout(ini,1000);}else iniciarEsperaPrompt();});
 if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){swReg=reg;reg.addEventListener("updatefound",function(){var nw=reg.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage({type:"SKIP_WAITING"});mostrarBotaoAtualizar(reg);}});});}).catch(function(err){console.warn("[SW]",err);});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});});}
-function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("↺ Nova versão disponível — toque em Atualizar","");}
+function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("<i class='fa-solid fa-arrows-rotate'></i> Nova versão disponível — toque em Atualizar","");}
 
 /* ══ MODO COMPACTO TABLET ══ */
 var _modoCompactoTablet = false;
@@ -1928,7 +1928,7 @@ function toggleCompactoTablet() {
     btn.style.color       = _modoCompactoTablet ? "var(--azul)"       : "";
   }
   try { localStorage.setItem("hyd_compacto_tablet", _modoCompactoTablet ? "1" : "0"); } catch(e) {}
-  toast(_modoCompactoTablet ? "☰ Modo compacto ativado" : "☷ Modo normal", "");
+  toast(_modoCompactoTablet ? "<i class='fa-solid fa-bars'></i> Modo compacto ativado" : "<i class='fa-solid fa-table-cells'></i> Modo normal", "");
 }
 window.addEventListener("DOMContentLoaded", function() {
   var btn = document.getElementById("btnCompactoTablet");
@@ -1951,20 +1951,20 @@ function togglePerto(){
   if(_modoPerto){
     _modoPerto=false; _posAtual=null;
     setAtivo(false); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim");
-    toast("📍 Modo proximidade desativado","");
+    toast("<i class='fa-solid fa-map-pin'></i> Modo proximidade desativado","");
     renderFiltrado(_ultimaLista); renderTablet(_ultimaLista); return;
   }
-  setTxt("⏳ Buscando GPS...");
-  if(!navigator.geolocation){ toast("❌ GPS não disponível","erro"); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim"); return; }
+  setTxt("<i class='fa-solid fa-spinner fa-spin'></i> Buscando GPS...");
+  if(!navigator.geolocation){ toast("<i class='fa-solid fa-circle-xmark'></i> GPS não disponível","erro"); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim"); return; }
   navigator.geolocation.getCurrentPosition(function(pos){
     _posAtual={lat:pos.coords.latitude,lng:pos.coords.longitude};
     _modoPerto=true;
-    setAtivo(true); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim ✓");
+    setAtivo(true); setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim <i class='fa-solid fa-check' style='font-size:9px'></i>");
     toast("<i class='fa-solid fa-circle-check'></i> GPS ativo — até "+RAIO_KM+"km","ok");
     renderFiltrado(_ultimaLista); renderTablet(_ultimaLista);
   },function(err){
     setTxt("<i class='fa-solid fa-map-pin'></i> Perto de mim");
-    toast(err.code===1?"❌ Permissão de GPS negada":"❌ Localização indisponível","erro");
+    toast(err.code===1?"<i class='fa-solid fa-circle-xmark'></i> Permissão de GPS negada":"<i class='fa-solid fa-circle-xmark'></i> Localização indisponível","erro");
   },{enableHighAccuracy:true,timeout:10000,maximumAge:30000});
 }
 function _aplicarProximidade(lista){if(!_modoPerto||!_posAtual) return lista;var cd=[];lista.forEach(function(p){var st=(p.status||"").toUpperCase().trim();if(st==="CONCLUÍDO"||st==="CONCLUIDO") return;/* Prioridade máxima sempre aparece, ignora restrição de raio */if(p.prioridade&&!isConcluido(p)){p._distKm=p.lat!=null&&p.lng!=null?_haversine(_posAtual.lat,_posAtual.lng,p.lat,p.lng):null;cd.push(p);return;}if(p.lat==null||p.lng==null){p._distKm=null;cd.push(p);return;}var d=_haversine(_posAtual.lat,_posAtual.lng,p.lat,p.lng);if(d<=RAIO_KM){p._distKm=d;cd.push(p);}});cd.sort(function(a,b){if(a._distKm==null&&b._distKm==null)return 0;if(a._distKm==null)return 1;if(b._distKm==null)return -1;return a._distKm-b._distKm;});return cd;}
@@ -2066,7 +2066,7 @@ function iniciarHeartbeat(protocolo){if(meusLocks[protocolo])return;meusLocks[pr
 function pararHeartbeat(protocolo){if(meusLocks[protocolo]){clearInterval(meusLocks[protocolo]);delete meusLocks[protocolo];atualizarChipOperador();}}
 
 /* ══ MODAL INICIAR ══ */
-function abrirModal(protocolo,endereco){protocoloPendente=protocolo;enderecoPendente=endereco;document.getElementById("modalTitulo").textContent="Iniciar execução?";document.getElementById("modalSub").textContent="Protocolo "+protocolo+"\n📍 "+endereco+"\n\nOperador: "+(getOperador()||"não identificado")+"\n\nO serviço ficará marcado como Em Execução.";document.getElementById("modalOverlay").classList.add("open");}
+function abrirModal(protocolo,endereco){protocoloPendente=protocolo;enderecoPendente=endereco;document.getElementById("modalTitulo").textContent="Iniciar execução?";document.getElementById("modalSub").textContent="Protocolo "+protocolo+"\n"+endereco+"\n\nOperador: "+(getOperador()||"não identificado")+"\n\nO serviço ficará marcado como Em Execução.";document.getElementById("modalOverlay").classList.add("open");}
 function fecharModal(){document.getElementById("modalOverlay").classList.remove("open");protocoloPendente=null;}
 
 /* ── cancelamentos pendentes: protocolo → true quando cancelado antes do adquirir retornar ── */
@@ -2076,7 +2076,7 @@ function confirmarExecucao(){
   var protocolo=protocoloPendente,enderecoAtual=enderecoPendente;
   if(!protocolo)return;
   var locksAtivos=Object.keys(meusLocks);
-  if(locksAtivos.length>0){fecharModal();toast("⚠️ Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}
+  if(locksAtivos.length>0){fecharModal();toast("<i class='fa-solid fa-triangle-exclamation'></i> Conclua ou cancele o protocolo "+locksAtivos[0]+" antes de iniciar outro.","erro");return;}
   if(navigator.vibrate)navigator.vibrate(50);
   fecharModal();
   var operador=getOperador()||"Operador";
@@ -2104,7 +2104,7 @@ function confirmarExecucao(){
       delete _optimisticLocks[protocolo];
       for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){var l=_ultimaLista[i].lock;if(l&&l._otimista&&l.sessionId===SESSION_ID)_ultimaLista[i].lock=null;break;}}
       renderFiltrado(_ultimaLista);renderTablet(_ultimaLista);
-      toast("⚠️ "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");
+      toast("<i class='fa-solid fa-triangle-exclamation'></i> "+(res.erro||"Serviço já em execução por outro usuário!"),"erro");
       carregarDados();return;
     }
     delete _optimisticLocks[protocolo];
@@ -2145,7 +2145,7 @@ function cancelarMinhaExecucao(protocolo){
   renderFiltrado(_ultimaLista);
   renderTablet(_ultimaLista);
   renderOperadoresOnline(_presencasCache);
-  toast("🔓 Execução cancelada.","");
+  toast("<i class='fa-solid fa-lock-open'></i> Execução cancelada.","");
   postLock({acao:"liberar",protocolo:protocolo,sessionId:sidParaLiberar}).catch(function(){ carregarDados(); });
 }
 
@@ -2207,13 +2207,13 @@ function _preencherDetalhe(p){
   var lock=p.lock,minhaExecucao=isMinhaExecucao(lock,concluido),outraExecucao=!concluido&&lock&&!isMinhaExecucao(lock,concluido);
   var tipoCard=concluido?"concluido":(minhaExecucao||outraExecucao)?"execucao":t.tipo;
   var deltaVal,deltaLbl;
-  if(concluido){deltaVal="✔";deltaLbl="CONCLUÍDO";}else{deltaVal=t.r<=0?"−"+ar(t.delta):ar(t.delta);deltaLbl=t.r<=0?"VENCIDO":"RESTANTE";}
+  if(concluido){deltaVal="<i class='fa-solid fa-check'></i>";deltaLbl="CONCLUÍDO";}else{deltaVal=t.r<=0?"−"+ar(t.delta):ar(t.delta);deltaLbl=t.r<=0?"VENCIDO":"RESTANTE";}
   var abertura=p.dataHora?new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";
   var prazoHora=concluido?(p.dataConclusao?new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—"):(t.horaVence||"—");
   var prazoLbl=concluido?"CONCLUSÃO":"PRAZO";
   var execInfoHtml="";
-  if(outraExecucao){var _tsExecD=_getIniciadoEm(lock,p);var minEx=Math.round((new Date()-new Date(_tsExecD))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'>⏱ Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
-  else if(minhaExecucao){execInfoHtml="<div class='exec-info-box meu'>✔ Você está executando — vá ao local e conclua aqui</div>";}
+  if(outraExecucao){var _tsExecD=_getIniciadoEm(lock,p);var minEx=Math.round((new Date()-new Date(_tsExecD))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'><i class='fa-solid fa-stopwatch'></i> Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
+  else if(minhaExecucao){execInfoHtml="<div class='exec-info-box meu'><i class='fa-solid fa-check'></i> Você está executando — vá ao local e conclua aqui</div>";}
   var fotoHtml="",src=fotoSrc(p.fotoId);
   if(src){fotoHtml="<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de abertura</div><div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+src+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(p.fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(p.fotoUrl||"")+"\",\""+esc(p.fotoId||"")+"\")' alt='Foto'></div></div>";}
   function _renderObs(obs){
@@ -2232,7 +2232,7 @@ function _preencherDetalhe(p){
     return html;
   }
   var obsHtml=_renderObs(p.obs);
-  var badgeMap={urgente:"<span class='badge t-urgente'>⚠️ Urgente</span>",pendente:"<span class='badge t-pendente'>🟡 Pendente</span>",atrasado:"<span class='badge t-atrasado'>🔴 Atrasado</span>",execucao:"<span class='badge-exec'><span class='dot'></span>Em execução</span>",concluido:"<span class='badge t-concluido'><i class='fa-solid fa-circle-check'></i> Concluído</span>"};
+  var badgeMap={urgente:"<span class='badge t-urgente'><i class='fa-solid fa-triangle-exclamation'></i> Urgente</span>",pendente:"<span class='badge t-pendente'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--amarelo)'></i> Pendente</span>",atrasado:"<span class='badge t-atrasado'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--vermelho)'></i> Atrasado</span>",execucao:"<span class='badge-exec'><span class='dot'></span>Em execução</span>",concluido:"<span class='badge t-concluido'><i class='fa-solid fa-circle-check'></i> Concluído</span>"};
   var conclusaoHtml="";
   if(concluido){var fotoConcHtml="",_fcId=p.fotoConcId||p.fotoConclusaoId||"",_fcUrl=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcId){var srcC=fotoSrc(_fcId);fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+srcC+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fcUrl||srcC)+"\")' onerror='onFotoErro(this,\""+esc(_fcUrl)+"\",\""+esc(_fcId)+"\")' alt='Foto conclusão'></div>";}else if(_fcUrl){fotoConcHtml="<div class='detail-foto-wrap'><div class='detail-foto-skeleton'></div><img class='detail-foto' src='"+esc(_fcUrl)+"' loading='lazy' onload='onDetailFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fcUrl)+"\")' alt='Foto conclusão'></div>";}conclusaoHtml="<div class='detail-conclusao-section'><div class='detail-conclusao-header'><i class='fa-solid fa-circle-check'></i> Dados de conclusão</div>"+(p.operadorConclusao?"<div class='detail-row'><div class='detail-row-lbl'>Concluído por</div><div class='detail-row-val' style='font-weight:600;color:var(--verde)'>"+safeText(p.operadorConclusao)+"</div></div>":"")+"<div class='detail-row'><div class='detail-row-lbl'>Data/hora conclusão</div><div class='detail-row-val'>"+fdt(p.dataConclusao)+"</div></div>"+(fotoConcHtml?"<div><div class='detail-row-lbl' style='margin-bottom:6px'>Foto de conclusão</div>"+fotoConcHtml+"</div>":"")+"</div>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso-detalhe='"+esc(p.dataHora)+"' data-concluido-detalhe='"+(concluido?"1":"0")+"'":"";
@@ -2259,9 +2259,9 @@ function _preencherDetalhe(p){
   footer.classList.add("show");
   if(concluido){footer.innerHTML="<div style='background:var(--verde-bg);border:1.5px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px 14px;text-align:center;font-size:13px;font-weight:700;color:var(--verde);'><i class='fa-solid fa-circle-check'></i> Serviço concluído</div>";}
   else if(outraExecucao){
-    footer.innerHTML="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";
+    footer.innerHTML="<div class='btn-bloqueado'><i class='fa-solid fa-lock'></i> Em execução por outro usuário</div>";
   }
-  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'>✕ Cancelar execução</button>";}
+  else if(minhaExecucao){footer.innerHTML="<button class='btn-detail-concluir' onclick='abrirConclusao(\""+esc(p.protocolo)+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-detail-cancelar' onclick='cancelarMinhaExecucaoPainel(\""+esc(p.protocolo)+"\")'><i class='fa-solid fa-xmark'></i> Cancelar execução</button>";}
   else{footer.innerHTML="<button class='btn-detail-iniciar t-"+tipoCard+"' onclick='abrirModal(\""+esc(p.protocolo)+"\",\""+esc(p.endereco)+"\")'><i class='fa-solid fa-play'></i> Iniciar execução</button>";}
 }
 function cancelarMinhaExecucaoPainel(protocolo){
@@ -2287,7 +2287,7 @@ function cancelarMinhaExecucaoPainel(protocolo){
   var pSel=null;for(var i=0;i<_ultimaLista.length;i++){if(_ultimaLista[i].protocolo===protocolo){pSel=_ultimaLista[i];break;}}
   if(pSel)selecionarProtocolo(pSel);
   renderOperadoresOnline(_presencasCache);
-  toast("🔓 Execução cancelada.","");
+  toast("<i class='fa-solid fa-lock-open'></i> Execução cancelada.","");
   postLock({acao:"liberar",protocolo:protocolo,sessionId:sidParaLiberar}).catch(function(){ carregarDados(); });
 }
 
@@ -2296,7 +2296,7 @@ var _protocoloConcluindo=null,_fotoConclBase64=null;
 function abrirConclusao(protocolo,endereco){_protocoloConcluindo=protocolo;_fotoConclBase64=null;document.getElementById("modalConclusaoSub").textContent=protocolo+" • "+decodeURIComponent(endereco);document.getElementById("fotoConclPreview").classList.remove("show");document.getElementById("fotoConclImg").src="";document.getElementById("btnFotoConcl").classList.remove("oculto");document.getElementById("inputFotoConcl").value="";var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";document.getElementById("modalConclusao").classList.add("open");}
 function fecharModalConclusao(){document.getElementById("modalConclusao").classList.remove("open");_protocoloConcluindo=null;_fotoConclBase64=null;}
 function _comprimirImagem(file,callback){var tipo=file.type;if(!tipo||tipo==="image/jpg")tipo="image/jpeg";var reader=new FileReader();reader.onload=function(e){var rr=e.target.result;if(rr&&rr.startsWith("data:image/jpg"))rr=rr.replace("data:image/jpg","data:image/jpeg");if(file.size<800*1024){callback(rr);return;}var img=new Image();img.onload=function(){try{var MAX=1280,w=img.width,h=img.height;if(w>MAX||h>MAX){if(w>h){h=Math.round(h*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h);h=MAX;}}var canvas=document.createElement("canvas");canvas.width=w;canvas.height=h;var ctx=canvas.getContext("2d");ctx.drawImage(img,0,0,w,h);var result=canvas.toDataURL("image/jpeg",0.82);if(!result||result.length<1000||result==="data:,"){callback(rr);}else{callback(result);}}catch(err){callback(rr);}};img.onerror=function(){callback(rr);};img.src=rr;};reader.onerror=function(){callback(null);};reader.readAsDataURL(file);}
-function onFotoConclChange(input){var file=input.files[0];if(!file)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.textContent="⏳ Processando…";_comprimirImagem(file,function(base64){if(!base64){toast("❌ Não foi possível carregar a foto","erro");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";return;}_fotoConclBase64=base64;document.getElementById("fotoConclImg").src=base64;document.getElementById("fotoConclPreview").classList.add("show");document.getElementById("btnFotoConcl").classList.add("oculto");btn.disabled=false;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";});}
+function onFotoConclChange(input){var file=input.files[0];if(!file)return;var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-spinner fa-spin'></i> Processando…";_comprimirImagem(file,function(base64){if(!base64){toast("<i class='fa-solid fa-circle-xmark'></i> Não foi possível carregar a foto","erro");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";return;}_fotoConclBase64=base64;document.getElementById("fotoConclImg").src=base64;document.getElementById("fotoConclPreview").classList.add("show");document.getElementById("btnFotoConcl").classList.add("oculto");btn.disabled=false;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";});}
 function removerFotoConcl(){_fotoConclBase64=null;document.getElementById("fotoConclImg").src="";document.getElementById("fotoConclPreview").classList.remove("show");document.getElementById("btnFotoConcl").classList.remove("oculto");document.getElementById("inputFotoConcl").value="";var btn=document.getElementById("btnEnviarConclusao");btn.disabled=true;btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Concluir";}
 function enviarConclusao(){
   if(!_protocoloConcluindo)return;
@@ -2326,7 +2326,7 @@ function enviarConclusao(){
         btn.disabled=false;
         btn.innerHTML="<i class='fa-solid fa-circle-check'></i> Tentar novamente";
         if(btnCancelar) btnCancelar.disabled=false;
-        toast("❌ "+(res.erro||"Erro ao concluir — tente novamente"),"erro");
+        toast("<i class='fa-solid fa-circle-xmark'></i> "+(res.erro||"Erro ao concluir — tente novamente"),"erro");
         return;
       }
       /* ── SUCESSO: agora aplica update otimista e fecha modal ── */
@@ -2377,7 +2377,7 @@ function enviarConclusao(){
       renderTablet(_ultimaLista);
       if(navigator.vibrate)navigator.vibrate([50,30,50]);
       tocarSomConclusao();
-      toast("⚠️ Sem conexão — conclusão será enviada quando a rede voltar","");
+      toast("<i class='fa-solid fa-triangle-exclamation'></i> Sem conexão — conclusão será enviada quando a rede voltar","");
       _filaAdicionar({acao:"concluir",protocolo:protocolo,operador:operador,foto:fotoBase64,sessionId:sid,token:API_TOKEN});
     });
 }
@@ -2394,7 +2394,7 @@ function _filaLer(){
 }
 function _filaSalvar(fila){
   try{ localStorage.setItem(_FILA_KEY, JSON.stringify(fila)); }
-  catch(e){ toast("⚠️ Armazenamento local cheio — libere espaço no dispositivo","erro"); }
+  catch(e){ toast("<i class='fa-solid fa-triangle-exclamation'></i> Armazenamento local cheio — libere espaço no dispositivo","erro"); }
   _atualizarBadgeFila(fila);
 }
 function _atualizarBadgeFila(fila){
@@ -2417,10 +2417,10 @@ function _filaAdicionar(payload){
 function _processarFilaPendente(manual){
   if(_filaProcessando) return;
   var fila = _filaLer();
-  if(!fila.length){ if(manual) toast("✅ Nada pendente para enviar",""); return; }
+  if(!fila.length){ if(manual) toast("<i class='fa-solid fa-circle-check'></i> Nada pendente para enviar",""); return; }
   if(!navigator.onLine && !manual){ return; }
   _filaProcessando = true;
-  if(manual) toast("📡 Reenviando "+fila.length+" ação(ões)…","");
+  if(manual) toast("<i class='fa-solid fa-cloud-arrow-up'></i> Reenviando "+fila.length+" ação(ões)…","");
 
   var restantes = fila.slice();
   function proximo(){
@@ -2434,7 +2434,7 @@ function _processarFilaPendente(manual){
         var atual = _filaLer().filter(function(f){ return f.id !== item.id; });
         _filaSalvar(atual);
         if(res && res.ok===false){
-          toast("❌ Ação pendente falhou: "+(res.erro||"erro desconhecido"),"erro");
+          toast("<i class='fa-solid fa-circle-xmark'></i> Ação pendente falhou: "+(res.erro||"erro desconhecido"),"erro");
         } else {
           carregarDados();
         }
@@ -2466,7 +2466,7 @@ function renderCard(p,idx,isNovo){
   var _mm=p.obs&&p.obs.match(/https:\/\/maps\.google\.[^\s]+/);
   var _mapsUrl = _mm ? _mm[0] : null;
   var _obsTexto = p.obs ? p.obs.replace(/https:\/\/maps\.google\.[^\s]*/g,"").replace(/•\s*$/,"").trim() : "";
-  var obs=(_obsTexto&&_obsTexto!=="—"&&!_mapsUrl)?"<span class='meta-item'>📝 "+safeText(_obsTexto)+"</span>":"";
+  var obs=(_obsTexto&&_obsTexto!=="—"&&!_mapsUrl)?"<span class='meta-item'><i class='fa-solid fa-note-sticky'></i> "+safeText(_obsTexto)+"</span>":"";
   var obsMaps = _mapsUrl ? "<a href='"+esc(_mapsUrl)+"' target='_blank' rel='noopener' style='display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;color:var(--azul);text-decoration:none;background:var(--azul-bg);border:1px solid var(--azul-borda);border-radius:20px;padding:2px 9px;'><i class='fa-solid fa-map-pin'></i> Ver no Maps</a>" : "";
   var dist=(_modoPerto&&p._distKm!=null)?"<span class='meta-item' style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"";
   var foto="",_fotoId=p.fotoId,_fotoUrl=p.fotoUrl;
@@ -2476,19 +2476,19 @@ function renderCard(p,idx,isNovo){
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
   var protEsc=esc(p.protocolo),endEsc=esc(p.endereco);
   var execInfoHtml="";
-  if(outraExecucao){var _tsExecM=_getIniciadoEm(lock,p);var min=Math.round((new Date()-new Date(_tsExecM))/60000),quem=lock.usuario?" por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info'>⏱ Iniciado há "+(min<1?"<1 min":min+" min")+quem+"</div>";}
-  else if(minhaExecucao){execInfoHtml="<div class='exec-info' style='background:#DCFCE7;border-color:rgba(74,222,128,.3);color:#166534;'>✔ Você está executando</div>";}
+  if(outraExecucao){var _tsExecM=_getIniciadoEm(lock,p);var min=Math.round((new Date()-new Date(_tsExecM))/60000),quem=lock.usuario?" por <strong class='exec-operador'>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info'><i class='fa-solid fa-stopwatch'></i> Iniciado há "+(min<1?"<1 min":min+" min")+quem+"</div>";}
+  else if(minhaExecucao){execInfoHtml="<div class='exec-info' style='background:#DCFCE7;border-color:rgba(74,222,128,.3);color:#166534;'><i class='fa-solid fa-check'></i> Você está executando</div>";}
   var btnHtml;
   if(concluido){var _quemConc=p.operadorConclusao?" · <strong>"+safeText(p.operadorConclusao)+"</strong>":"";btnHtml="<div class='btn-concluido-info'><i class='fa-solid fa-circle-check'></i> Concluído em "+fdt(p.dataConclusao)+_quemConc+"</div>";}
-  else if(outraExecucao){btnHtml="<div class='btn-bloqueado'>🔒 Em execução por outro usuário</div>";}
-  else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'>✕ Cancelar execução</button>";}
+  else if(outraExecucao){btnHtml="<div class='btn-bloqueado'><i class='fa-solid fa-lock'></i> Em execução por outro usuário</div>";}
+  else if(minhaExecucao){btnHtml="<button class='btn-concluir-exec' onclick='abrirConclusao(\""+protEsc+"\",\""+encodeURIComponent(p.endereco)+"\")'><i class='fa-solid fa-circle-check'></i> Concluir este serviço</button><button class='btn-cancelar-exec' onclick='cancelarMinhaExecucao(\""+protEsc+"\")'><i class='fa-solid fa-xmark'></i> Cancelar execução</button>";}
   else{btnHtml="<button class='btn-iniciar' onclick='abrirModal(\""+protEsc+"\",\""+endEsc+"\")'><i class='fa-solid fa-play'></i> Iniciar execução</button>";}
   var isoAttr=!concluido&&p.dataHora?"data-iso='"+esc(p.dataHora)+"' data-concluido='0' data-tipo='"+tipoCard+"'":"data-concluido='1'";
   var delay=isNovo?Math.min(idx*50,380):0;
   var prazoTxt=concluido?"Concluído":"<span class='prazo-live-txt'>"+t.txt+"</span>";
   var prazoLabel=concluido?"100% concluído":pct+"% do prazo";
   var prazoExtra=(!concluido&&t.horaVence)?" <span class='prazo-hora'>· vence às "+t.horaVence+"</span>":"";
-  var badgeTxt={urgente:"⚠️ Urgente",pendente:"🟡 Pendente",atrasado:"🔴 Atrasado",concluido:"<i class='fa-solid fa-circle-check'></i> Concluído"}[tipoCard]||"";
+  var badgeTxt={urgente:"<i class='fa-solid fa-triangle-exclamation'></i> Urgente",pendente:"<i class='fa-solid fa-circle' style='font-size:8px;color:var(--amarelo)'></i> Pendente",atrasado:"<i class='fa-solid fa-circle' style='font-size:8px;color:var(--vermelho)'></i> Atrasado",concluido:"<i class='fa-solid fa-circle-check'></i> Concluído"}[tipoCard]||"";
   return "<div class='card t-"+tipoCard+(prioridade?" t-prioridade":"")+(isNovo?" card-animar":"")+"' style='--delay:"+delay+"ms' "+isoAttr+">"+
     "<div class='card-inner'><div class='card-stripe'></div>"+
     "<div class='card-body'>"+
@@ -2497,7 +2497,7 @@ function renderCard(p,idx,isNovo){
         "<div class='card-top-right'>"+execBadge+_btnPrioridade(p.protocolo,prioridade)+_btnRemoverCard(p.protocolo,p.endereco)+"</div>"+
       "</div>"+
       "<div class='endereco'><i class='fa-solid fa-map-pin'></i> "+safeText(p.endereco)+"</div>"+
-      "<div class='meta'><span class='meta-item'>🕐 "+fdt(p.dataHora)+"</span><span class='meta-item'><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+obs+obsMaps+dist+"</div>"+
+      "<div class='meta'><span class='meta-item'><i class='fa-solid fa-clock'></i> "+fdt(p.dataHora)+"</span><span class='meta-item'><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+obs+obsMaps+dist+"</div>"+
       execInfoHtml+foto+
       "<div class='prazo-wrap'><div class='prazo-row'><span>"+prazoTxt+prazoExtra+"</span><span>"+prazoLabel+"</span></div><div class='prazo-bar'><div class='prazo-fill' style='width:"+pct+"%'></div></div></div>"+
     "</div></div>"+
@@ -2513,7 +2513,7 @@ function renderCardTablet(p,idx,isNovo){
   if(prioridade) badgeHtml="<span class='badge-prioridade'><i class='fa-solid fa-bolt'></i> Máxima</span>";
   else if(concluido)badgeHtml="<span class='badge-sm t-concluido'><i class='fa-solid fa-circle-check'></i> Concluído</span>";
   else if(outraExecucao||minhaExecucao)badgeHtml="<span class='badge-sm t-execucao'><span class='exec-dot'></span>Execução</span>";
-  else{var labels={urgente:"⚠ Urgente",pendente:"Pendente",atrasado:"Atrasado"};badgeHtml="<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";}
+  else{var labels={urgente:"<i class='fa-solid fa-triangle-exclamation'></i> Urgente",pendente:"Pendente",atrasado:"Atrasado"};badgeHtml="<span class='badge-sm t-"+tipoCard+"'>"+(labels[tipoCard]||tipoCard)+"</span>";}
   var execSub="";
   if(concluido){var _quemConcT=p.operadorConclusao?" · <strong>"+safeText(p.operadorConclusao)+"</strong>":"";execSub="<span style='color:var(--verde)'>"+fdt(p.dataConclusao)+_quemConcT+"</span>";}
   else if(outraExecucao){var _tsExec=_getIniciadoEm(lock,p);var min=Math.round((new Date()-new Date(_tsExec))/60000),quem=lock.usuario?" · "+safeText(lock.usuario):"";execSub="<span style='color:var(--exec)'>há "+(min<1?"<1":min)+"min"+quem+"</span>";}
@@ -2530,7 +2530,7 @@ function renderCardTablet(p,idx,isNovo){
     "<div class='card-t-inner'><div class='card-t-stripe'></div>"+
     "<div class='card-t-body'>"+
       "<div class='card-t-top'><div><div class='card-t-prot'>"+safeText(p.protocolo)+"</div><div class='card-t-end'>"+safeText(p.endereco)+"</div></div>"+badgeHtml+"</div>"+
-      "<div class='card-t-meta'><span>🕐 "+fdt(p.dataHora)+"</span><span><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+(_modoPerto&&p._distKm!=null?"<span style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"")+(execSub?execSub:"")+"</div>"+
+      "<div class='card-t-meta'><span><i class='fa-solid fa-clock'></i> "+fdt(p.dataHora)+"</span><span><i class='fa-regular fa-circle-user' style='font-size:11px'></i> "+safeText(p.registradoPor||"—")+"</span>"+(_modoPerto&&p._distKm!=null?"<span style='color:var(--azul);font-weight:600'><i class='fa-solid fa-map-pin'></i> "+_formatarDist(p._distKm)+"</span>":"")+(execSub?execSub:"")+"</div>"+
       "<div class='card-t-prazo-row'><span>"+prazoTxt+"</span><span style='color:var(--texto3)'>"+prazoLabel+"</span></div>"+
       "<div class='card-t-prazo-bar'><div class='card-t-prazo-fill' style='width:"+pct+"%'></div></div>"+
     "</div></div></div>";
@@ -2579,10 +2579,10 @@ function renderTablet(lista){
   if(!filtrados.length){gt.innerHTML="<div class='empty-tablet'><div class='empty-centro-icon'><i class='fa-solid fa-circle-check'></i></div><div class='empty-centro-title'>Tudo em dia!</div><div class='empty-centro-sub'>Nenhum protocolo para este filtro.</div><div class='empty-centro-badge'>Fila limpa</div></div>";return;}
   var execL=filtrados.filter(function(p){return !isConcluido(p)&&!!p.lock;}),prioL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!!p.prioridade;}),urgL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!p.prioridade&&p._t&&p._t.tipo==="atrasado";}),norL=filtrados.filter(function(p){return !isConcluido(p)&&!p.lock&&!p.prioridade&&p._t&&(p._t.tipo==="pendente"||p._t.tipo==="urgente");}),concL=filtrados.filter(function(p){return isConcluido(p);});
   var h="",gIdx=0;
-  if(execL.length){h+="<div class='sec-label-tablet'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
-  if(prioL.length){h+="<div class='sec-label-tablet'>🟡 Prioridade máxima</div>";prioL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
-  if(urgL.length){h+="<div class='sec-label-tablet'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
-  if(norL.length){h+="<div class='sec-label-tablet'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(execL.length){h+="<div class='sec-label-tablet'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--exec)'></i> Em execução agora</div>";execL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(prioL.length){h+="<div class='sec-label-tablet'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--amarelo)'></i> Prioridade máxima</div>";prioL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(urgL.length){h+="<div class='sec-label-tablet'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--vermelho)'></i> Atenção imediata</div>";urgL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
+  if(norL.length){h+="<div class='sec-label-tablet'><i class='fa-solid fa-clipboard-list'></i> Fila de serviços</div>";norL.forEach(function(p){h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
   if(concL.length){h+="<div class='sec-label-tablet'><i class='fa-solid fa-circle-check'></i> Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCardTablet(p,gIdx++,!_prevHashesTablet[p.protocolo]);});}
   h+="<div class='ts-tablet'>Atualizado às "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+"</div>";
@@ -2632,7 +2632,7 @@ function render(lista){
       if (isConcluido(p)) return;
       if (!_protocolosConhecidos.has(p.protocolo)) {
         var tipo = p._t ? p._t.tipo : "pendente";
-        var icone = tipo === STATUS.TIPO.ATRASADO ? "🔴" : tipo === STATUS.TIPO.URGENTE ? "⚠️" : "🆕";
+        var icone = tipo === STATUS.TIPO.ATRASADO ? "<i class='fa-solid fa-circle' style='font-size:8px;color:var(--vermelho)'></i>" : tipo === STATUS.TIPO.URGENTE ? "<i class='fa-solid fa-triangle-exclamation'></i>" : "🆕";
         toast(icone + " Novo protocolo: " + p.endereco, tipo === STATUS.TIPO.ATRASADO ? "erro" : "ok");
         if (navigator.vibrate) navigator.vibrate(tipo === STATUS.TIPO.ATRASADO ? [80,40,80] : [50]);
         if (tipo === STATUS.TIPO.PENDENTE) tocarSomNovoProtocolo();
@@ -2645,7 +2645,7 @@ function render(lista){
       var eraPrioridade = !!_prioridadesConhecidas[p.protocolo];
       var ehPrioridade  = !!p.prioridade;
       if (!eraPrioridade && ehPrioridade) {
-        toast("⚡ Prioridade máxima: " + p.endereco, "exec");
+        toast("<i class='fa-solid fa-bolt'></i> Prioridade máxima: " + p.endereco, "exec");
         if (navigator.vibrate) navigator.vibrate([80, 40, 80, 40, 80]);
       }
     });
@@ -2668,7 +2668,7 @@ function renderFiltrado(lista){
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
   var filtrados=!termoBusca?ativos:todosParaBusca.filter(function(p){return(p.endereco||"").toLowerCase().indexOf(termoBusca)>=0||(p.protocolo||"").toLowerCase().indexOf(termoBusca)>=0||(p.obs||"").toLowerCase().indexOf(termoBusca)>=0;});
   if(!ativos.length&&!concluidosHoje.length){g.innerHTML="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-circle-check'></i></div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo pendente no momento.</div></div>";_prevHashes={};return;}
-  if(termoBusca&&!filtrados.length){g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'>🔍</div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou protocolo.</div></div>";return;}
+  if(termoBusca&&!filtrados.length){g.innerHTML="<div class='busca-nada'><div class='busca-nada-icon'><i class='fa-solid fa-magnifying-glass'></i></div><div class='busca-nada-txt'>Nenhum resultado para \""+safeText(termoBusca)+"\"</div><div class='busca-nada-sub'>Tente outro endereço ou protocolo.</div></div>";return;}
   /* Filtro mobile por stat */
   if (!termoBusca && _filtroMobile !== "todos") {
     if (_filtroMobile === "pendente") {
@@ -2695,10 +2695,10 @@ function renderFiltrado(lista){
   if(!precisaReconstruir)gridList.forEach(function(p){if(_prevHashes[p.protocolo]!==novoHashes[p.protocolo])precisaReconstruir=true;});
   if(precisaReconstruir){
     var h="",gIdx=0;
-    if(execL.length){h+="<div class='sec-label'>🟣 Em execução agora</div>";execL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
-    if(prioL.length){h+="<div class='sec-label'>🟡 Prioridade máxima</div>";prioL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
-    if(urgL.length){h+="<div class='sec-label'>🔴 Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
-    if(norL.length){h+="<div class='sec-label'>📋 Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(execL.length){h+="<div class='sec-label'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--exec)'></i> Em execução agora</div>";execL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(prioL.length){h+="<div class='sec-label'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--amarelo)'></i> Prioridade máxima</div>";prioL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(urgL.length){h+="<div class='sec-label'><i class='fa-solid fa-circle' style='font-size:8px;color:var(--vermelho)'></i> Atenção imediata</div>";urgL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
+    if(norL.length){h+="<div class='sec-label'><i class='fa-solid fa-clipboard-list'></i> Fila de serviços</div>";norL.forEach(function(p){h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     concL.sort(function(a,b){return new Date(b.dataConclusao)-new Date(a.dataConclusao);});
     if(concL.length){h+="<div class='sec-label'><i class='fa-solid fa-circle-check'></i> Concluídos hoje</div>";concL.forEach(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};h+=renderCard(p,gIdx++,!_prevHashes[p.protocolo]);});}
     if(!h)h="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-circle-check'></i></div><div class='empty-title'>Tudo limpo!</div><div class='empty-sub'>Nenhum protocolo ativo.</div></div>";
@@ -2715,7 +2715,7 @@ function renderFiltrado(lista){
 var _cbConfirmacaoGenerica = null;
 
 function abrirModalConfirmacaoGenerica(opts) {
-  document.getElementById("modalConfGenIcon").textContent  = opts.icon  || "⚠️";
+  document.getElementById("modalConfGenIcon").innerHTML  = opts.icon  || "<i class='fa-solid fa-triangle-exclamation'></i>";
   document.getElementById("modalConfGenTitulo").textContent = opts.titulo || "Confirmar?";
   document.getElementById("modalConfGenSub").textContent    = opts.sub   || "";
   var btnConf = document.getElementById("btnConfirmacaoGenerica");
@@ -2760,7 +2760,7 @@ async function _fetchComRetry(url, tentativas) {
 }
 
 function carregarDados(){
-  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>📵</div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
+  if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-wifi'></i></div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
   _fetchComRetry(API+"&t="+Date.now(), 3)
     .then(function(lista){
       salvarCache(lista);
@@ -2771,7 +2771,7 @@ function carregarDados(){
       console.error("[carregarDados] falhou após 3 tentativas",err);
       var cache=lerCache();
       if(cache){render(cache);mostrarBannerOffline("cache");}
-      else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'>⚠️</div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
+      else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-triangle-exclamation'></i></div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
     });
 }
 
@@ -2845,16 +2845,16 @@ function confirmarEditarEndereco() {
   var novoEndereco = document.getElementById("inputNovoEndereco").value.trim();
   if (!novoEndereco || novoEndereco.length < 5 || !_editEndProtocolo) return;
   var btn = document.getElementById("btnConfirmarEndereco");
-  btn.disabled = true; btn.textContent = "⏳ Salvando…";
+  btn.disabled = true; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Salvando…";
   fetch(tok(API_BASE + "?acao=editarEndereco&protocolo=" + encodeURIComponent(_editEndProtocolo) + "&endereco=" + encodeURIComponent(novoEndereco) + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalEditarEndereco();
       btn.disabled = false; btn.innerHTML = "<i class='fa-solid fa-pencil'></i> Salvar";
       if (res.ok) { toast("<i class='fa-solid fa-pencil'></i> Endereço atualizado.", "ok"); carregarDados(); }
-      else toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+      else toast("<i class='fa-solid fa-circle-xmark'></i> Erro: " + (res.erro || "tente novamente"), "erro");
     })
-    .catch(function(){ fecharModalEditarEndereco(); btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-pencil'></i> Salvar"; toast("❌ Erro ao salvar","erro"); });
+    .catch(function(){ fecharModalEditarEndereco(); btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-pencil'></i> Salvar"; toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao salvar","erro"); });
 }
 
 /* ══ OBSERVAÇÃO ══ */
@@ -2878,16 +2878,16 @@ function confirmarObs() {
   var obs = document.getElementById("inputObs").value.trim();
   if (!_obsProtocolo) return;
   var btn = document.getElementById("btnConfirmarObs");
-  btn.disabled = true; btn.textContent = "⏳ Salvando…";
+  btn.disabled = true; btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Salvando…";
   fetch(tok(API_BASE + "?acao=adicionarObs&protocolo=" + encodeURIComponent(_obsProtocolo) + "&obs=" + encodeURIComponent(obs || "—") + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalObs();
-      btn.disabled = false; btn.textContent = "📝 Salvar";
-      if (res.ok) { toast("📝 Observação salva.", "ok"); carregarDados(); }
-      else toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+      btn.disabled = false; btn.innerHTML = "<i class='fa-solid fa-note-sticky'></i> Salvar";
+      if (res.ok) { toast("<i class='fa-solid fa-note-sticky'></i> Observação salva.", "ok"); carregarDados(); }
+      else toast("<i class='fa-solid fa-circle-xmark'></i> Erro: " + (res.erro || "tente novamente"), "erro");
     })
-    .catch(function(){ fecharModalObs(); btn.disabled=false; btn.textContent="📝 Salvar"; toast("❌ Erro ao salvar","erro"); });
+    .catch(function(){ fecharModalObs(); btn.disabled=false; btn.innerHTML="<i class='fa-solid fa-note-sticky'></i> Salvar"; toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao salvar","erro"); });
 }
 
 /* ══ FORÇAR CONCLUSÃO (supervisor) ══ */
@@ -2895,10 +2895,10 @@ function forcarConclusaoSupervisor(protocolo) {
   if (!isSupervisor()) return;
   var operador = getOperador() || "Supervisor";
   abrirModalConfirmacaoGenerica({
-    icon: "⚡",
+    icon: "<i class='fa-solid fa-bolt'></i>",
     titulo: "Forçar conclusão?",
     sub: "Protocolo " + protocolo + " será marcado como concluído sem foto.\n\nRegistrado por: " + operador,
-    labelConfirmar: "✔ Confirmar",
+    labelConfirmar: "<i class='fa-solid fa-check'></i> Confirmar",
     corConfirmar: "var(--verde)",
     onConfirmar: function() {
       fetch(tok(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now()), { redirect: "follow" })
@@ -2909,10 +2909,10 @@ function forcarConclusaoSupervisor(protocolo) {
             toast("<i class='fa-solid fa-circle-check'></i> Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
             carregarDados();
           } else {
-            toast("❌ Erro: " + (res.erro || "tente novamente"), "erro");
+            toast("<i class='fa-solid fa-circle-xmark'></i> Erro: " + (res.erro || "tente novamente"), "erro");
           }
         })
-        .catch(function(){ toast("❌ Erro ao forçar conclusão", "erro"); });
+        .catch(function(){ toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao forçar conclusão", "erro"); });
     }
   });
 }
@@ -2941,7 +2941,7 @@ function _renderMenuSupervisor(p, lock, concluido, outraExecucao) {
   }
 
   if (outraExecucao && lock) {
-    items += "<button class='sup-menu-item' onclick='abrirModalRedistribuir(\""+prot+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\");fecharMenuSupervisor()'>↔ Redistribuir protocolo</button>";
+    items += "<button class='sup-menu-item' onclick='abrirModalRedistribuir(\""+prot+"\",\""+esc(lock.usuario||"")+"\",\""+esc(lock.sessionId||"")+"\");fecharMenuSupervisor()'><i class='fa-solid fa-right-left'></i> Redistribuir protocolo</button>";
   }
 
   items += "<div class='sup-menu-divider'></div>";
@@ -2987,7 +2987,7 @@ function abrirModalRemover(protocolo, endereco) {
   if (!isSupervisor()) return;
   _removerProtocolo = protocolo;
   document.getElementById("modalRemoverSub").textContent =
-    "Protocolo " + protocolo + "\n📍 " + endereco + "\n\nEsta ação é permanente e não pode ser desfeita.";
+    "Protocolo " + protocolo + "\n" + endereco + "\n\nEsta ação é permanente e não pode ser desfeita.";
   document.getElementById("modalRemover").classList.add("open");
 }
 
@@ -3001,14 +3001,14 @@ function confirmarRemover() {
   var protocolo = _removerProtocolo;
   var btn = document.getElementById("btnConfirmarRemover");
   btn.disabled = true;
-  btn.textContent = "⏳ Removendo…";
+  btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Removendo…";
 
   fetch(tok(API_BASE + "?acao=remover&protocolo=" + encodeURIComponent(protocolo) + "&t=" + Date.now()), { redirect: "follow" })
     .then(function(r){ return r.json(); })
     .then(function(res){
       fecharModalRemover();
       btn.disabled = false;
-      btn.textContent = "🗑️ Remover";
+      btn.innerHTML = "<i class='fa-solid fa-trash'></i> Remover";
       if (res.ok) {
         if (_protocoloSelecionado === protocolo) {
           _protocoloSelecionado = null;
@@ -3018,23 +3018,23 @@ function confirmarRemover() {
           var df = document.getElementById("detailFooter");
           df.classList.remove("show"); df.innerHTML = "";
         }
-        toast("🗑️ Protocolo " + protocolo + " removido.", "");
+        toast("<i class='fa-solid fa-trash'></i> Protocolo " + protocolo + " removido.", "");
         carregarDados();
       } else {
-        toast("❌ Erro ao remover: " + (res.erro || "tente novamente"), "erro");
+        toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao remover: " + (res.erro || "tente novamente"), "erro");
       }
     })
     .catch(function(){
       fecharModalRemover();
       btn.disabled = false;
-      btn.textContent = "🗑️ Remover";
-      toast("❌ Erro ao remover", "erro");
+      btn.innerHTML = "<i class='fa-solid fa-trash'></i> Remover";
+      toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao remover", "erro");
     });
 }
 
 function _btnRemoverCard(protocolo, endereco) {
   if (!isSupervisor()) return "";
-  return "<button class='btn-remover-card' onclick='event.stopPropagation();abrirModalRemover(\"" + esc(protocolo) + "\",\"" + esc(endereco) + "\")'>🗑️ Remover</button>";
+  return "<button class='btn-remover-card' onclick='event.stopPropagation();abrirModalRemover(\"" + esc(protocolo) + "\",\"" + esc(endereco) + "\")'><i class='fa-solid fa-trash'></i> Remover</button>";
 }
 
 /* ══ REDISTRIBUIÇÃO DE PROTOCOLO ══ */
@@ -3075,7 +3075,7 @@ function confirmarRedistribuir() {
 
   var btn = document.getElementById("btnConfirmarRedistribuir");
   btn.disabled = true;
-  btn.textContent = "⏳ Redistribuindo…";
+  btn.innerHTML = "<i class='fa-solid fa-spinner fa-spin'></i> Redistribuindo…";
 
   var protocolo = _redistProtocolo;
   var sessionAtual = _redistSessionAtual;
@@ -3088,19 +3088,19 @@ function confirmarRedistribuir() {
     .then(function(res) {
       fecharModalRedistribuir();
       btn.disabled = false;
-      btn.textContent = "↔ Redistribuir";
+      btn.innerHTML = "<i class='fa-solid fa-right-left'></i> Redistribuir";
       if (res.ok) {
-        toast("↔ Protocolo redistribuído para " + novoOperador, "ok");
+        toast("<i class='fa-solid fa-right-left'></i> Protocolo redistribuído para " + novoOperador, "ok");
         carregarDados();
       } else {
-        toast("❌ Erro ao redistribuir: " + (res.erro || "tente novamente"), "erro");
+        toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao redistribuir: " + (res.erro || "tente novamente"), "erro");
       }
     })
     .catch(function() {
       fecharModalRedistribuir();
       btn.disabled = false;
-      btn.textContent = "↔ Redistribuir";
-      toast("❌ Erro ao redistribuir", "erro");
+      btn.innerHTML = "<i class='fa-solid fa-right-left'></i> Redistribuir";
+      toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao redistribuir", "erro");
     });
 }
 
@@ -3116,7 +3116,7 @@ function togglePrioridade(protocolo, ativaAtual) {
         carregarDados();
       }
     })
-    .catch(function(){ toast("❌ Erro ao alterar prioridade","erro"); });
+    .catch(function(){ toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao alterar prioridade","erro"); });
 }
 
 function _btnPrioridade(protocolo, prioridade) {
@@ -3387,7 +3387,7 @@ function _iniciarMapa() {
       _initMapaInterno();
     } else if (tentativas > 20) {
       clearInterval(espera);
-      toast("❌ Erro ao carregar o mapa", "erro");
+      toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao carregar o mapa", "erro");
     }
   }, 300);
 }
@@ -3438,7 +3438,7 @@ function _renderMapaMarcadores(lista) {
         '<div style="font-size:13px;font-weight:700;color:#0F172A;line-height:1.3;margin-bottom:6px">'+safeText(p.endereco)+'</div>' +
         '<div style="display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;background:'+cor+'22;color:'+cor+';border:1px solid '+cor+'44;margin-bottom:8px">'+_LABELS_MAPA[tipo]+'</div>' +
         '<div style="font-size:11px;color:#64748B;margin-bottom:2px"><i class=\"fa-regular fa-circle-user\" style="font-size:11px"></i> '+safeText(p.registradoPor||"—")+'</div>' +
-        (t ? '<div style="font-size:11px;color:'+cor+';font-weight:600;margin-bottom:8px">⏱ '+t.txt+'</div>' : '') +
+        (t ? '<div style="font-size:11px;color:'+cor+';font-weight:600;margin-bottom:8px"><i class="fa-solid fa-stopwatch"></i> '+t.txt+'</div>' : '') +
         '<a href="https://maps.google.com/?q='+p.lat+','+p.lng+'" target="_blank" rel="noopener" style="display:block;text-align:center;padding:6px 10px;background:#EBF3FD;border:1.5px solid #1469C7;border-radius:6px;color:#1469C7;font-size:12px;font-weight:700;text-decoration:none;"><i class=\"fa-solid fa-map-pin\"></i> Abrir no Google Maps</a>' +
       '</div>';
     var iw = new google.maps.InfoWindow({ content: infoHtml });
@@ -3491,8 +3491,8 @@ function centralizarLocalizacao() {
         }
       });
     }
-    toast("📍 Localização obtida","ok");
-  }, function() { toast("❌ Não foi possível obter localização","erro"); }, {enableHighAccuracy:true,timeout:10000});
+    toast("<i class='fa-solid fa-map-pin'></i> Localização obtida","ok");
+  }, function() { toast("<i class='fa-solid fa-circle-xmark'></i> Não foi possível obter localização","erro"); }, {enableHighAccuracy:true,timeout:10000});
 }
 
 var _origRender = render;
@@ -3648,8 +3648,8 @@ if (logoBase64) {
       document.body.appendChild(a);
       a.click();
       setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); }, 1000);
-      toast("📥 XLSX exportado — " + dados.length + " protocolos", "ok");
-    }).catch(function(){ toast("❌ Erro ao gerar arquivo","erro"); });
+      toast("<i class='fa-solid fa-file-arrow-down'></i> XLSX exportado — " + dados.length + " protocolos", "ok");
+    }).catch(function(){ toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao gerar arquivo","erro"); });
     } /* fecha _gerarComLogo */
   } /* fecha _gerarXlsx */
 
@@ -3659,7 +3659,7 @@ if (logoBase64) {
     var s = document.createElement("script");
     s.src = "https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js";
     s.onload = _gerarXlsx;
-    s.onerror = function(){ toast("❌ Erro ao carregar biblioteca XLSX","erro"); };
+    s.onerror = function(){ toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao carregar biblioteca XLSX","erro"); };
     document.head.appendChild(s);
   }
 }
@@ -3766,7 +3766,7 @@ function _renderTimeline(p) {
   /* 1. Abertura */
   items.push({
     dot:   "abertura",
-    icon:  "📋",
+    icon:  "<i class='fa-solid fa-clipboard-list'></i>",
     label: "Abertura",
     val:   fdt(p.dataHora),
     sub:   p.registradoPor ? "por " + safeText(p.registradoPor) : ""
@@ -3799,7 +3799,7 @@ function _renderTimeline(p) {
   if (concluido) {
     items.push({
       dot:   "concluido",
-      icon:  "✔",
+      icon:  "<i class='fa-solid fa-check'></i>",
       label: "Concluído",
       val:   fdt(p.dataConclusao),
       sub:   p.operadorConclusao ? "por " + safeText(p.operadorConclusao) : ""
@@ -3809,7 +3809,7 @@ function _renderTimeline(p) {
     var t = p._t || tempo(p.dataHora);
     items.push({
       dot:   "pendente",
-      icon:  "⏱",
+      icon:  "<i class='fa-solid fa-stopwatch'></i>",
       label: t.r <= 0 ? "Prazo vencido" : "Prazo previsto",
       val:   t.horaVence || "—",
       sub:   t.r <= 0 ? "Atrasado " + ar(t.delta) : t.txt
@@ -3842,15 +3842,15 @@ function loteAcao(tipo){
   if(!prots.length)return;
   var label=tipo==="remover"?"remover":"concluir";
   abrirModalConfirmacaoGenerica({
-    icon: tipo==="remover" ? "🗑️" : "✔",
+    icon: tipo==="remover" ? "<i class='fa-solid fa-trash'></i>" : "<i class='fa-solid fa-check'></i>",
     titulo: "Confirmar ação em lote?",
     sub: "Deseja "+label+" "+prots.length+" protocolo(s)?\n\n"+prots.join(", "),
-    labelConfirmar: tipo==="remover" ? "🗑️ Remover" : "✔ Concluir",
+    labelConfirmar: tipo==="remover" ? "<i class='fa-solid fa-trash'></i> Remover" : "<i class='fa-solid fa-check'></i> Concluir",
     corConfirmar: tipo==="remover" ? "var(--vermelho)" : "var(--verde)",
     onConfirmar: function() {
       var btnR=document.getElementById("btnLoteRemover");var btnC=document.getElementById("btnLoteConcluir");
       if(btnR)btnR.disabled=true;if(btnC)btnC.disabled=true;
-      toast("⏳ Processando "+prots.length+" protocolo(s)…","exec");
+      toast("<i class='fa-solid fa-spinner fa-spin'></i> Processando "+prots.length+" protocolo(s)…","exec");
       var operador = isSupervisor() ? "" : (getOperador() || "Operador");
       var promises=prots.map(function(protocolo){
         if(tipo==="remover"){
@@ -3863,7 +3863,7 @@ function loteAcao(tipo){
         var ok=resultados.filter(function(r){return r.ok!==false;}).length;
         var falhas=prots.length-ok;
         cancelarLote();
-        var msg=tipo==="remover"?"🗑️ "+ok+" protocolo(s) removido(s)":"<i class='fa-solid fa-circle-check'></i> "+ok+" protocolo(s) concluído(s)";
+        var msg=tipo==="remover"?"<i class='fa-solid fa-trash'></i> "+ok+" protocolo(s) removido(s)":"<i class='fa-solid fa-circle-check'></i> "+ok+" protocolo(s) concluído(s)";
         if(falhas>0)msg+=" ("+falhas+" falha(s))";
         toast(msg,ok>0?"ok":"erro");
         setTimeout(carregarDados,800);
