@@ -228,7 +228,9 @@ header {
   top: 0;
   z-index: 100;
   border-bottom: 1px solid rgba(255,255,255,.08);
+  transition: box-shadow .2s ease;
 }
+header.header-scrolled { box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 .h-brand { display: flex; align-items: center; gap: 12px; }
 .h-logo {
   width: 36px; height: 36px; border-radius: 10px;
@@ -668,6 +670,8 @@ header {
 .foto-skeleton { position: absolute; inset: 0; background: linear-gradient(90deg, var(--cinza-md) 25%, #e4eaf2 50%, var(--cinza-md) 75%); background-size: 200% 100%; animation: shimmer 1.4s ease-in-out infinite; }
 .card-foto { width: 100%; height: 100%; object-fit: cover; display: block; cursor: pointer; position: relative; z-index: 1; opacity: 0; transition: opacity .3s; }
 .card-foto.loaded { opacity: 1; }
+.foto-expand-ico { position: absolute; bottom: 8px; right: 8px; width: 24px; height: 24px; border-radius: 7px; background: rgba(0,0,0,.55); display: flex; align-items: center; justify-content: center; z-index: 2; pointer-events: none; }
+.foto-expand-ico i { color: #fff; font-size: 11px; }
 
 .prazo-wrap { padding-bottom: 2px; }
 .prazo-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; margin-bottom: 5px; color: var(--texto2); }
@@ -962,14 +966,17 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 .btn-lote-ativar.ativo { background:var(--azul-bg);border-color:var(--azul-borda);color:var(--azul); }
 .lote-check-wrap { display:none;position:absolute;top:10px;left:10px;z-index:10; }
 body.modo-lote .lote-check-wrap { display:flex; }
-.lote-check { width:22px;height:22px;border-radius:6px;border:2px solid var(--borda-md);background:var(--branco);cursor:pointer;appearance:none;-webkit-appearance:none;transition:background .15s,border-color .15s;flex-shrink:0; }
-.lote-check:checked { background:var(--azul);border-color:var(--azul); }
+.lote-check { width:22px;height:22px;border-radius:6px;border:2px solid var(--borda-md);background:var(--branco);cursor:pointer;appearance:none;-webkit-appearance:none;transition:background .15s,border-color .15s,transform .15s;flex-shrink:0;position:relative; }
+.lote-check:active { transform:scale(.88); }
+.lote-check:checked { background:var(--azul);border-color:var(--azul);transform:scale(1.06); }
+.lote-check:checked::after { content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800;animation:loteCheckPop .18s ease; }
+@keyframes loteCheckPop { from{ transform:scale(.4); opacity:0; } to{ transform:scale(1); opacity:1; } }
 body.modo-lote .card { position:relative;cursor:pointer; }
 body.modo-lote .card-t { position:relative;cursor:pointer; }
 body.modo-lote .card.lote-selecionado { border:2px solid var(--azul) !important;background:var(--azul-bg); }
 body.modo-lote .card-t.lote-selecionado { border:2px solid var(--azul) !important;background:var(--azul-bg); }
-#barraLote { display:none;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--texto);color:#fff;padding:12px 20px;gap:12px;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.08);font-family:"DM Sans",sans-serif; }
-#barraLote.show { display:flex; }
+#barraLote { display:flex;position:fixed;bottom:0;left:0;right:0;z-index:300;background:var(--texto);color:#fff;padding:12px 20px;gap:12px;align-items:center;box-shadow:0 -4px 20px rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.08);font-family:"DM Sans",sans-serif;transform:translateY(120%);transition:transform .25s ease;pointer-events:none; }
+#barraLote.show { transform:translateY(0);pointer-events:auto; }
 .barra-lote-info { flex:1;font-size:13px;font-weight:600; }
 .barra-lote-info span { font-family:"DM Mono",monospace;font-size:15px;color:#60A5FA; }
 .btn-lote-cancelar { padding:8px 16px;border-radius:var(--radius-sm);background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);color:#fff;font-family:"DM Sans",sans-serif;font-size:13px;font-weight:600;cursor:pointer; }
@@ -2465,7 +2472,7 @@ function renderCard(p,idx,isNovo){
   var foto="",_fotoId=p.fotoId,_fotoUrl=p.fotoUrl;
   if(concluido){var _fcIdM=p.fotoConcId||p.fotoConclusaoId||"",_fcUrlM=p.fotoConcUrl||p.fotoConclusaoUrl||"";if(_fcIdM||_fcUrlM){_fotoId=_fcIdM;_fotoUrl=_fcUrlM;}}
   var src=_fotoId?fotoSrc(_fotoId):(_fotoUrl||null);
-  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(_fotoUrl||"")+"\",\""+esc(_fotoId||"")+"\")' alt='Foto'></div>";
+  if(src)foto="<div class='foto-wrap'><div class='foto-skeleton'></div><img class='card-foto' src='"+src+"' loading='lazy' onload='onFotoLoad(this)' onclick='abrirLightbox(\""+esc(_fotoUrl||src)+"\")' onerror='onFotoErro(this,\""+esc(_fotoUrl||"")+"\",\""+esc(_fotoId||"")+"\")' alt='Foto'><div class='foto-expand-ico'><i class='fa-solid fa-expand'></i></div></div>";
   var execBadge=(outraExecucao||minhaExecucao)?"<span class='badge-exec'><span class='dot'></span>Em execução</span>":"";
   var protEsc=esc(p.protocolo),endEsc=esc(p.endereco);
   var execInfoHtml="";
@@ -2781,6 +2788,16 @@ window.addEventListener("beforeunload",function(e){
     try{if(navigator.sendBeacon)navigator.sendBeacon(API_BASE+"?"+params);}catch(e){}
   });
 });
+
+/* ══ SOMBRA NO HEADER AO ROLAR ══ */
+(function(){
+  var hdr = document.querySelector('header');
+  if(!hdr) return;
+  function marcar(y){ hdr.classList.toggle('header-scrolled', y > 4); }
+  window.addEventListener('scroll', function(){ marcar(window.scrollY); }, {passive:true});
+  var centroScroll = document.getElementById('centroScroll');
+  if(centroScroll) centroScroll.addEventListener('scroll', function(){ marcar(centroScroll.scrollTop); }, {passive:true});
+})();
 
 /* ══ INICIAR ══ */
 carregarDados();
