@@ -1607,7 +1607,7 @@ var API_BASE = "https://script.google.com/macros/s/AKfycbxN_o0SVo3hEoWM1MGOBWP8T
 // Ações somente-leitura (dados/foto/lockInfo/presencas) não exigem token.
 var API_TOKEN = "f4367852f1b769897432f674b2a8026e501a7bb35f333f28";
 function tok(qs) { return qs + "&token=" + encodeURIComponent(API_TOKEN); }
-var PRAZO = 24, LOCK_TTL = 3600, REFRESH_INTERVAL = 10000;
+var PRAZO = 24, LOCK_TTL = 3600, REFRESH_INTERVAL = 20000;
 var API = API_BASE + "?acao=dados";
 var CACHE_KEY = "hyd_cache_dados", CACHE_TS = "hyd_cache_ts";
 
