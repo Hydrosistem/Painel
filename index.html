@@ -3204,7 +3204,7 @@ function carregarOperadoresOnline() {
 function renderOperadoresOnline(presencas) {
   var locks = {};
   _ultimaLista.forEach(function(p) {
-    if (p.lock) locks[p.lock.sessionId] = {
+    if (p.lock && !isConcluido(p)) locks[p.lock.sessionId] = {
       protocolo:  p.protocolo,
       endereco:   p.endereco,
       timestamp:  p.lock.timestamp,
