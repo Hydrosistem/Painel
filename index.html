@@ -2737,12 +2737,12 @@ function _confirmarGenerica() {
 
 /* ══ CARREGAR DADOS — com retry backoff exponencial ══ */
 var _retryTimer = null;
-var _RETRY_DELAYS = [1000, 2000, 4000];
+var _RETRY_DELAYS = [1000, 2000, 4000, 6000, 8000];
 
 function _sleep(ms){ return new Promise(function(r){ setTimeout(r, ms); }); }
 
 async function _fetchComRetry(url, tentativas) {
-  tentativas = tentativas || 3;
+  tentativas = tentativas || 5;
   var ultimoErro;
   for (var i = 0; i < tentativas; i++) {
     try {
