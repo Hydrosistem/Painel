@@ -2746,13 +2746,21 @@ async function _fetchComRetry(url, tentativas) {
   var ultimoErro;
   for (var i = 0; i < tentativas; i++) {
     try {
-      var r = await fetch(url, { redirect: "follow" });
+      // cache-buster único por tentativa (evita reaproveitar o mesmo link de conteúdo expirado)
+      var urlTentativa = url + "&_try=" + i + "_" + Math.random().toString(36).slice(2);
+      var r = await fetch(urlTentativa, { redirect: "follow", cache: "no-store" });
+      if (!r.ok) {
+        // 404 aqui geralmente é o link temporário do Google (echo/lib) expirado — trata como falha retryável
+        throw new Error("HTTP " + r.status);
+      }
       var lista = await r.json();
       return lista;
     } catch(err) {
       ultimoErro = err;
       if (i < tentativas - 1) {
-        await _sleep(_RETRY_DELAYS[i] || 4000);
+        // no caso específico de 404, tenta de novo rápido (é transitório do lado do Google)
+        var delay = (err && err.message === "HTTP 404") ? 500 : (_RETRY_DELAYS[i] || 4000);
+        await _sleep(delay);
       }
     }
   }
@@ -2761,14 +2769,14 @@ async function _fetchComRetry(url, tentativas) {
 
 function carregarDados(){
   if(!estaOnline()){var cache=lerCache();if(cache){render(cache);mostrarBannerOffline("offline");}else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-wifi'></i></div><div class='empty-title'>Sem conexão</div><div class='empty-sub'>Conecte-se para carregar os protocolos.</div></div>";document.getElementById("gridTablet").innerHTML="";}return;}
-  _fetchComRetry(API+"&t="+Date.now(), 3)
+  _fetchComRetry(API+"&t="+Date.now(), 5)
     .then(function(lista){
       salvarCache(lista);
       mostrarBannerOffline(null);
       render(lista);
     })
     .catch(function(err){
-      console.error("[carregarDados] falhou após 3 tentativas",err);
+      console.error("[carregarDados] falhou após 5 tentativas",err);
       var cache=lerCache();
       if(cache){render(cache);mostrarBannerOffline("cache");}
       else{document.getElementById("grid").innerHTML="<div class='empty'><div class='empty-icon'><i class='fa-solid fa-triangle-exclamation'></i></div><div class='empty-title'>Erro ao carregar</div><div class='empty-sub'>Verifique a conexão e tente novamente.</div></div>";}
