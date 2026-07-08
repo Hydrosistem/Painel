@@ -57,7 +57,7 @@
   --radius-xs:   6px;
   --sidebar-w:   248px;
   --detail-w:    304px;
-  --header-h:    0px;
+  --header-h:    60px;
 }
 
 /* ══ DARK MODE TOKENS ══ */
@@ -167,9 +167,9 @@ body.dark-mode .btn-detail-iniciar.t-urgente  { background: #7F1D1D; color: #FCA
 
 /* ══ BOTÃO MODO NOTURNO ══ */
 .btn-dark-mode {
-  background: var(--cinza-md);
-  border: 1px solid var(--borda);
-  color: var(--texto2);
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.85);
   border-radius: var(--radius-sm);
   width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
@@ -178,7 +178,7 @@ body.dark-mode .btn-detail-iniciar.t-urgente  { background: #7F1D1D; color: #FCA
   transition: background .15s, border-color .15s, transform .2s;
   flex-shrink: 0;
 }
-.btn-dark-mode:hover { background: var(--borda); border-color: var(--borda-md); }
+.btn-dark-mode:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.24); }
 .btn-dark-mode.ativo { background: rgba(253,224,71,.15); border-color: rgba(253,224,71,.35); color: #FDE047; }
 body.dark-mode .btn-dark-mode { background: rgba(167,139,250,.12); border-color: rgba(167,139,250,.3); color: #A78BFA; }
 body.dark-mode .btn-dark-mode.ativo { background: rgba(167,139,250,.22); border-color: rgba(167,139,250,.5); color: #C4B5FD; }
@@ -218,7 +218,7 @@ body.dark-mode *::-webkit-scrollbar-thumb { border-color: #171717; }
 
 /* ══ HEADER ══ */
 header {
-  background: var(--branco);
+  background: var(--azul-esc);
   padding: 0 20px;
   height: var(--header-h);
   display: flex;
@@ -227,44 +227,42 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid var(--borda);
+  border-bottom: 1px solid rgba(255,255,255,.08);
   transition: box-shadow .2s ease;
 }
-header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
+header.header-scrolled { box-shadow: 0 4px 14px rgba(0,0,0,.25); }
 .h-brand { display: flex; align-items: center; gap: 12px; }
 .h-logo {
   width: 36px; height: 36px; border-radius: 10px;
-  background: var(--azul-bg);
-  border: 1px solid var(--azul-borda);
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(255,255,255,.18);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; flex-shrink: 0;
 }
 .h-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 .h-wordmark { display: flex; flex-direction: column; gap: 1px; }
-.h-nome { font-size: 14px; font-weight: 700; color: var(--texto); letter-spacing: .6px; line-height: 1; }
-.h-sub  { font-size: 10px; color: var(--texto3); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
-.h-divider { width: 1px; height: 28px; background: var(--borda); margin: 0 4px; }
+.h-nome { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .6px; line-height: 1; }
+.h-sub  { font-size: 10px; color: rgba(255,255,255,.5); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
+.h-divider { width: 1px; height: 28px; background: rgba(255,255,255,.12); margin: 0 4px; }
 .header-btns { display: flex; gap: 6px; align-items: center; }
 
 .btn-header {
-  background: var(--cinza-md);
-  border: 1px solid var(--borda);
-  color: var(--texto2); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.85); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
   font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
   transition: background .15s, border-color .15s; letter-spacing: .3px;
 }
-.btn-header:hover { background: var(--borda); border-color: var(--borda-md); color: var(--texto); }
+.btn-header:hover { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.22); }
 .btn-header.hidden { display: none; }
 .btn-header.visible { display: flex; }
 .btn-header.spin svg { animation: rot .9s linear infinite; }
-#btnInstall.visible { background: var(--azul); border-color: var(--azul); color: #fff; }
-#btnInstall.visible:hover { background: var(--azul-md); border-color: var(--azul-md); }
 
 .btn-perto {
-  background: var(--cinza-md);
-  border: 1px solid var(--borda);
-  color: var(--texto2); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
+  color: rgba(255,255,255,.85); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
   font-size: 12px; font-family: "DM Sans",sans-serif; font-weight: 600;
   cursor: pointer; display: flex; align-items: center; gap: 6px;
   transition: background .15s, border-color .15s;
@@ -273,19 +271,19 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
   width: auto;
   overflow: visible;
 }
-.btn-perto:hover { background: var(--borda); }
-.btn-perto.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
+.btn-perto:hover { background: rgba(255,255,255,.14); }
+.btn-perto.ativo { background: rgba(74,222,128,.18); border-color: rgba(74,222,128,.4); color: #86EFAC; }
 #btnPertoDesktop { white-space: nowrap; flex-shrink: 0; min-width: max-content; }
 
 .chip-operador {
   display: flex; align-items: center; gap: 7px;
-  background: var(--cinza-md);
-  border: 1px solid var(--borda);
-  color: var(--texto); border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.3);
+  color: #fff; border-radius: var(--radius-sm); padding: 0 12px; height: 34px;
   font-size: 12px; font-weight: 700; cursor: pointer;
   transition: background .15s;
 }
-.chip-operador:hover { background: var(--borda); }
+.chip-operador:hover { background: rgba(255,255,255,.26); }
 .chip-op-dot { width: 7px; height: 7px; border-radius: 50%; background: #4ade80; flex-shrink: 0; animation: pulseOnline 2s ease-in-out infinite; }
 @keyframes pulseOnline { 0% { box-shadow: 0 0 0 0 rgba(74,222,128,.5); } 60% { box-shadow: 0 0 0 4px rgba(74,222,128,0); } 100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); } }
 @keyframes rot { to { transform: rotate(360deg); } }
@@ -419,19 +417,7 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
   body.operador-view .sidebar { display: none !important; }
 
   /* Sidebar padrão (supervisor) */
-  .sidebar {
-    width: var(--sidebar-w); flex-shrink: 0;
-    background: linear-gradient(180deg, #1E5A9E 0%, #123B6E 45%, #0A2647 100%);
-    border-right: 1px solid rgba(255,255,255,.08);
-    display: flex; flex-direction: column; overflow: hidden;
-    --texto: #FFFFFF;
-    --texto2: rgba(255,255,255,.72);
-    --texto3: rgba(255,255,255,.52);
-    --borda: rgba(255,255,255,.14);
-    --borda-md: rgba(255,255,255,.22);
-    --cinza-md: rgba(255,255,255,.08);
-    --branco: rgba(255,255,255,.05);
-  }
+  .sidebar { width: var(--sidebar-w); flex-shrink: 0; background: var(--branco); border-right: 1px solid var(--borda); display: flex; flex-direction: column; overflow: hidden; }
   .sb-search { padding: 10px; border-bottom: 1px solid var(--borda); position: relative; }
   .sb-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
   .sb-search-input { width: 100%; padding: 8px 28px 8px 32px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-md); outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; }
@@ -927,7 +913,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 .sidebar, .centro, .detail-panel { display: none; }
 /* centro-busca oculto por padrão no mobile (só desktop) */
 .centro-busca { display: none; }
-@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } .centro-busca { display: flex; } body.supervisor-view .h-brand { display: none; } body.supervisor-view .h-divider { display: none; } body.supervisor-view header { justify-content: flex-end; } }
+@media (min-width: 768px) { .sidebar, .centro, .detail-panel { display: flex; } .centro-busca { display: flex; } }
 
 /* ══ EXEC INFO ══ */
 .exec-info-box { font-size: 11px; padding: 7px 10px; border-radius: var(--radius-xs); border: 1px solid; }
@@ -1276,6 +1262,29 @@ function fecharBannerNovidade() {
 </div>
 
 <!-- ══ HEADER ══ -->
+<header>
+  <div class="h-brand">
+    <div class="h-logo">
+      <img src="./icons/icon-192.png" alt="Hydrosistem" onerror="this.style.display='none'">
+    </div>
+    <div class="h-wordmark">
+      <div class="h-nome">HYDROSISTEM</div>
+      <div class="h-sub">Painel de Entulhos</div>
+    </div>
+  </div>
+  <div class="header-btns">
+    <button class="btn-header hidden" id="btnOperador"></button>
+    <button class="btn-header hidden" id="btnInstall"><i class='fa-solid fa-mobile-screen-button'></i> Instalar</button>
+    <button class="btn-header hidden" id="btnUpdate"><i class='fa-solid fa-arrows-rotate'></i> Atualizar</button>
+    <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
+    <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
+    <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
+     <button class="btn-dark-mode" id="btnDarkMode" title="Modo noturno" onclick="toggleDarkMode()">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+  </div>
+</header>
+
 <div id="bannerOffline"><i class='fa-solid fa-wifi'></i> Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache"><i class='fa-solid fa-triangle-exclamation'></i> Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
@@ -1322,17 +1331,6 @@ function fecharBannerNovidade() {
 
   <!-- ══ TABLET SIDEBAR (supervisor only) ══ -->
   <aside class="sidebar" id="sidebarEl">
-
-    <!-- ══ MARCA (logo) ══ -->
-    <div style="display:flex;align-items:center;gap:10px;padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0;">
-      <div style="width:36px;height:36px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;">
-        <img src="./icons/icon-192.png" alt="Hydrosistem" style="width:100%;height:100%;object-fit:contain;border-radius:50%;" onerror="this.style.display='none'">
-      </div>
-      <div style="display:flex;flex-direction:column;gap:1px;">
-        <div style="font-size:14px;font-weight:700;color:#fff;letter-spacing:.6px;line-height:1;">HYDROSISTEM</div>
-        <div style="font-size:9px;color:rgba(255,255,255,.55);font-weight:500;letter-spacing:1.5px;text-transform:uppercase;">Painel de Entulhos</div>
-      </div>
-    </div>
 
     <!-- ══ MENU PRINCIPAL (supervisor) ══ -->
     <div id="sbMenuPrincipal" style="display:none;border-bottom:1px solid var(--borda);flex-shrink:0;padding:6px 0 4px;">
@@ -1415,22 +1413,9 @@ function fecharBannerNovidade() {
 
     <!-- ══ BUSCA TABLET — acima dos filtros, visível para todos ══ -->
     <div class="centro-busca" id="centroBusca">
-      <div style="position:relative;flex:1;display:flex;align-items:center;">
-        <svg class="centro-busca-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="centro-busca-input" id="centroBuscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false" style="width:100%;">
-        <button class="centro-busca-clear" id="centroBuscaClear" onclick="limparCentroBusca()">×</button>
-      </div>
-      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0;">
-        <button class="btn-header hidden" id="btnUpdate"><i class='fa-solid fa-arrows-rotate'></i> Atualizar</button>
-        <a href="./relatorio.html" class="btn-header" id="btnRelatorio" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
-        <a href="./equipe.html" class="btn-header" id="btnEquipe" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
-        <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
-        <button class="btn-header hidden" id="btnOperador"></button>
-        <button class="btn-header hidden" id="btnInstall"><i class='fa-solid fa-mobile-screen-button'></i> Instalar</button>
-        <button class="btn-dark-mode" id="btnDarkMode" title="Modo noturno" onclick="toggleDarkMode()">
-          <i class="fa-solid fa-moon"></i>
-        </button>
-      </div>
+      <svg class="centro-busca-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input class="centro-busca-input" id="centroBuscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false">
+      <button class="centro-busca-clear" id="centroBuscaClear" onclick="limparCentroBusca()">×</button>
     </div>
 
     <div class="centro-top">
