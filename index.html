@@ -456,6 +456,21 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
     --cinza-md: rgba(255,255,255,.08);
     --branco: rgba(255,255,255,.05);
   }
+
+  /* ══ Sidebar — paleta nova (SOMENTE modo claro + tablet/desktop) ══
+     Não afeta o mobile (esta regra já está dentro do @media min-width:768px)
+     Não afeta o modo escuro (escopado com body:not(.dark-mode)) */
+  body:not(.dark-mode) .sidebar {
+    background: linear-gradient(135deg, #003CB2 0%, #0058E6 55%, #0072F7 100%);
+    --azul:      #0058E6;
+    --azul-esc:  #003CB2;
+    --azul-md:   #006CFC;
+    --amarelo:   #FBBF24;
+    --atrasado:  #F97316;
+    --vermelho:  #F87171;
+    --exec:      #C084FC;
+    --verde:     #4ADE80;
+  }
   .sb-search { padding: 10px; border-bottom: 1px solid var(--borda); position: relative; }
   .sb-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
   .sb-search-input { width: 100%; padding: 8px 28px 8px 32px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 13px; background: var(--cinza-md); outline: none; color: var(--texto); transition: border-color .2s, box-shadow .2s; }
@@ -896,7 +911,8 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
   .sb-op-dot-live { width: 7px; height: 7px; border-radius: 50%; background: var(--verde); flex-shrink: 0; animation: pulseOnline 2s ease-in-out infinite; }
   .sb-op-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--borda); }
   .sb-op-item:last-child { border-bottom: none; }
-  .sb-op-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; }
+  .sb-op-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; position: relative; }
+  .sb-op-avatar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); border: 2px solid var(--branco); position: absolute; bottom: -1px; right: -1px; animation: pulseOnline 2s ease-in-out infinite; }
   .sb-op-info { flex: 1; min-width: 0; }
   .sb-op-nome { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .sb-op-status { font-size: 10px; color: var(--texto2); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1401,12 +1417,12 @@ function fecharBannerNovidade() {
       <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
         <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-chart-column"></i></span>
         Relatório
-        <span id="sbBadgeRelatorio" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--azul-bg);color:var(--azul);display:none;">Hoje</span>
+        <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
       </a>
       <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
         <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-user-group"></i></span>
         Equipes
-        <span id="sbBadgeEquipe" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--verde-bg);color:var(--verde);display:none;">0 online</span>
+        <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
       </a>
     </div>
   
@@ -3350,6 +3366,7 @@ function renderOperadoresOnline(presencas) {
 
       /* Timer de execução */
       var timerHtml = "";
+      var avatarDotHtml = "";
       if (lock) {
         var _tsTimer = lock.iniciadoEm || lock.timestamp;
         var minExec = Math.round((new Date() - new Date(_tsTimer)) / 60000);
@@ -3357,13 +3374,14 @@ function renderOperadoresOnline(presencas) {
         timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
           '<span style="width:6px;height:6px;border-radius:50%;background:var(--exec);display:inline-block;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0;"></span>' +
           timerTxt + '</div>';
+        avatarDotHtml = '<span class="sb-op-avatar-dot" style="background:' + indicadorCor + '"></span>';
       } else {
-        timerHtml = '<div class="sb-op-indicador" style="background:' + indicadorCor + '"></div>';
+        avatarDotHtml = '<span class="sb-op-avatar-dot" style="background:' + indicadorCor + '"></span>';
       }
 
       html +=
         '<div class="sb-op-item" onclick="window.location.href=\'./equipe.html\'" style="cursor:pointer;" onmouseover="this.style.background=\'var(--cinza-md)\'" onmouseout="this.style.background=\'\'">' +
-          '<div class="sb-op-avatar" style="background:var(--azul)"><i class=\"fa-solid fa-user\"></i></div>' +
+          '<div class="sb-op-avatar" style="background:var(--azul)"><i class=\"fa-solid fa-user\"></i>' + avatarDotHtml + '</div>' +
           '<div class="sb-op-info">' +
             '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
             '<div class="sb-op-status ' + statusClass + '">' +
