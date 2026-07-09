@@ -532,6 +532,8 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
   .filtro-tab:hover { background: var(--cinza-md); border-color: var(--borda-md); }
   .filtro-tab.active { background: var(--azul); border-color: var(--azul); color: #fff; }
   .filtro-tab.t-atrasado.active { background: var(--atrasado); border-color: var(--atrasado); }
+  .filtro-tab.t-pendente.active { background: var(--amarelo); border-color: var(--amarelo); }
+  .filtro-tab.t-concluido.active { background: var(--verde); border-color: var(--verde); }
   .filtro-tab.t-urgente.active  { background: var(--vermelho); border-color: var(--vermelho); }
   .filtro-tab.t-exec.active     { background: var(--exec);     border-color: var(--exec); }
   .filtro-tab-badge {
@@ -924,7 +926,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
   .sb-resumo { border-bottom: 1px solid var(--borda); flex-shrink: 0; padding-top: 4px; }
   [data-resumo-tipo] { cursor: pointer; transition: transform .12s, box-shadow .12s; }
   [data-resumo-tipo]:hover { transform: translateY(-1px); box-shadow: 0 3px 8px rgba(0,0,0,.1); }
-  [data-resumo-tipo].ativo-resumo { box-shadow: 0 0 0 2px currentColor; }
+  [data-resumo-tipo].ativo-resumo { box-shadow: 0 0 0 2px #fff; }
 
 /* ══ MENU SUPERVISOR ══ */
   .sup-menu-wrap { position: relative; }
@@ -1518,8 +1520,8 @@ function fecharBannerNovidade() {
     <div class="centro-top">
   <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
   <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
-  <button class="filtro-tab" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
-  <button class="filtro-tab" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
+  <button class="filtro-tab t-pendente" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
+  <button class="filtro-tab t-concluido" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
   <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
