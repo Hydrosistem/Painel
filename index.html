@@ -120,7 +120,9 @@ body.dark-mode .card-t.t-atrasado  { border-color: var(--atrasado-borda); }
 body.dark-mode .card-t.t-execucao  { border-color: var(--exec-borda); }
 body.dark-mode .card-t.t-concluido { border-color: var(--verde-borda); }
 body.dark-mode .card-t-thumb { background: #2A2A2A; }
-/* Sidebar mantém o mesmo visual (gradiente navy) em modo noturno */
+body.dark-mode .sidebar { background: #171717; border-right-color: var(--borda); }
+body.dark-mode .sb-search-input { background: #2A2A2A; color: var(--texto); border-color: var(--borda); }
+body.dark-mode .sb-op-item:hover { background: #2A2A2A; }
 body.dark-mode .centro { background: #1F1F1F; border-color: var(--borda); }
 body.dark-mode .centro-busca { background: #1F1F1F; border-bottom-color: var(--borda); }
 body.dark-mode .centro-busca-input { background: #2A2A2A; color: var(--texto); border-color: var(--borda); }
@@ -451,32 +453,6 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
     --borda-md: rgba(255,255,255,.22);
     --cinza-md: rgba(255,255,255,.08);
     --branco: rgba(255,255,255,.05);
-    /* Cores de status fixas (paleta clara/pastel) — Resumo do dia, Menu
-       principal e Por operador não mudam de tom com o modo noturno. */
-    --azul:        #1469C7;
-    --azul-esc:    #0A3F7F;
-    --azul-md:     #1D5FAA;
-    --azul-bg:     #EBF3FD;
-    --azul-borda:  #B8D4F4;
-    --verde:       #15803D;
-    --verde-bg:    #DCFCE7;
-    --verde-borda: #86EFAC;
-    --amarelo:     #A16207;
-    --amarelo-bg:  #FEF9C3;
-    --amarelo-borda:#FDE047;
-    --vermelho:    #B91C1C;
-    --vermelho-bg: #FEE2E2;
-    --vermelho-borda:#FCA5A5;
-    --atrasado:    #7F1D1D;
-    --atrasado-bg: #FECACA;
-    --atrasado-borda:#F87171;
-    --exec:        #7C3AED;
-    --exec-bg:     #EDE9FE;
-    --exec-borda:  #A78BFA;
-    --concluido:   #15803D;
-    --prioridade:    #B45309;
-    --prioridade-bg: #FEF3C7;
-    --prioridade-b:  #FCD34D;
   }
   .sb-search { padding: 10px; border-bottom: 1px solid var(--borda); position: relative; }
   .sb-search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
