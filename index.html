@@ -58,7 +58,7 @@
   --radius-xs:   6px;
   --sidebar-w:   248px;
   --detail-w:    304px;
-  --header-h:    0px;
+  --header-h:    60px;
 }
 
 /* ══ DARK MODE TOKENS ══ */
@@ -269,8 +269,8 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
 .btn-header.hidden { display: none; }
 .btn-header.visible { display: flex; }
 .btn-header.spin svg { animation: rot .9s linear infinite; }
-#btnInstall.visible { background: var(--azul); border-color: var(--azul); color: #fff; }
-#btnInstall.visible:hover { background: var(--azul-md); border-color: var(--azul-md); }
+#btnInstall.visible, #btnInstallMobile.visible { background: var(--azul); border-color: var(--azul); color: #fff; }
+#btnInstall.visible:hover, #btnInstallMobile.visible:hover { background: var(--azul-md); border-color: var(--azul-md); }
 
 .btn-perto {
   background: var(--cinza-md);
@@ -390,6 +390,8 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
 
 /* ══ TABLET/DESKTOP ══ */
 @media (min-width: 768px) {
+  :root { --header-h: 0px; }
+  header { display: none; }
   #btnPertoDesktop {
   padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 700;
   border: 1.5px solid var(--borda); background: none; cursor: pointer;
@@ -1311,7 +1313,30 @@ function fecharBannerNovidade() {
   </div>
 </div>
 
-<!-- ══ HEADER ══ -->
+<!-- ══ HEADER (visível apenas no mobile) ══ -->
+<header>
+  <div class="h-brand">
+    <div class="h-logo">
+      <img src="./icons/icon-192.png" alt="Hydrosistem" onerror="this.style.display='none'">
+    </div>
+    <div class="h-wordmark">
+      <div class="h-nome">HYDROSISTEM</div>
+      <div class="h-sub">Painel de Entulhos</div>
+    </div>
+  </div>
+  <div class="header-btns">
+    <button class="btn-header hidden" id="btnOperadorMobile"></button>
+    <button class="btn-header hidden" id="btnInstallMobile"><i class='fa-solid fa-mobile-screen-button'></i> Instalar</button>
+    <button class="btn-header hidden" id="btnUpdateMobile"><i class='fa-solid fa-arrows-rotate'></i> Atualizar</button>
+    <a href="./relatorio.html" class="btn-header" id="btnRelatorioMobile" style="text-decoration:none;display:none"><i class="fa-solid fa-chart-column"></i> Relatório</a>
+    <a href="./equipe.html" class="btn-header" id="btnEquipeMobile" style="text-decoration:none;display:none"><i class="fa-regular fa-circle-user"></i>Equipe</a>
+    <button class="btn-perto" id="btnPerto" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
+     <button class="btn-dark-mode" id="btnDarkModeHeaderMobile" title="Modo noturno" onclick="toggleDarkMode()">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+  </div>
+</header>
+
 <div id="bannerOffline"><i class='fa-solid fa-wifi'></i> Sem conexão — exibindo dados salvos anteriormente</div>
 <div id="bannerCache"><i class='fa-solid fa-triangle-exclamation'></i> Dados offline — última atualização: <span id="cacheHora">—</span></div>
 
@@ -1374,12 +1399,12 @@ function fecharBannerNovidade() {
     <div id="sbMenuPrincipal" style="display:none;border-bottom:1px solid var(--borda);flex-shrink:0;padding:6px 0 4px;">
       <div style="padding:8px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);">Menu principal</div>
       <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;border-radius:7px;background:var(--azul-bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:var(--azul);"><i class="fa-solid fa-chart-column"></i></span>
+        <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-chart-column"></i></span>
         Relatório
         <span id="sbBadgeRelatorio" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--azul-bg);color:var(--azul);display:none;">Hoje</span>
       </a>
       <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;border-radius:7px;background:var(--verde-bg);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:var(--verde);"><i class="fa-solid fa-user-group"></i></span>
+        <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-user-group"></i></span>
         Equipes
         <span id="sbBadgeEquipe" style="margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--verde-bg);color:var(--verde);display:none;">0 online</span>
       </a>
@@ -1389,19 +1414,19 @@ function fecharBannerNovidade() {
     <div class="sb-resumo" id="sbResumo">
   <div style="padding:12px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:var(--texto3);display:flex;align-items:center;gap:6px;">Resumo do dia <span style="flex:1;height:1px;background:var(--borda);display:block;"></span></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 10px 10px;">
-    <div data-resumo-tipo="pendente" onclick="filtrarResumo('pendente',this)" style="background:var(--amarelo-bg);border:1px solid var(--amarelo-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+    <div data-resumo-tipo="pendente" onclick="filtrarResumo('pendente',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
       <div id="sbResumoPen" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--amarelo);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
     </div>
-    <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)" style="background:var(--atrasado-bg);border:1px solid var(--atrasado-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+    <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
       <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--atrasado);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--atrasado);margin-top:2px;">Atrasados</div>
     </div>
-    <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)" style="background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+    <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
       <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--exec);margin-top:2px;">Execução</div>
     </div>
-    <div data-resumo-tipo="concluido" onclick="filtrarResumo('concluido',this)" style="background:var(--verde-bg);border:1px solid var(--verde-borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
+    <div data-resumo-tipo="concluido" onclick="filtrarResumo('concluido',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
       <div id="sbResumoOk" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--verde);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
     </div>
@@ -1737,6 +1762,10 @@ function atualizarBotaoRelatorio() {
   if (btn) btn.style.display = "none";
   var btnE = document.getElementById("btnEquipe");
   if (btnE) btnE.style.display = "none";
+  var btnM = document.getElementById("btnRelatorioMobile");
+  if (btnM) btnM.style.display = "none";
+  var btnEM = document.getElementById("btnEquipeMobile");
+  if (btnEM) btnEM.style.display = "none";
   // sidebar — mostrar só para supervisor
   var sbR = document.getElementById("sbBtnRelatorio");
   var sbE = document.getElementById("sbBtnEquipe");
@@ -1751,19 +1780,24 @@ function _iniciaisOperador(nome) {
   return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
 }
 function atualizarChipOperador() {
-  var nome=getOperador(), btn=document.getElementById("btnOperador"); if(!btn) return;
+  var nome=getOperador(), btn=document.getElementById("btnOperador"), btnMob=document.getElementById("btnOperadorMobile");
+  if(!btn && !btnMob) return;
   if(nome) {
     var nL=Object.keys(meusLocks).length;
     var cargo = isSupervisor() ? "Supervisor" : "Operador";
-    btn.innerHTML =
+    var html =
       "<span class='chip-op-avatar'><i class='fa-regular fa-circle-user'></i><span class='chip-op-dot'></span></span>" +
       "<span class='chip-op-info'>" +
         "<span class='chip-op-nome'>" + safeText(nome.split(" ")[0]) + (nL>0?" ("+nL+")":"") + "</span>" +
         "<span class='chip-op-role'>" + cargo + "</span>" +
       "</span>" +
       "<i class='fa-solid fa-chevron-down chip-op-chevron'></i>";
-    btn.className = "chip-operador"; btn.style.display="";
-  } else { btn.style.display="none"; }
+    if(btn){ btn.innerHTML = html; btn.className = "chip-operador"; btn.style.display=""; }
+    if(btnMob){ btnMob.innerHTML = "<i class='fa-regular fa-circle-user' style='font-size:13px'></i> " + safeText(nome.split(" ")[0]) + (nL>0?" ("+nL+")":"") + " <span class='chip-op-dot'></span>"; btnMob.className = "chip-operador"; btnMob.style.display=""; }
+  } else {
+    if(btn) btn.style.display="none";
+    if(btnMob) btnMob.style.display="none";
+  }
 }
 function abrirModalOperador() { document.getElementById("modalOperador").classList.add("open"); var i=document.getElementById("inputOperador"); i.value=getOperador(); validarInputOperador(); setTimeout(function(){i.focus();},100); }
 function fecharModalOperador() { document.getElementById("modalOperador").classList.remove("open"); }
@@ -1773,6 +1807,7 @@ document.getElementById("inputOperador").addEventListener("input",validarInputOp
 document.getElementById("inputOperador").addEventListener("keydown",function(e){if(e.key==="Enter") confirmarOperador();});
 document.getElementById("btnConfirmarOperador").onclick=confirmarOperador;
 document.getElementById("btnOperador").onclick=abrirModalOperador;
+if(document.getElementById("btnOperadorMobile")) document.getElementById("btnOperadorMobile").onclick=abrirModalOperador;
 window.addEventListener("DOMContentLoaded",function(){
   if(!getOperador()) abrirModalOperador();
   else { atualizarChipOperador(); atualizarBotaoRelatorio(); aplicarVisualizacaoRole(); }
@@ -1955,6 +1990,9 @@ var _modoCompacto=false;
       // novo: sincroniza botão mobile
       var btnM = document.getElementById("btnDarkModeMobile");
       if(btnM){ btnM.classList.add("ativo"); btnM.innerHTML='<i class="fa-solid fa-sun"></i>'; }
+      // sincroniza botão do header mobile
+      var btnHM = document.getElementById("btnDarkModeHeaderMobile");
+      if(btnHM){ btnHM.classList.add("ativo"); btnHM.innerHTML='<i class="fa-solid fa-sun"></i>'; }
     }
   } catch(e){}
 })();
@@ -1964,8 +2002,8 @@ window.addEventListener("DOMContentLoaded",function(){var b=document.getElementB
 /* ══ PWA ══ */
 var deferredPrompt=null,swReg=null,_promptWaitTimer=null;
 function estaInstalado(){return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;}
-function ocultarBtnInstall(){var b=document.getElementById("btnInstall");if(b){b.classList.remove("visible");b.classList.add("hidden");b.onclick=null;}}
-function mostrarBtnInstall(fn){if(estaInstalado()){ocultarBtnInstall();return;}var b=document.getElementById("btnInstall");if(b){b.classList.remove("hidden");b.classList.add("visible");b.onclick=fn;}}
+function ocultarBtnInstall(){[document.getElementById("btnInstall"),document.getElementById("btnInstallMobile")].forEach(function(b){if(b){b.classList.remove("visible");b.classList.add("hidden");b.onclick=null;}});}
+function mostrarBtnInstall(fn){if(estaInstalado()){ocultarBtnInstall();return;}[document.getElementById("btnInstall"),document.getElementById("btnInstallMobile")].forEach(function(b){if(b){b.classList.remove("hidden");b.classList.add("visible");b.onclick=fn;}});}
 function getUA(){var ua=navigator.userAgent.toLowerCase();return{isIOS:/iphone|ipad|ipod/.test(ua),isAndroid:/android/.test(ua)};}
 function instalarPWA(){if(!deferredPrompt)return;deferredPrompt.prompt();deferredPrompt.userChoice.then(function(c){deferredPrompt=null;if(c.outcome==="accepted"){ocultarBtnInstall();toast("<i class='fa-solid fa-circle-check'></i> App instalado!","ok");}});}
 function ativarBotaoNativo(){clearTimeout(_promptWaitTimer);mostrarBtnInstall(instalarPWA);}
@@ -1977,7 +2015,7 @@ window.addEventListener("appinstalled",function(){deferredPrompt=null;ocultarBtn
 function iniciarEsperaPrompt(){if(estaInstalado()||deferredPrompt)return;clearTimeout(_promptWaitTimer);_promptWaitTimer=setTimeout(function(){if(!deferredPrompt)ativarBotaoFallback();},15000);}
 window.addEventListener("load",function(){if(estaInstalado()){ocultarBtnInstall();return;}var ua=getUA();if(ua.isIOS){ativarBotaoFallback();return;}if("serviceWorker"in navigator){var ok=false,ini=function(){if(!ok){ok=true;iniciarEsperaPrompt();}};navigator.serviceWorker.ready.then(ini).catch(ini);setTimeout(ini,1000);}else iniciarEsperaPrompt();});
 if("serviceWorker"in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("./sw.js").then(function(reg){swReg=reg;reg.addEventListener("updatefound",function(){var nw=reg.installing;nw.addEventListener("statechange",function(){if(nw.state==="installed"&&navigator.serviceWorker.controller){nw.postMessage({type:"SKIP_WAITING"});mostrarBotaoAtualizar(reg);}});});}).catch(function(err){console.warn("[SW]",err);});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});});}
-function mostrarBotaoAtualizar(reg){var btn=document.getElementById("btnUpdate");if(!btn)return;btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};toast("<i class='fa-solid fa-arrows-rotate'></i> Nova versão disponível — toque em Atualizar","");}
+function mostrarBotaoAtualizar(reg){var btns=[document.getElementById("btnUpdate"),document.getElementById("btnUpdateMobile")].filter(Boolean);if(!btns.length)return;btns.forEach(function(btn){btn.classList.remove("hidden");btn.classList.add("visible");btn.onclick=function(){var w=reg&&reg.waiting;if(w)w.postMessage({type:"SKIP_WAITING"});navigator.serviceWorker.addEventListener("controllerchange",function(){window.location.reload();});};});toast("<i class='fa-solid fa-arrows-rotate'></i> Nova versão disponível — toque em Atualizar","");}
 
 /* ══ MODO COMPACTO TABLET ══ */
 var _modoCompactoTablet = false;
@@ -3306,7 +3344,6 @@ function renderOperadoresOnline(presencas) {
     html = '<div class="sb-op-vazio">Nenhuma equipe online</div>';
   } else {
     equipe.forEach(function(p) {
-      var cor = hashColorOp(p.operador);
       var lock = locks[p.sessionId];
       var statusClass = lock ? "executando" : "online";
       var indicadorCor = lock ? "var(--exec)" : "var(--verde)";
@@ -3326,7 +3363,7 @@ function renderOperadoresOnline(presencas) {
 
       html +=
         '<div class="sb-op-item" onclick="window.location.href=\'./equipe.html\'" style="cursor:pointer;" onmouseover="this.style.background=\'var(--cinza-md)\'" onmouseout="this.style.background=\'\'">' +
-          '<div class="sb-op-avatar" style="background:' + cor + '"><i class=\"fa-solid fa-user\"></i></div>' +
+          '<div class="sb-op-avatar" style="background:var(--azul)"><i class=\"fa-solid fa-user\"></i></div>' +
           '<div class="sb-op-info">' +
             '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
             '<div class="sb-op-status ' + statusClass + '">' +
@@ -3982,6 +4019,8 @@ function abrirLightbox(u) {
       document.body.classList.add("dark-mode");
       var btn = document.getElementById("btnDarkMode");
       if(btn){ btn.classList.add("ativo"); btn.innerHTML='<i class="fa-solid fa-sun"></i>'; }
+      var btnHM = document.getElementById("btnDarkModeHeaderMobile");
+      if(btnHM){ btnHM.classList.add("ativo"); btnHM.innerHTML='<i class="fa-solid fa-sun"></i>'; }
     }
   } catch(e){}
 })();
@@ -4001,6 +4040,13 @@ function toggleDarkMode(){
   if(btnM){
     btnM.classList.toggle("ativo", ativo);
     btnM.innerHTML = ativo ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+  }
+
+  // botão do header mobile (restaurado)
+  var btnHM = document.getElementById("btnDarkModeHeaderMobile");
+  if(btnHM){
+    btnHM.classList.toggle("ativo", ativo);
+    btnHM.innerHTML = ativo ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
   }
   
   try{ localStorage.setItem("hyd_dark", ativo ? "1" : "0"); }catch(e){}
