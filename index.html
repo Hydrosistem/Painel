@@ -397,7 +397,7 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
   border: 1.5px solid var(--borda); background: none; cursor: pointer;
   font-family: "DM Sans",sans-serif; color: var(--texto2);
   display: flex; align-items: center; gap: 5px; white-space: nowrap;
-  flex-shrink: 0; transition: all .15s;
+  flex-shrink: 0; transition: all .15s; height: auto;
 }
 #btnPertoDesktop:hover { background: var(--cinza-md); border-color: var(--borda-md); }
 #btnPertoDesktop.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
@@ -1518,7 +1518,7 @@ function fecharBannerNovidade() {
     <div class="centro">
 
     <div class="centro-top">
-  <button class="filtro-tab active" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
+  <button class="filtro-tab active" id="filtroTabTodos" onclick="setFiltroTab('todos',this)">Todos <span class="filtro-tab-badge" id="ftb-todos">—</span></button>
   <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
   <button class="filtro-tab t-pendente" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
   <button class="filtro-tab t-concluido" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
@@ -3432,7 +3432,9 @@ function filtrarResumo(tipo, el) {
   }
   ftFiltro = _filtroResumo;
   document.querySelectorAll(".filtro-tab").forEach(function(b){ b.classList.remove("active"); });
-  var tabEl = document.querySelector(".filtro-tab[data-ft='" + tipo + "']");
+  var tabEl = _filtroResumo === "todos"
+    ? document.getElementById("filtroTabTodos")
+    : document.querySelector(".filtro-tab[data-ft='" + _filtroResumo + "']");
   if (tabEl) tabEl.classList.add("active");
   renderTablet(_ultimaLista);
 }
@@ -3504,6 +3506,11 @@ function setFiltroTabComMapa(filtro, btn) {
   }
   document.getElementById("mapaView").style.display = "none";
   document.getElementById("centroScroll").style.display = "";
+  if (["pendente","atrasado","concluido"].indexOf(filtro) !== -1 && btn.classList.contains("active")) {
+    var btnTodos = document.getElementById("filtroTabTodos");
+    setFiltroTab("todos", btnTodos);
+    return;
+  }
   setFiltroTab(filtro, btn);
 }
 
