@@ -229,7 +229,7 @@ body.dark-mode *::-webkit-scrollbar-thumb { border-color: #171717; }
 
 /* ══ HEADER ══ */
 header {
-  background: var(--branco);
+  background: linear-gradient(135deg, #003CB2 0%, #0058E6 55%, #0072F7 100%);
   padding: 0 20px;
   height: var(--header-h);
   display: flex;
@@ -238,23 +238,23 @@ header {
   position: sticky;
   top: 0;
   z-index: 100;
-  border-bottom: 1px solid var(--borda);
+  border-bottom: 1px solid rgba(255,255,255,.14);
   transition: box-shadow .2s ease;
 }
-header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
+header.header-scrolled { box-shadow: 0 4px 14px rgba(0,20,60,.25); }
 .h-brand { display: flex; align-items: center; gap: 12px; }
 .h-logo {
   width: 36px; height: 36px; border-radius: 10px;
-  background: var(--azul-bg);
-  border: 1px solid var(--azul-borda);
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(255,255,255,.28);
   display: flex; align-items: center; justify-content: center;
   overflow: hidden; flex-shrink: 0;
 }
 .h-logo img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 .h-wordmark { display: flex; flex-direction: column; gap: 1px; }
-.h-nome { font-size: 14px; font-weight: 700; color: var(--texto); letter-spacing: .6px; line-height: 1; }
-.h-sub  { font-size: 10px; color: var(--texto3); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
-.h-divider { width: 1px; height: 28px; background: var(--borda); margin: 0 4px; }
+.h-nome { font-size: 14px; font-weight: 700; color: #fff; letter-spacing: .6px; line-height: 1; }
+.h-sub  { font-size: 10px; color: rgba(255,255,255,.72); font-weight: 500; letter-spacing: 1.5px; text-transform: uppercase; }
+.h-divider { width: 1px; height: 28px; background: rgba(255,255,255,.22); margin: 0 4px; }
 .header-btns { display: flex; gap: 6px; align-items: center; }
 
 .btn-header {
@@ -271,6 +271,21 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
 .btn-header.spin svg { animation: rot .9s linear infinite; }
 #btnInstall.visible, #btnInstallMobile.visible { background: var(--azul); border-color: var(--azul); color: #fff; }
 #btnInstall.visible:hover, #btnInstallMobile.visible:hover { background: var(--azul-md); border-color: var(--azul-md); }
+#btnInstallMobile.visible { background: #fff; border-color: #fff; color: var(--azul); }
+#btnInstallMobile.visible:hover { background: rgba(255,255,255,.88); border-color: rgba(255,255,255,.88); }
+
+header .btn-header {
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.24);
+  color: #fff;
+}
+header .btn-header:hover { background: rgba(255,255,255,.24); border-color: rgba(255,255,255,.36); color: #fff; }
+header .btn-perto { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); color: #fff; }
+header .btn-perto:hover { background: rgba(255,255,255,.24); }
+header .btn-perto.ativo { background: rgba(74,222,128,.22); border-color: rgba(74,222,128,.45); color: #4ADE80; }
+header .btn-dark-mode { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.24); color: #fff; }
+header .btn-dark-mode:hover { background: rgba(255,255,255,.24); border-color: rgba(255,255,255,.36); }
+header .btn-dark-mode.ativo { background: rgba(253,224,71,.22); border-color: rgba(253,224,71,.45); color: #FDE047; }
 
 .btn-perto {
   background: var(--cinza-md);
@@ -445,7 +460,7 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
   /* Sidebar padrão (supervisor) */
   .sidebar {
     width: var(--sidebar-w); flex-shrink: 0;
-    background: linear-gradient(180deg, #0A2647 0%, #123B6E 45%, #1E5A9E 100%);
+    background: linear-gradient(180deg, #061A38 0%, #0D2C57 45%, #164575 100%);
     border-right: 1px solid rgba(255,255,255,.08);
     display: flex; flex-direction: column; overflow: hidden;
     --texto: #FFFFFF;
@@ -461,7 +476,7 @@ header.header-scrolled { box-shadow: 0 4px 14px rgba(15,23,42,.08); }
      Não afeta o mobile (esta regra já está dentro do @media min-width:768px)
      Não afeta o modo escuro (escopado com body:not(.dark-mode)) */
   body:not(.dark-mode) .sidebar {
-    background: linear-gradient(135deg, #003CB2 0%, #0058E6 55%, #0072F7 100%);
+    background: linear-gradient(135deg, #002B85 0%, #003FA8 55%, #0055C9 100%);
     --azul:      #0058E6;
     --azul-esc:  #003CB2;
     --azul-md:   #006CFC;
