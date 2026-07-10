@@ -312,6 +312,8 @@ header .btn-dark-mode.ativo { background: rgba(253,224,71,.22); border-color: rg
   transition: background .15s;
 }
 .chip-operador:hover { background: var(--cinza-md); }
+header .chip-operador { color: #fff; }
+header .chip-operador:hover { background: rgba(255,255,255,.14); }
 .chip-op-avatar {
   width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
   background: linear-gradient(135deg, var(--azul), var(--azul-esc));
@@ -1831,7 +1833,7 @@ function atualizarChipOperador() {
       "</span>" +
       "<i class='fa-solid fa-chevron-down chip-op-chevron'></i>";
     if(btn){ btn.innerHTML = html; btn.className = "chip-operador"; btn.style.display=""; }
-    if(btnMob){ btnMob.innerHTML = "<i class='fa-regular fa-circle-user' style='font-size:13px'></i> " + safeText(nome.split(" ")[0]) + (nL>0?" ("+nL+")":"") + " <span class='chip-op-dot'></span>"; btnMob.className = "chip-operador"; btnMob.style.display=""; }
+    if(btnMob){ btnMob.innerHTML = "<i class='fa-regular fa-circle-user' style='font-size:13px'></i> " + safeText(nome.split(" ")[0]) + (nL>0?" ("+nL+")":""); btnMob.className = "chip-operador"; btnMob.style.display=""; }
   } else {
     if(btn) btn.style.display="none";
     if(btnMob) btnMob.style.display="none";
