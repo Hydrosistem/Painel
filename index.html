@@ -59,6 +59,7 @@
   --sidebar-w:   248px;
   --detail-w:    304px;
   --header-h:    60px;
+  --search-h:    59px;
 }
 
 /* ══ DARK MODE TOKENS ══ */
@@ -352,7 +353,7 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
 .layout-root { display: flex; flex-direction: column; min-height: calc(100vh - var(--header-h)); }
 
 /* ══ MOBILE: busca ══ */
-.search-wrap { background: var(--branco); border-bottom: 1px solid var(--borda); padding: 10px 16px; position: relative; z-index: 99; }
+.search-wrap { background: var(--branco); border-bottom: 1px solid var(--borda); padding: 10px 16px; position: sticky; top: var(--header-h); z-index: 99; }
 .search-inner { max-width: 720px; margin: 0 auto; position: relative; display: flex; align-items: center; gap: 8px; }
 .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--texto3); pointer-events: none; }
 .search-input { flex: 1; padding: 10px 40px 10px 38px; border: 1.5px solid var(--borda); border-radius: var(--radius-sm); font-family: "DM Sans",sans-serif; font-size: 14px; background: var(--cinza-md); outline: none; color: var(--texto); transition: border-color .2s, background .2s, box-shadow .2s; }
@@ -369,7 +370,7 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
 .btn-compacto.ativo { background: var(--azul-bg); border-color: var(--azul-borda); color: var(--azul); }
 
 /* ══ MOBILE: stats ══ */
-.stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--branco); border-bottom: 1px solid var(--borda); }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); background: var(--branco); border-bottom: 1px solid var(--borda); position: sticky; top: calc(var(--header-h) + var(--search-h)); z-index: 98; }
 .stat { padding: 12px 4px; text-align: center; border-right: 1px solid var(--borda); }
 .stat:last-child { border-right: none; }
 .stat-n { font-size: clamp(22px, 5.5vw, 30px); font-weight: 700; line-height: 1; font-family: "DM Mono", monospace; transition: transform .3s cubic-bezier(.34,1.56,.64,1); }
@@ -1008,6 +1009,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 /* ══ MOBILE HEADER COMPACTO ══ */
 @media (max-width: 767px) {
   header { padding: 0 14px; height: 52px; }
+  :root { --header-h: 52px; --search-h: 59px; }
   .h-logo { width: 32px; height: 32px; border-radius: 8px; }
   .h-nome { font-size: 13px; }
   .h-sub  { font-size: 9px; }
