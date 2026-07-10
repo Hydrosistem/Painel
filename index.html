@@ -671,12 +671,12 @@ header .btn-dark-mode.ativo { background: rgba(253,224,71,.22); border-color: rg
   .card-t.t-atrasado  .card-t-stripe { background: var(--atrasado); }
   .card-t.t-execucao  .card-t-stripe { background: var(--exec); }
   .card-t.t-concluido .card-t-stripe { background: var(--verde); }
-  .card-t-body { flex: 1; padding: 11px 12px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+  .card-t-body { flex: 1; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .card-t-top  { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
   .card-t-prot { font-family: "DM Mono",monospace; font-size: 10px; color: var(--texto3); letter-spacing: 1px; }
   .card-t-end  { font-size: 12px; font-weight: 600; line-height: 1.35; color: var(--texto); }
   .card-t-meta { font-size: 11px; color: var(--texto2); display: flex; flex-wrap: wrap; gap: 2px 6px; }
-  .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 3px; }
+  .card-t-prazo-row { display: flex; justify-content: space-between; font-size: 10px; font-weight: 600; margin-bottom: 2px; }
   .card-t-prazo-bar  { height: 3px; border-radius: 10px; background: var(--cinza-md); overflow: hidden; }
   .card-t-prazo-fill { height: 100%; border-radius: 10px; }
   .card-t.t-urgente   .card-t-prazo-fill { background: var(--vermelho); }
@@ -1028,6 +1028,10 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 .sb-stat-card-val.vermelho { color: var(--vermelho); }
 .sb-stat-card-val.exec { color: var(--exec); }
 .sidebar .sb-stat-card-val.verde { color: #4ADE80; }
+@media (min-width: 768px) {
+  [data-resumo-tipo] { padding: 7px 10px !important; }
+  .sb-stat-card { padding: 6px 10px; }
+}
 .sidebar .sb-stat-card-val.vermelho { color: #F87171; }
 .sb-ops-lista { display: flex; flex-direction: column; gap: 2px; padding: 0 10px 8px; }
 .sb-ops-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: var(--radius-xs); background: var(--branco); border: 1px solid var(--borda); }
