@@ -2146,7 +2146,7 @@ function fotoSrc(id){if(!id)return null;return isDesktop()?"https://lh3.googleus
 function onFotoErro(img,u,id){if(!img.dataset.r1&&id){img.dataset.r1="1";img.src="https://drive.google.com/thumbnail?id="+encodeURIComponent(id)+"&sz=w800";return;}if(!img.dataset.r2&&id&&isDesktop()){img.dataset.r2="1";img.src="https://drive.google.com/uc?export=view&id="+encodeURIComponent(id);return;}var w=img.closest(".foto-wrap,.detail-foto-wrap");if(w)w.outerHTML="<a class='btn-foto-fallback' href='"+(u||"#")+"' target='_blank' rel='noopener'>📷 Ver foto no Drive</a>";}
 function onFotoLoad(img){img.classList.add("loaded");var sk=img.previousElementSibling;if(sk&&sk.classList.contains("foto-skeleton"))sk.style.display="none";}
 function onDetailFotoLoad(img){img.classList.add("loaded");var sk=img.previousElementSibling;if(sk)sk.style.display="none";}
-function tempo(iso){var h=(new Date()-new Date(iso))/36e5,r=PRAZO-h,pct=Math.min(h/PRAZO*100,100),vence=new Date(new Date(iso).getTime()+PRAZO*36e5),horaVence=vence.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});if(r<=0)return{txt:"VENCIDO",r:0,pct:100,tipo:"atrasado",horaVence:horaVence,delta:Math.abs(r)};if(r<=4)return{txt:ar(r)+" restantes",r:r,pct:pct,tipo:"urgente",horaVence:horaVence,delta:r};return{txt:ar(r)+" restantes",r:r,pct:pct,tipo:"pendente",horaVence:horaVence,delta:r};}
+function tempo(iso){var h=(new Date()-new Date(iso))/36e5,r=PRAZO-h,pct=Math.min(h/PRAZO*100,100),vence=new Date(new Date(iso).getTime()+PRAZO*36e5),horaVence=vence.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});if(r<=0)return{txt:"VENCIDO",r:0,pct:100,tipo:"atrasado",horaVence:horaVence,vence:vence,delta:Math.abs(r)};if(r<=4)return{txt:ar(r)+" restantes",r:r,pct:pct,tipo:"urgente",horaVence:horaVence,vence:vence,delta:r};return{txt:ar(r)+" restantes",r:r,pct:pct,tipo:"pendente",horaVence:horaVence,vence:vence,delta:r};}
 function ar(n){return n<1?Math.round(n*60)+"min":Math.round(n)+"h";}
 function fdt(iso){if(!iso)return "—";return new Date(iso).toLocaleString("pt-BR",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});}
 function abrirFoto(u){window.open(u,'_blank','noopener');}
@@ -2335,7 +2335,9 @@ function _preencherDetalhe(p){
   var deltaVal,deltaLbl;
   if(concluido){deltaVal="<i class='fa-solid fa-check'></i>";deltaLbl="CONCLUÍDO";}else{deltaVal=t.r<=0?"−"+ar(t.delta):ar(t.delta);deltaLbl=t.r<=0?"VENCIDO":"RESTANTE";}
   var abertura=p.dataHora?new Date(p.dataHora).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—";
+  var aberturaData=p.dataHora?new Date(p.dataHora).toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}):"";
   var prazoHora=concluido?(p.dataConclusao?new Date(p.dataConclusao).toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"}):"—"):(t.horaVence||"—");
+  var prazoData=(!concluido&&t.vence)?t.vence.toLocaleDateString("pt-BR",{day:"2-digit",month:"2-digit"}):"";
   var prazoLbl=concluido?"CONCLUSÃO":"PRAZO";
   var execInfoHtml="";
   if(outraExecucao){var _tsExecD=_getIniciadoEm(lock,p);var minEx=Math.round((new Date()-new Date(_tsExecD))/60000),quemEx=lock.usuario?" por <strong>"+safeText(lock.usuario)+"</strong>":"";execInfoHtml="<div class='exec-info-box outro'><i class='fa-solid fa-stopwatch'></i> Iniciado há "+(minEx<1?"menos de 1 min":minEx+" min")+quemEx+"</div>";}
@@ -2369,8 +2371,8 @@ function _preencherDetalhe(p){
     "</div>"+
     "<div class='detail-mini-cards "+tipoCard+"' "+isoAttr+">"+
       "<div class='mini-card'><div class='mini-card-val t-"+tipoCard+" detail-delta-val'>"+deltaVal+"</div><div class='mini-card-lbl'>"+deltaLbl+"</div></div>"+
-      "<div class='mini-card'><div class='mini-card-val'>"+abertura+"</div><div class='mini-card-lbl'>Abertura</div></div>"+
-      "<div class='mini-card'><div class='mini-card-val"+(concluido?" t-concluido":t.r<=0?" t-atrasado":"")+"'>"+prazoHora+"</div><div class='mini-card-lbl'>"+prazoLbl+"</div></div>"+
+      "<div class='mini-card'><div class='mini-card-val'>"+abertura+(aberturaData?"<span style='display:block;font-size:9px;font-weight:700;opacity:.65;margin-top:1px;letter-spacing:.3px'>"+aberturaData+"</span>":"")+"</div><div class='mini-card-lbl'>Abertura</div></div>"+
+      "<div class='mini-card'><div class='mini-card-val"+(concluido?" t-concluido":t.r<=0?" t-atrasado":"")+"'>"+prazoHora+(prazoData?"<span style='display:block;font-size:9px;font-weight:700;opacity:.65;margin-top:1px;letter-spacing:.3px'>"+prazoData+"</span>":"")+"</div><div class='mini-card-lbl'>"+prazoLbl+"</div></div>"+
     "</div>"+
     "<div class='detail-prazo-bar "+tipoCard+"'><div class='detail-prazo-fill' style='width:"+t.pct.toFixed(0)+"%'></div></div>"+
     execInfoHtml+
@@ -3953,7 +3955,7 @@ function _renderTimeline(p) {
       dot:   "pendente",
       icon:  "<i class='fa-solid fa-stopwatch'></i>",
       label: t.r <= 0 ? "Prazo vencido" : "Prazo previsto",
-      val:   t.horaVence || "—",
+      val:   t.vence ? fdt(t.vence) : (t.horaVence || "—"),
       sub:   t.r <= 0 ? "Atrasado " + ar(t.delta) : t.txt
     });
   }
