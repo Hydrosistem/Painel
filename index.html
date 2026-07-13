@@ -458,6 +458,13 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
     font-size: 15px; padding: 4px; display: none;
   }
   .centro-busca-clear.show { display: block; }
+  .centro-busca-logo {
+    display: none; align-items: center; justify-content: center;
+    width: 32px; height: 32px; border-radius: 8px; overflow: hidden;
+    flex-shrink: 0; background: var(--cinza-md);
+  }
+  .centro-busca-logo img { width: 100%; height: 100%; object-fit: contain; }
+  body.operador-view .centro-busca-logo { display: flex; }
 
   /* ══ ROLE-BASED LAYOUT ══ */
   /* Operador: sem sidebar, centro ocupa tudo */
@@ -1520,6 +1527,9 @@ function fecharBannerNovidade() {
 
     <!-- ══ BUSCA — barra superior, largura total (cards + painel de detalhe) ══ -->
     <div class="centro-busca" id="centroBusca">
+      <div class="centro-busca-logo" id="centroBuscaLogo">
+        <img src="./icons/icon-192.png" alt="Hydrosistem" onerror="this.style.display='none'">
+      </div>
       <div style="position:relative;flex:1;display:flex;align-items:center;">
         <svg class="centro-busca-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
         <input class="centro-busca-input" id="centroBuscaInput" type="search" placeholder="Buscar endereço ou protocolo…" autocomplete="off" spellcheck="false" style="width:100%;">
