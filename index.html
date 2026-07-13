@@ -302,6 +302,9 @@ header .btn-dark-mode.ativo { background: rgba(253,224,71,.22); border-color: rg
 }
 .btn-perto:hover { background: var(--borda); }
 .btn-perto.ativo { background: var(--verde-bg); border-color: var(--verde-borda); color: var(--verde); }
+.centro-top .btn-perto:not(.ativo) i, .centro-busca .btn-perto:not(.ativo) i { color: var(--azul); }
+.filtro-tab:not(.active) i.fa-map { color: var(--azul); }
+.filtro-tab:not(.active) i.fa-download { color: var(--azul); }
 #btnPertoDesktop { white-space: nowrap; flex-shrink: 0; min-width: max-content; }
 
 .chip-operador {
@@ -1035,7 +1038,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
   [data-resumo-tipo] { padding: 7px 10px !important; }
   .sb-stat-card { padding: 6px 10px; }
 }
-.sidebar .sb-stat-card-val.vermelho { color: #F87171; }
+.sidebar .sb-stat-card-val.vermelho { color: #F43F5E; }
 .sb-ops-lista { display: flex; flex-direction: column; gap: 2px; padding: 0 10px 8px; }
 .sb-ops-item { display: flex; align-items: center; justify-content: space-between; padding: 5px 8px; border-radius: var(--radius-xs); background: var(--branco); border: 1px solid var(--borda); }
 .sb-ops-nome { font-size: 11px; font-weight: 600; color: var(--texto); }
@@ -1460,8 +1463,8 @@ function fecharBannerNovidade() {
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
     </div>
     <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
-      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--vermelho);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--vermelho);margin-top:2px;">Atrasados</div>
+      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:#F43F5E;line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#F43F5E;margin-top:2px;">Atrasados</div>
     </div>
     <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)" style="background:var(--cinza-md);border:1px solid var(--borda);border-radius:var(--radius-sm);padding:10px;text-align:center;">
       <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
@@ -1544,7 +1547,7 @@ function fecharBannerNovidade() {
   <button class="filtro-tab t-atrasado" data-ft="atrasado" onclick="setFiltroTabComMapa('atrasado',this)">Atrasados <span class="filtro-tab-badge" id="ftb-atrasado">—</span></button>
   <button class="filtro-tab t-pendente" data-ft="pendente" onclick="setFiltroTabComMapa('pendente',this)">Pendentes <span class="filtro-tab-badge" id="ftb-pendente">—</span></button>  
   <button class="filtro-tab t-concluido" data-ft="concluido" onclick="setFiltroTabComMapa('concluido',this)">Concluídos hoje <span class="filtro-tab-badge" id="ftb-concluido">—</span></button>
-  <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-solid fa-map-pin"></i> Mapa</button>
+  <button class="filtro-tab" style="margin-left:auto" onclick="setFiltroTabComMapa('mapa',this)"><i class="fa-regular fa-map"></i> Mapa</button>
   <button class="btn-perto" id="btnPertoDesktop" onclick="togglePerto()"><i class="fa-solid fa-map-pin"></i> Perto de mim</button>
   <button onclick="exportarCSV()" id="btnExportarCSV" class="filtro-tab">
   <i class="fa-solid fa-download"></i> Exportar
