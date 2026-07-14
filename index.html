@@ -1526,12 +1526,12 @@ function fecharBannerNovidade() {
       </div>
       <div class="sb-stat-lg-chart"><svg id="sparkTaxaAtraso" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
-    <div class="sb-stat-card-lg" id="cardMaiorAtraso">
+    <div class="sb-stat-card-lg" id="cardAtrasoMedio">
       <div>
-        <div class="sb-stat-lg-val vermelho" id="statMaiorAtraso">—</div>
-        <div class="sb-stat-lg-lbl">Maior atraso</div>
+        <div class="sb-stat-lg-val vermelho" id="statAtrasoMedio">—</div>
+        <div class="sb-stat-lg-lbl">Atraso médio</div>
       </div>
-      <div class="sb-stat-lg-chart"><svg id="sparkMaiorAtraso" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
+      <div class="sb-stat-lg-chart"><svg id="sparkAtrasoMedio" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
   </div>
   <div class="sb-stats-header" style="margin-top:2px">Por operador</div>
@@ -3440,7 +3440,7 @@ function renderOperadoresOnline(presencas) {
         var _tsTimer = lock.iniciadoEm || lock.timestamp;
         var minExec = Math.round((new Date() - new Date(_tsTimer)) / 60000);
         var timerTxt = minExec < 1 ? "<1min" : minExec + "min";
-        timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--exec-bg);border:1px solid var(--exec-borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
+        timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--cinza-md);border:1px solid var(--borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
           '<span style="width:6px;height:6px;border-radius:50%;background:var(--exec);display:inline-block;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0;"></span>' +
           timerTxt + '</div>';
         avatarDotHtml = '<span class="sb-op-avatar-dot" style="background:' + indicadorCor + '"></span>';
@@ -3874,9 +3874,27 @@ if (logoBase64) {
 
 /* ══ ESTATÍSTICAS DO DIA ══ */
 var _histTaxaAtraso = [];
-var _histMaiorAtraso = [];
+var _histAtrasoMedio = [];
 var _curTaxaPct = null, _curTaxaHex = "#4ADE80";
-var _curMaiorDelta = null, _curMaiorHex = "#4ADE80";
+var _curAtrasoMedio = null, _curAtrasoMedioHex = "#4ADE80";
+
+/* Converte uma lista de pontos [x,y] numa curva suave (Catmull-Rom → Bezier cúbica),
+   em vez de linhas retas entre os pontos — evita o efeito de "escadinha". */
+function _catmullRom2bezier(pts) {
+  var d = "M" + pts[0][0].toFixed(1) + "," + pts[0][1].toFixed(1);
+  for (var i = 0; i < pts.length - 1; i++) {
+    var p0 = pts[i - 1] || pts[i];
+    var p1 = pts[i];
+    var p2 = pts[i + 1];
+    var p3 = pts[i + 2] || p2;
+    var cp1x = p1[0] + (p2[0] - p0[0]) / 6;
+    var cp1y = p1[1] + (p2[1] - p0[1]) / 6;
+    var cp2x = p2[0] - (p3[0] - p1[0]) / 6;
+    var cp2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += " C" + cp1x.toFixed(1) + "," + cp1y.toFixed(1) + " " + cp2x.toFixed(1) + "," + cp2y.toFixed(1) + " " + p2[0].toFixed(1) + "," + p2[1].toFixed(1);
+  }
+  return d;
+}
 
 function _renderSpark(svg, values, colorHex) {
   if (!svg) return;
@@ -3890,32 +3908,38 @@ function _renderSpark(svg, values, colorHex) {
     var y = h - pad - ((v - min) / range) * (h - pad * 2);
     return [x, y];
   });
-  var linePts = pts.map(function(p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" ");
-  var areaPts = "0," + h + " " + linePts + " " + w + "," + h;
   var last = pts[n - 1];
+  if (n < 2) {
+    svg.innerHTML = '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6" fill="' + colorHex + '"></circle>';
+    return;
+  }
+  var linePath = _catmullRom2bezier(pts);
+  var areaPath = linePath + " L" + w.toFixed(1) + "," + h.toFixed(1) + " L0," + h.toFixed(1) + " Z";
   svg.innerHTML =
-    '<polyline points="' + areaPts + '" fill="' + colorHex + '" opacity="0.15" stroke="none"></polyline>' +
-    '<polyline points="' + linePts + '" fill="none" stroke="' + colorHex + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></polyline>' +
+    '<path d="' + areaPath + '" fill="' + colorHex + '" opacity="0.15" stroke="none"></path>' +
+    '<path d="' + linePath + '" fill="none" stroke="' + colorHex + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>' +
     '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6" fill="' + colorHex + '"></circle>';
 }
 
-/* Amostra os valores atuais no histórico do gráfico a cada chamada.
-   Chamada tanto pelo recálculo completo quanto por um intervalo próprio,
-   assim os sparklines ganham pontos suficientes pra mostrar tendência
-   real sem esperar horas por atualizações completas da lista. */
+/* Amostra os valores atuais no histórico do gráfico.
+   Chamada apenas quando os dados são recalculados de verdade (a cada
+   REFRESH_INTERVAL, dentro de _atualizarEstatisticas) — antes havia também
+   um setInterval próprio de 8s que reamostrava o mesmo valor várias vezes
+   entre um refresh e outro, criando patamares retos seguidos de saltos
+   (efeito "escadinha"). Agora cada ponto do histórico é sempre uma leitura
+   nova, e a curva (Catmull-Rom) do _renderSpark cuida de deixar o traço suave. */
 function _sampleEstatisticasSpark() {
   if (_curTaxaPct != null) {
     _histTaxaAtraso.push(_curTaxaPct);
     if (_histTaxaAtraso.length > 20) _histTaxaAtraso.shift();
     _renderSpark(document.getElementById("sparkTaxaAtraso"), _histTaxaAtraso, _curTaxaHex);
   }
-  if (_curMaiorDelta != null) {
-    _histMaiorAtraso.push(_curMaiorDelta);
-    if (_histMaiorAtraso.length > 20) _histMaiorAtraso.shift();
-    _renderSpark(document.getElementById("sparkMaiorAtraso"), _histMaiorAtraso, _curMaiorHex);
+  if (_curAtrasoMedio != null) {
+    _histAtrasoMedio.push(_curAtrasoMedio);
+    if (_histAtrasoMedio.length > 20) _histAtrasoMedio.shift();
+    _renderSpark(document.getElementById("sparkAtrasoMedio"), _histAtrasoMedio, _curAtrasoMedioHex);
   }
 }
-setInterval(_sampleEstatisticasSpark, 8000);
 
 function _atualizarEstatisticas(lista) {
   if (!isSupervisor()) return;
@@ -3944,17 +3968,17 @@ function _atualizarEstatisticas(lista) {
   _curTaxaPct = taxaPct;
   _curTaxaHex = taxaHex;
 
-  /* ── Maior atraso ── */
-  var sMaiorAtraso = document.getElementById("statMaiorAtraso");
+  /* ── Atraso médio: média do delta entre todos os protocolos atrasados agora ── */
+  var sAtrasoMedio = document.getElementById("statAtrasoMedio");
   var atrasadosList = ativos.filter(function(p) { return p._t && p._t.tipo === "atrasado"; });
-  var maxDelta = atrasadosList.length ? Math.max.apply(null, atrasadosList.map(function(p) { return p._t.delta; })) : 0;
-  var maiorHex = atrasadosList.length ? "#F43F5E" : "#4ADE80";
-  if (sMaiorAtraso) {
-    sMaiorAtraso.textContent = atrasadosList.length ? ar(maxDelta) : "—";
-    sMaiorAtraso.className = "sb-stat-lg-val " + (atrasadosList.length ? "vermelho" : "verde");
+  var mediaDelta = atrasadosList.length ? (atrasadosList.reduce(function(soma, p) { return soma + p._t.delta; }, 0) / atrasadosList.length) : 0;
+  var atrasoMedioHex = atrasadosList.length ? "#F43F5E" : "#4ADE80";
+  if (sAtrasoMedio) {
+    sAtrasoMedio.textContent = atrasadosList.length ? ar(mediaDelta) : "—";
+    sAtrasoMedio.className = "sb-stat-lg-val " + (atrasadosList.length ? "vermelho" : "verde");
   }
-  _curMaiorDelta = maxDelta;
-  _curMaiorHex = maiorHex;
+  _curAtrasoMedio = mediaDelta;
+  _curAtrasoMedioHex = atrasoMedioHex;
   _sampleEstatisticasSpark();
 
 
