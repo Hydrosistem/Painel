@@ -473,7 +473,7 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
   /* Sidebar padrão (supervisor) */
   .sidebar {
     width: var(--sidebar-w); flex-shrink: 0;
-    background: linear-gradient(180deg, #061A38 0%, #0D2C57 45%, #164575 100%);
+    background: #2b6699;
     border-right: 1px solid rgba(255,255,255,.08);
     display: flex; flex-direction: column; overflow: hidden;
     --texto: #FFFFFF;
@@ -489,7 +489,7 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
      Não afeta o mobile (esta regra já está dentro do @media min-width:768px)
      Não afeta o modo escuro (escopado com body:not(.dark-mode)) */
   body:not(.dark-mode) .sidebar {
-    background: linear-gradient(135deg, #002B85 0%, #003FA8 55%, #0055C9 100%);
+    background: #2b6699;
     --azul:      #0058E6;
     --azul-esc:  #003CB2;
     --azul-md:   #006CFC;
@@ -943,6 +943,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
   .sb-op-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-bottom: 1px solid var(--borda); }
   .sb-op-item:last-child { border-bottom: none; }
   .sb-op-avatar { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; color: #fff; flex-shrink: 0; position: relative; }
+  body.dark-mode .sb-op-avatar { color: #0058E6 !important; }
   .sb-op-avatar-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); border: 2px solid var(--branco); position: absolute; bottom: -1px; right: -1px; animation: pulseOnline 2s ease-in-out infinite; }
   .sb-op-info { flex: 1; min-width: 0; }
   .sb-op-nome { font-size: 12px; font-weight: 600; color: var(--texto); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1045,7 +1046,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
   [data-resumo-tipo] { padding: 7px 10px !important; }
   .sb-stat-card { padding: 6px 10px; }
 }
-.sidebar .sb-stat-card-val.vermelho { color: #F43F5E; }
+.sidebar .sb-stat-card-val.vermelho { color: #E57373; }
 
 /* ── Resumo do dia: cards uniformes com borda azul sutil ── */
 .sb-resumo-grid {
@@ -1073,7 +1074,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 .sb-stat-lg-val { font-size: 20px; font-weight: 700; font-family: "DM Mono", monospace; line-height: 1; transition: color .35s ease; }
 .sb-stat-lg-val.verde { color: #4ADE80; }
 .sb-stat-lg-val.amarelo { color: #FBBF24; }
-.sb-stat-lg-val.vermelho { color: #F43F5E; }
+.sb-stat-lg-val.vermelho { color: #E57373; }
 .sb-stat-lg-lbl { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: .7px; color: rgba(255,255,255,.65); margin-top: 4px; }
 .sb-stat-lg-chart { width: 68px; height: 30px; flex-shrink: 0; }
 .sb-stat-lg-chart svg { width: 100%; height: 100%; display: block; overflow: visible; }
@@ -1482,12 +1483,12 @@ function fecharBannerNovidade() {
     <div id="sbMenuPrincipal" style="display:none;flex-shrink:0;padding:6px 0 4px;">
       <div style="padding:8px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px;">Menu principal <span style="flex:1;height:1px;background:var(--borda);display:block;"></span></div>
       <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-chart-column"></i></span>
+        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-chart-column"></i></span>
         Relatório
         <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
       </a>
       <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;border-radius:50%;background:var(--azul);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-user-group"></i></span>
+        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-user-group"></i></span>
         Equipes
         <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
       </a>
@@ -1502,8 +1503,8 @@ function fecharBannerNovidade() {
       <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
     </div>
     <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)">
-      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:#F43F5E;line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#F43F5E;margin-top:2px;">Atrasados</div>
+      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:#E57373;line-height:1;transition:font-size .15s,opacity .15s;">—</div>
+      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#E57373;margin-top:2px;">Atrasados</div>
     </div>
     <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)">
       <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
@@ -3958,7 +3959,7 @@ function _atualizarEstatisticas(lista) {
   /* ── Taxa de atraso: 0-20% verde · 21-50% amarelo · >50% vermelho ── */
   var taxaPct = totalAtivos > 0 ? Math.round(atrasados / totalAtivos * 100) : 0;
   var taxaCor = taxaPct > 50 ? "vermelho" : taxaPct >= 21 ? "amarelo" : "verde";
-  var taxaHex = taxaCor === "vermelho" ? "#F43F5E" : taxaCor === "amarelo" ? "#FBBF24" : "#4ADE80";
+  var taxaHex = taxaCor === "vermelho" ? "#E57373" : taxaCor === "amarelo" ? "#FBBF24" : "#4ADE80";
 
   var sTaxa = document.getElementById("statTaxaAtraso");
   if (sTaxa) {
@@ -3972,7 +3973,7 @@ function _atualizarEstatisticas(lista) {
   var sAtrasoMedio = document.getElementById("statAtrasoMedio");
   var atrasadosList = ativos.filter(function(p) { return p._t && p._t.tipo === "atrasado"; });
   var mediaDelta = atrasadosList.length ? (atrasadosList.reduce(function(soma, p) { return soma + p._t.delta; }, 0) / atrasadosList.length) : 0;
-  var atrasoMedioHex = atrasadosList.length ? "#F43F5E" : "#4ADE80";
+  var atrasoMedioHex = atrasadosList.length ? "#E57373" : "#4ADE80";
   if (sAtrasoMedio) {
     sAtrasoMedio.textContent = atrasadosList.length ? ar(mediaDelta) : "—";
     sAtrasoMedio.className = "sb-stat-lg-val " + (atrasadosList.length ? "vermelho" : "verde");
