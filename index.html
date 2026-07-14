@@ -159,6 +159,7 @@ body.dark-mode .exec-info-box.meu { background: #052E16; border-color: #14532D; 
 body.dark-mode .exec-info-box.outro { background: #1E0A3C; border-color: #4C1D95; color: #C4B5FD; }
 body.dark-mode .sb-stats-header { color: var(--texto3); border-color: var(--borda); }
 body.dark-mode .sb-stat-card { background: #2A2A2A; border-color: var(--borda); }
+body.dark-mode .sb-ops-item { border-bottom-color: var(--borda); }
 body.dark-mode .sb-ops-nome { color: var(--texto2); }
 body.dark-mode .sb-op-header { border-bottom-color: var(--borda); }
 body.dark-mode .sb-op-item { border-bottom-color: var(--borda); }
@@ -751,7 +752,7 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
 .badge-exec .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--exec); animation: pulseDot 1.4s ease-in-out infinite; }
 @keyframes pulseDot { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .4; transform: scale(.7); } }
 
-.exec-info { font-size: 11px; color: var(--exec); display: flex; align-items: center; gap: 4px; background: var(--exec-bg); border-radius: var(--radius-xs); padding: 6px 10px; border: 1px solid rgba(124,58,237,.2); }
+.exec-info { font-size: 11px; color: #C084FC; display: flex; align-items: center; gap: 4px; background: #0F2A5D; border-radius: var(--radius-xs); padding: 6px 10px; border: 1px solid rgba(124,58,237,.2); }
 .exec-operador { font-weight: 700; }
 
 .endereco { font-size: 14px; font-weight: 600; color: var(--texto); line-height: 1.4; }
@@ -1012,7 +1013,7 @@ body.dark-mode #toast.ok     { background: #14532D; color: #86EFAC; border-color
 
 /* ══ EXEC INFO ══ */
 .exec-info-box { font-size: 11px; padding: 7px 10px; border-radius: var(--radius-xs); border: 1px solid; }
-.exec-info-box.outro { background: var(--exec-bg); border-color: rgba(124,58,237,.2); color: var(--exec); }
+.exec-info-box.outro { background: #0F2A5D; border-color: rgba(124,58,237,.2); color: #C084FC; }
 .exec-info-box.meu { background: #DCFCE7; border-color: rgba(74,222,128,.3); color: #166534; }
 
 /* ══ MOBILE HEADER COMPACTO ══ */
