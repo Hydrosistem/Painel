@@ -1527,12 +1527,12 @@ function fecharBannerNovidade() {
       </div>
       <div class="sb-stat-lg-chart"><svg id="sparkTaxaAtraso" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
-    <div class="sb-stat-card-lg" id="cardAtrasoMedio">
+    <div class="sb-stat-card-lg" id="cardTaxaConclusao">
       <div>
-        <div class="sb-stat-lg-val vermelho" id="statAtrasoMedio">—</div>
-        <div class="sb-stat-lg-lbl">Atraso médio</div>
+        <div class="sb-stat-lg-val verde" id="statTaxaConclusao">—</div>
+        <div class="sb-stat-lg-lbl">Taxa de conclusão</div>
       </div>
-      <div class="sb-stat-lg-chart"><svg id="sparkAtrasoMedio" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
+      <div class="sb-stat-lg-chart"><svg id="sparkTaxaConclusao" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
   </div>
   <div class="sb-stats-header" style="margin-top:2px">Por operador</div>
@@ -3874,10 +3874,10 @@ if (logoBase64) {
 }
 
 /* ══ ESTATÍSTICAS DO DIA ══ */
-var _histTaxaAtraso = [];
-var _histAtrasoMedio = [];
+var LS_KEY_TAXA_ATRASO    = "he_hist_taxaAtraso";
+var LS_KEY_TAXA_CONCLUSAO = "he_hist_taxaConclusao";
 var _curTaxaPct = null, _curTaxaHex = "#4ADE80";
-var _curAtrasoMedio = null, _curAtrasoMedioHex = "#4ADE80";
+var _curConclusaoPct = null, _curConclusaoHex = "#4ADE80";
 
 /* Converte uma lista de pontos [x,y] numa curva suave (Catmull-Rom → Bezier cúbica),
    em vez de linhas retas entre os pontos — evita o efeito de "escadinha". */
@@ -3922,23 +3922,51 @@ function _renderSpark(svg, values, colorHex) {
     '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6" fill="' + colorHex + '"></circle>';
 }
 
-/* Amostra os valores atuais no histórico do gráfico.
-   Chamada apenas quando os dados são recalculados de verdade (a cada
-   REFRESH_INTERVAL, dentro de _atualizarEstatisticas) — antes havia também
-   um setInterval próprio de 8s que reamostrava o mesmo valor várias vezes
-   entre um refresh e outro, criando patamares retos seguidos de saltos
-   (efeito "escadinha"). Agora cada ponto do histórico é sempre uma leitura
-   nova, e a curva (Catmull-Rom) do _renderSpark cuida de deixar o traço suave. */
+/* Data no formato YYYY-MM-DD (chave do dia, para localStorage) */
+function _dataChaveHoje() {
+  var d = new Date();
+  var m = String(d.getMonth() + 1).padStart(2, "0");
+  var dd = String(d.getDate()).padStart(2, "0");
+  return d.getFullYear() + "-" + m + "-" + dd;
+}
+
+/* Lê o histórico diário salvo (objeto { "2026-07-12": 40, ... }) */
+function _carregarHistDiario(chaveLS) {
+  try {
+    var raw = localStorage.getItem(chaveLS);
+    return raw ? JSON.parse(raw) : {};
+  } catch (e) { return {}; }
+}
+
+/* Atualiza o valor do dia de hoje (sobrescreve conforme o dia avança) e
+   mantém só os últimos 10 dias salvos, para não crescer indefinidamente. */
+function _salvarValorDiario(chaveLS, valor) {
+  var hist = _carregarHistDiario(chaveLS);
+  hist[_dataChaveHoje()] = valor;
+  var chaves = Object.keys(hist).sort();
+  while (chaves.length > 10) { delete hist[chaves.shift()]; }
+  try { localStorage.setItem(chaveLS, JSON.stringify(hist)); } catch (e) {}
+  return hist;
+}
+
+/* Retorna os valores dos últimos N dias (ordem cronológica, terminando em hoje) */
+function _ultimosNDias(hist, n) {
+  var chaves = Object.keys(hist).sort();
+  return chaves.slice(-n).map(function(k) { return hist[k]; });
+}
+
+/* Amostra os valores atuais no histórico diário do gráfico (últimos 4 dias até hoje).
+   Cada dia guarda 1 valor (o mais recente calculado naquele dia), persistido em
+   localStorage, para que o sparkline mostre a tendência real dia a dia — não
+   variações dentro da mesma sessão/dia. */
 function _sampleEstatisticasSpark() {
   if (_curTaxaPct != null) {
-    _histTaxaAtraso.push(_curTaxaPct);
-    if (_histTaxaAtraso.length > 20) _histTaxaAtraso.shift();
-    _renderSpark(document.getElementById("sparkTaxaAtraso"), _histTaxaAtraso, _curTaxaHex);
+    var histTaxa = _salvarValorDiario(LS_KEY_TAXA_ATRASO, _curTaxaPct);
+    _renderSpark(document.getElementById("sparkTaxaAtraso"), _ultimosNDias(histTaxa, 4), _curTaxaHex);
   }
-  if (_curAtrasoMedio != null) {
-    _histAtrasoMedio.push(_curAtrasoMedio);
-    if (_histAtrasoMedio.length > 20) _histAtrasoMedio.shift();
-    _renderSpark(document.getElementById("sparkAtrasoMedio"), _histAtrasoMedio, _curAtrasoMedioHex);
+  if (_curConclusaoPct != null) {
+    var histConclusao = _salvarValorDiario(LS_KEY_TAXA_CONCLUSAO, _curConclusaoPct);
+    _renderSpark(document.getElementById("sparkTaxaConclusao"), _ultimosNDias(histConclusao, 4), _curConclusaoHex);
   }
 }
 
@@ -3969,17 +3997,21 @@ function _atualizarEstatisticas(lista) {
   _curTaxaPct = taxaPct;
   _curTaxaHex = taxaHex;
 
-  /* ── Atraso médio: média do delta entre todos os protocolos atrasados agora ── */
-  var sAtrasoMedio = document.getElementById("statAtrasoMedio");
-  var atrasadosList = ativos.filter(function(p) { return p._t && p._t.tipo === "atrasado"; });
-  var mediaDelta = atrasadosList.length ? (atrasadosList.reduce(function(soma, p) { return soma + p._t.delta; }, 0) / atrasadosList.length) : 0;
-  var atrasoMedioHex = atrasadosList.length ? "#E57373" : "#4ADE80";
-  if (sAtrasoMedio) {
-    sAtrasoMedio.textContent = atrasadosList.length ? ar(mediaDelta) : "—";
-    sAtrasoMedio.className = "sb-stat-lg-val " + (atrasadosList.length ? "vermelho" : "verde");
+  /* ── Taxa de conclusão: concluídos hoje ÷ (concluídos hoje + ativos) ──
+     Ao contrário da taxa de atraso, aqui quanto MAIOR, melhor:
+     ≥70% verde · 40-69% amarelo · <40% vermelho ── */
+  var totalDia = concluidos.length + totalAtivos;
+  var conclusaoPct = totalDia > 0 ? Math.round(concluidos.length / totalDia * 100) : 0;
+  var conclusaoCor = conclusaoPct >= 70 ? "verde" : conclusaoPct >= 40 ? "amarelo" : "vermelho";
+  var conclusaoHex = conclusaoCor === "vermelho" ? "#E57373" : conclusaoCor === "amarelo" ? "#FBBF24" : "#4ADE80";
+
+  var sConclusao = document.getElementById("statTaxaConclusao");
+  if (sConclusao) {
+    sConclusao.textContent = conclusaoPct + "%";
+    sConclusao.className = "sb-stat-lg-val " + conclusaoCor;
   }
-  _curAtrasoMedio = mediaDelta;
-  _curAtrasoMedioHex = atrasoMedioHex;
+  _curConclusaoPct = conclusaoPct;
+  _curConclusaoHex = conclusaoHex;
   _sampleEstatisticasSpark();
 
 
