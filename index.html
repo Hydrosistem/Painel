@@ -1423,6 +1423,23 @@ body.dark-mode .sidebar { --sb-bg: #171717; }
 @media (prefers-reduced-motion: reduce) {
   .sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso, .sb-eq-dot.on, .sb-eq-tm i { animation: none; }
 }
+
+/* ══ PAINEL DE DETALHE SOB DEMANDA: só aparece com um card selecionado ══ */
+@media (min-width: 768px) {
+  .detail-panel:not(:has(.detail-content.show)) { display: none; }
+  .detail-panel { position: relative; animation: detalheEntra .22s ease-out; }
+  .detail-fechar {
+    position: absolute; top: 8px; right: 8px; z-index: 2; width: 26px; height: 26px;
+    border-radius: 50%; border: 1px solid var(--borda); background: var(--branco);
+    color: var(--texto2); font-size: 15px; line-height: 1; cursor: pointer; display: flex;
+    align-items: center; justify-content: center; transition: background .15s, color .15s;
+  }
+  .detail-fechar:hover { background: var(--cinza-md); color: var(--texto); }
+  .detail-fechar:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+  body.dark-mode .detail-fechar { background: #2a2a2a; }
+}
+@keyframes detalheEntra { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .detail-panel { animation: none !important; } }
 </style>
 </head>
 <body>
@@ -1765,6 +1782,7 @@ function fecharBannerNovidade() {
 
   <!-- ══ TABLET DETALHE ══ -->
   <div class="detail-panel">
+    <button type="button" class="detail-fechar" onclick="fecharDetalhe()" title="Fechar detalhes (Esc)" aria-label="Fechar detalhes">&times;</button>
     <div class="detail-vazio" id="detailVazio">
       <div class="detail-vazio-icon"><i class="fa-solid fa-hand-point-up"></i></div>
       <div class="detail-vazio-txt">Selecione um protocolo</div>
@@ -2509,6 +2527,21 @@ function selecionarProtocolo(p){
 }
 
 var _hashDetalheAtual = "";
+
+/* Fecha o painel de detalhe (volta a mostrar só os cards) */
+function fecharDetalhe() {
+  _protocoloSelecionado = null;
+  _hashDetalheAtual = "";
+  var vz = document.getElementById("detailVazio"); if (vz) vz.style.display = "";
+  var dc = document.getElementById("detailContent"); if (dc) { dc.classList.remove("show"); dc.innerHTML = ""; }
+  var df = document.getElementById("detailFooter"); if (df) { df.classList.remove("show"); df.innerHTML = ""; }
+  document.querySelectorAll(".card-t.selected").forEach(function(c){ c.classList.remove("selected"); });
+}
+document.addEventListener("keydown", function(ev) {
+  if (ev.key !== "Escape" || !_protocoloSelecionado) return;
+  if (document.querySelector('[id^="modal"].open, #lb.open')) return;   /* Esc fecha primeiro o modal/foto */
+  fecharDetalhe();
+});
 
 function _hashDetalhe(p) {
   return (p.protocolo||"") + "|" +
