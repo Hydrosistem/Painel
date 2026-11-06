@@ -1326,6 +1326,102 @@ body.dark-mode .nov-beneficio { background: #2A2A2A; border-color: var(--borda);
   #overlayNovidade { align-items: center; }
   .nov-card { max-width: 480px; }
 }
+
+/* ══ SIDEBAR DO SUPERVISOR v2 ══ */
+.sidebar { --sb-bg: #2b6699; }
+body.dark-mode .sidebar { --sb-bg: #171717; }
+.sb-scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.25) transparent; }
+.sb-titulo {
+  display: flex; align-items: center; gap: 8px; width: 100%; box-sizing: border-box;
+  padding: 14px 12px 6px; margin: 0; background: none; border: 0; text-align: left;
+  font: 700 11px "DM Sans", sans-serif; letter-spacing: 1.2px; text-transform: uppercase;
+  color: rgba(255,255,255,.92);
+}
+.sb-titulo::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.16); order: 1; }
+.sb-toggle { cursor: pointer; }
+.sb-toggle:hover { color: #fff; }
+.sb-toggle:focus-visible, .sb-menu-btn:focus-visible, .sb-eq-item:focus-visible, .sb-footer-btn:focus-visible,
+[data-resumo-tipo]:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 8px; }
+.sb-chev { font-size: 10px; opacity: .85; transition: transform .2s; order: 2; }
+.sb-bloco.colapsada .sb-chev { transform: rotate(-90deg); }
+.sb-bloco.colapsada .sb-sec-corpo { display: none; }
+.sb-titulo-n { font-weight: 600; letter-spacing: .2px; text-transform: none; color: #86efac; }
+.sb-titulo-n:empty { display: none; }
+
+/* menu compacto */
+.sb-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; padding: 2px 10px 4px; flex-shrink: 0; }
+.sb-menu-btn {
+  display: flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 8px;
+  border-radius: 10px; background: rgba(255,255,255,.10); border: 1px solid rgba(255,255,255,.12);
+  color: #fff; text-decoration: none; font: 600 12.5px "DM Sans", sans-serif; transition: background .15s;
+}
+.sb-menu-btn:hover { background: rgba(255,255,255,.18); }
+.sb-menu-btn i { font-size: 12px; opacity: .9; }
+.sb-menu-badge { font: 700 10px "DM Mono", monospace; padding: 1px 6px; border-radius: 8px; background: rgba(255,255,255,.18); color: #fff; }
+#sbBadgeEquipe { background: rgba(74,222,128,.22); color: #86efac; }
+
+/* resumo do dia */
+.sb-resumo-grid [data-resumo-tipo] {
+  min-height: 78px; padding: 10px 6px !important; gap: 0; position: relative;
+  background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.10);
+}
+.sb-res-n { font: 700 30px/1 "DM Mono", monospace; transition: opacity .2s; }
+.sb-res-l { font: 700 10.5px "DM Sans", sans-serif; text-transform: uppercase; letter-spacing: .9px; margin-top: 6px; }
+.n-pen { color: var(--amarelo); } .n-atr { color: #E57373; } .n-exe { color: var(--exec); } .n-ok { color: var(--verde); }
+.sb-resumo-grid [data-resumo-tipo].zero .sb-res-n { opacity: .5; }
+.sb-resumo-grid [data-resumo-tipo].zero .sb-res-l { opacity: .8; }
+.sb-resumo-grid [data-resumo-tipo].ativo-resumo { background: rgba(255,255,255,.20); box-shadow: 0 0 0 2px #fff; }
+.sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso {
+  background: rgba(248,113,113,.22); border-color: rgba(248,113,113,.80);
+  animation: sbPulsoAtraso 2.2s ease-in-out infinite;
+}
+.sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso .sb-res-n { color: #FFB4B4; font-size: 34px; }
+.sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso .sb-res-l { color: #FFD0D0; }
+.sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso.ativo-resumo { animation: none; box-shadow: 0 0 0 2px #fff; }
+@keyframes sbPulsoAtraso { 0%,100% { box-shadow: 0 0 0 0 rgba(248,113,113,0); } 50% { box-shadow: 0 0 0 4px rgba(248,113,113,.30); } }
+
+/* estatísticas */
+.sb-stat-card-lg { padding: 12px 14px; align-items: center; }
+.sb-stat-lg-info { min-width: 0; flex: 1; }
+.sb-stat-lg-row { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.sb-stat-lg-val { font-size: 26px; }
+.sb-stat-lg-lbl { font-size: 10px; letter-spacing: .4px; white-space: nowrap; color: rgba(255,255,255,.82); margin-top: 5px; }
+.sb-stat-lg-sub { font: 500 11px "DM Sans", sans-serif; color: rgba(255,255,255,.75); margin-top: 3px; }
+.sb-stat-lg-sub:empty { display: none; }
+.sb-stat-lg-chart { width: 68px; height: 30px; }
+.sb-stat-ok { width: 68px; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #4ADE80; flex-shrink: 0; }
+.sb-delta { font: 700 10.5px "DM Mono", monospace; padding: 1px 6px; border-radius: 7px; white-space: nowrap; }
+.sb-delta.bom { background: rgba(74,222,128,.20); color: #86efac; }
+.sb-delta.ruim { background: rgba(248,113,113,.24); color: #fecaca; }
+.sb-delta.neutro { background: rgba(255,255,255,.12); color: rgba(255,255,255,.82); }
+
+/* equipe hoje */
+.sb-eq-lista { display: flex; flex-direction: column; gap: 2px; padding: 2px 8px 12px; }
+.sb-eq-item { display: flex; align-items: center; gap: 9px; padding: 7px 8px; border-radius: 10px; cursor: pointer; transition: background .12s; }
+.sb-eq-item:hover { background: rgba(255,255,255,.09); }
+.sb-eq-av { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font: 800 12px "DM Sans", sans-serif; color: #fff; position: relative; flex-shrink: 0; }
+.sb-eq-dot { position: absolute; right: -2px; bottom: -2px; width: 11px; height: 11px; border-radius: 50%; border: 2px solid var(--sb-bg); box-sizing: border-box; }
+.sb-eq-dot.on { background: #4ADE80; animation: pulseOnline 2s ease-in-out infinite; }
+.sb-eq-dot.exec { background: #C084FC; }
+.sb-eq-dot.off { background: #94A3B8; }
+.sb-eq-info { flex: 1; min-width: 0; }
+.sb-eq-nome { font: 600 13px "DM Sans", sans-serif; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-eq-st { font: 500 11px "DM Sans", sans-serif; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-eq-st.on { color: #86efac; } .sb-eq-st.exec { color: #e0c3ff; } .sb-eq-st.off { color: rgba(255,255,255,.58); }
+.sb-eq-fim { display: flex; flex-direction: column; align-items: flex-end; gap: 3px; flex-shrink: 0; }
+.sb-eq-ok { display: flex; align-items: center; gap: 4px; font: 700 12px "DM Mono", monospace; color: #86efac; background: rgba(74,222,128,.14); padding: 2px 7px; border-radius: 8px; }
+.sb-eq-ok.zero { color: rgba(255,255,255,.55); background: rgba(255,255,255,.07); }
+.sb-eq-tm { display: flex; align-items: center; gap: 4px; font: 700 10px "DM Mono", monospace; color: #e0c3ff; }
+.sb-eq-tm i { width: 6px; height: 6px; border-radius: 50%; background: #C084FC; display: inline-block; animation: pulseDot 1.4s ease-in-out infinite; }
+
+/* rodapé fixo */
+.sb-footer { flex-shrink: 0; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; border-top: 1px solid rgba(255,255,255,.14); background: rgba(0,0,0,.10); font: 500 11px "DM Sans", sans-serif; color: rgba(255,255,255,.78); }
+.sb-footer-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid rgba(255,255,255,.22); background: rgba(255,255,255,.10); color: #fff; cursor: pointer; font-size: 12px; }
+.sb-footer-btn:hover { background: rgba(255,255,255,.2); }
+.sb-footer-btn.spin i { animation: rot .9s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .sb-resumo-grid [data-resumo-tipo="atrasado"].tem-atraso, .sb-eq-dot.on, .sb-eq-tm i { animation: none; }
+}
 </style>
 </head>
 <body>
@@ -1515,72 +1611,84 @@ function fecharBannerNovidade() {
       </div>
     </div>
 
-    <!-- ══ MENU PRINCIPAL (supervisor) ══ -->
-    <div id="sbMenuPrincipal" style="display:none;flex-shrink:0;padding:6px 0 4px;">
-      <div style="padding:8px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px;">Menu principal <span style="flex:1;height:1px;background:var(--borda);display:block;"></span></div>
-      <a href="./relatorio.html" id="sbBtnRelatorio" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 2px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-chart-column"></i></span>
-        Relatório
-        <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
+    <!-- ══ ÁREA ROLÁVEL (menu, resumo, estatísticas, equipe) ══ -->
+    <div class="sb-scroll" id="sbScroll">
+
+    <!-- ══ MENU PRINCIPAL (supervisor) — compacto, lado a lado ══ -->
+    <div id="sbMenuPrincipal" class="sb-menu" style="display:none">
+      <a href="./relatorio.html" id="sbBtnRelatorio" class="sb-menu-btn" style="display:none" title="Abrir relatório">
+        <i class="fa-solid fa-chart-column"></i><span>Relatório</span>
+        <span class="sb-menu-badge" id="sbBadgeRelatorio" style="display:none"></span>
       </a>
-      <a href="./equipe.html" id="sbBtnEquipe" style="display:none;align-items:center;gap:10px;padding:8px 10px;font-size:13px;font-weight:600;color:var(--texto);text-decoration:none;border-radius:var(--radius-xs);margin:0 6px 6px;transition:background .12s;" onmouseover="this.style.background='var(--cinza-md)'" onmouseout="this.style.background=''">
-        <span style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;color:#fff;"><i class="fa-solid fa-user-group"></i></span>
-        Equipes
-        <i class="fa-solid fa-chevron-right" style="margin-left:auto;font-size:12px;color:var(--texto3);"></i>
+      <a href="./equipe.html" id="sbBtnEquipe" class="sb-menu-btn" style="display:none" title="Abrir equipes">
+        <i class="fa-solid fa-user-group"></i><span>Equipes</span>
+        <span class="sb-menu-badge" id="sbBadgeEquipe" style="display:none"></span>
       </a>
     </div>
-  
-    <!-- Resumo em 4 cards -->
+
+    <!-- Resumo em 4 cards (Atrasados primeiro: é o que o supervisor mais precisa ver) -->
     <div class="sb-resumo" id="sbResumo">
-  <div style="padding:12px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.3px;color:rgba(255,255,255,.8);display:flex;align-items:center;gap:6px;">Resumo do dia <span style="flex:1;height:1px;background:var(--borda);display:block;"></span></div>
-  <div class="sb-resumo-grid">
-    <div data-resumo-tipo="pendente" onclick="filtrarResumo('pendente',this)">
-      <div id="sbResumoPen" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--amarelo);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--amarelo);margin-top:2px;">Pendentes</div>
-    </div>
-    <div data-resumo-tipo="atrasado" onclick="filtrarResumo('atrasado',this)">
-      <div id="sbResumoUrg" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:#E57373;line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#E57373;margin-top:2px;">Atrasados</div>
-    </div>
-    <div data-resumo-tipo="execucao" onclick="filtrarResumo('execucao',this)">
-      <div id="sbResumoExec" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--exec);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--exec);margin-top:2px;">Execução</div>
-    </div>
-    <div data-resumo-tipo="concluido" onclick="filtrarResumo('concluido',this)">
-      <div id="sbResumoOk" style="font-size:22px;font-weight:700;font-family:'DM Mono',monospace;color:var(--verde);line-height:1;transition:font-size .15s,opacity .15s;">—</div>
-      <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--verde);margin-top:2px;">Concluídos</div>
-    </div>
-  </div>
-</div>
-    <!-- Estatísticas do dia -->
-<div class="sb-stats-section" id="sbEstatisticas" style="display:none">
-  <div class="sb-stats-header">Estatísticas do dia</div>
-  <div class="sb-stats-grid-lg">
-    <div class="sb-stat-card-lg" id="cardTaxaAtraso">
-      <div>
-        <div class="sb-stat-lg-val verde" id="statTaxaAtraso">—</div>
-        <div class="sb-stat-lg-lbl">Taxa de atraso</div>
+      <div class="sb-titulo">Resumo do dia</div>
+      <div class="sb-resumo-grid">
+        <div data-resumo-tipo="atrasado" role="button" tabindex="0" aria-pressed="false" title="Filtrar atrasados" onclick="filtrarResumo('atrasado',this)">
+          <div id="sbResumoUrg" class="sb-res-n n-atr">—</div>
+          <div class="sb-res-l n-atr">Atrasados</div>
+        </div>
+        <div data-resumo-tipo="pendente" role="button" tabindex="0" aria-pressed="false" title="Filtrar pendentes" onclick="filtrarResumo('pendente',this)">
+          <div id="sbResumoPen" class="sb-res-n n-pen">—</div>
+          <div class="sb-res-l n-pen">Pendentes</div>
+        </div>
+        <div data-resumo-tipo="execucao" role="button" tabindex="0" aria-pressed="false" title="Filtrar em execução" onclick="filtrarResumo('execucao',this)">
+          <div id="sbResumoExec" class="sb-res-n n-exe">—</div>
+          <div class="sb-res-l n-exe">Execução</div>
+        </div>
+        <div data-resumo-tipo="concluido" role="button" tabindex="0" aria-pressed="false" title="Filtrar concluídos hoje" onclick="filtrarResumo('concluido',this)">
+          <div id="sbResumoOk" class="sb-res-n n-ok">—</div>
+          <div class="sb-res-l n-ok">Concluídos</div>
+        </div>
       </div>
-      <div class="sb-stat-lg-chart"><svg id="sparkTaxaAtraso" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
-    <div class="sb-stat-card-lg" id="cardTaxaConclusao">
-      <div>
-        <div class="sb-stat-lg-val verde" id="statTaxaConclusao">—</div>
-        <div class="sb-stat-lg-lbl">Taxa de conclusão</div>
+
+    <!-- Estatísticas do dia (recolhível) -->
+    <div class="sb-bloco" id="sbEstatisticas" data-sec="est" style="display:none">
+      <button type="button" class="sb-titulo sb-toggle" aria-expanded="true" onclick="sbToggleSec('est')">Estatísticas do dia<i class="fa-solid fa-chevron-down sb-chev"></i></button>
+      <div class="sb-sec-corpo">
+        <div class="sb-stats-grid-lg">
+          <div class="sb-stat-card-lg" id="cardTaxaAtraso">
+            <div class="sb-stat-lg-info">
+              <div class="sb-stat-lg-row"><div class="sb-stat-lg-val verde" id="statTaxaAtraso">—</div><span class="sb-delta" id="deltaTaxaAtraso" style="display:none"></span></div>
+              <div class="sb-stat-lg-lbl">Taxa de atraso</div>
+              <div class="sb-stat-lg-sub" id="subTaxaAtraso"></div>
+            </div>
+            <div class="sb-stat-lg-chart" id="chartTaxaAtraso"><svg id="sparkTaxaAtraso" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
+            <div class="sb-stat-ok" id="okTaxaAtraso" style="display:none"><i class="fa-solid fa-circle-check"></i></div>
+          </div>
+          <div class="sb-stat-card-lg" id="cardTaxaConclusao">
+            <div class="sb-stat-lg-info">
+              <div class="sb-stat-lg-row"><div class="sb-stat-lg-val verde" id="statTaxaConclusao">—</div><span class="sb-delta" id="deltaTaxaConclusao" style="display:none"></span></div>
+              <div class="sb-stat-lg-lbl">Taxa de conclusão</div>
+              <div class="sb-stat-lg-sub" id="subTaxaConclusao"></div>
+            </div>
+            <div class="sb-stat-lg-chart" id="chartTaxaConclusao"><svg id="sparkTaxaConclusao" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
+          </div>
+        </div>
       </div>
-      <div class="sb-stat-lg-chart"><svg id="sparkTaxaConclusao" viewBox="0 0 68 30" preserveAspectRatio="none"></svg></div>
     </div>
-  </div>
-  <div class="sb-stats-header" style="margin-top:2px">Por operador</div>
-  <div class="sb-ops-lista" id="sbOpsLista"></div>
-</div>
-    <!-- Equipes online -->
-    <div class="sb-operadores-main" id="sbOperadoresMain">
-      <div class="sb-op-header" style="padding:10px 12px 6px;">
-        <span class="sb-op-titulo">Equipes online</span>
-        <span style="flex:1;height:1px;background:var(--borda);display:block;"></span>
+
+    <!-- Equipe hoje: online + concluídos por operador numa lista só (recolhível) -->
+    <div class="sb-bloco" id="sbOperadoresMain" data-sec="eq">
+      <button type="button" class="sb-titulo sb-toggle" aria-expanded="true" onclick="sbToggleSec('eq')">Equipe hoje<span class="sb-titulo-n" id="sbEquipeN"></span><i class="fa-solid fa-chevron-down sb-chev"></i></button>
+      <div class="sb-sec-corpo">
+        <div id="sbOpLista" class="sb-eq-lista"><div class="sb-op-vazio">Ninguém na equipe agora</div></div>
       </div>
-      <div id="sbOpLista" style="overflow-y:auto;flex:1;"><div class="sb-op-vazio">Nenhuma equipe online</div></div>
+    </div>
+
+    </div><!-- /sb-scroll -->
+
+    <!-- Rodapé fixo -->
+    <div class="sb-footer" id="sbFooter">
+      <span class="sb-footer-ts" id="sbAtualizadoTs">Atualizado —</span>
+      <button type="button" class="sb-footer-btn" id="sbBtnAtualizar" onclick="sbAtualizarAgora()" title="Atualizar dados agora" aria-label="Atualizar dados agora"><i class="fa-solid fa-arrows-rotate"></i></button>
     </div>
 
     <!-- Legado mantido para compatibilidade JS -->
@@ -2788,6 +2896,7 @@ function renderTablet(lista){
   if (rOk)   rOk.textContent   = ok;
   _atualizarResumoClicavel(pen, urg, exec, ok);
   _atualizarEstatisticas(lista);
+  _atualizarRodapeSb();
   var todosParaBuscaSb=ativos.concat(concluidosHoje.map(function(p){p._t=p._t||{txt:"Concluído",r:0,pct:100,tipo:"concluido",horaVence:""};return p;}));
   if(_modoPerto&&_posAtual)ativos=_aplicarProximidade(ativos);
 
@@ -3472,6 +3581,15 @@ function carregarOperadoresOnline() {
     .catch(function(){});
 }
 
+var _opsConcluidosHoje = {};
+var _EQ_CORES = ["#0284C7", "#7C3AED", "#D97706", "#059669", "#DB2777", "#4F46E5"];
+function _corAvatar(nome) {
+  var h = 0;
+  for (var i = 0; i < nome.length; i++) h = (h * 31 + nome.charCodeAt(i)) >>> 0;
+  return _EQ_CORES[h % _EQ_CORES.length];
+}
+function _normNome(n) { return String(n || "").trim().toLowerCase(); }
+
 function renderOperadoresOnline(presencas) {
   var locks = {};
   _ultimaLista.forEach(function(p) {
@@ -3483,20 +3601,39 @@ function renderOperadoresOnline(presencas) {
     };
   });
 
-  var equipe = presencas.filter(function(p) { return !p.supervisor; });
+  /* Uma linha por pessoa: junta quem está online com quem concluiu serviços hoje */
+  var mapa = {};
+  (presencas || []).filter(function(p) { return !p.supervisor; }).forEach(function(p) {
+    var k = _normNome(p.operador);
+    if (!k) return;
+    var lock = locks[p.sessionId] || null;
+    var atual = mapa[k];
+    if (!atual) { mapa[k] = { nome: p.operador, online: true, lock: lock, ts: p.timestamp, ok: 0 }; }
+    else {
+      if (lock) atual.lock = lock;
+      if (new Date(p.timestamp) > new Date(atual.ts)) atual.ts = p.timestamp;
+    }
+  });
+  Object.keys(_opsConcluidosHoje).forEach(function(nome) {
+    var k = _normNome(nome);
+    if (!mapa[k]) mapa[k] = { nome: nome, online: false, lock: null, ts: null, ok: 0 };
+    mapa[k].ok += _opsConcluidosHoje[nome];
+  });
 
-  /* Atualiza badge do menu Equipes */
+  var itens = Object.keys(mapa).map(function(k) { return mapa[k]; });
+  function rank(o) { return o.lock ? 0 : (o.online ? 1 : 2); }
+  itens.sort(function(a, b) { return rank(a) - rank(b) || b.ok - a.ok || a.nome.localeCompare(b.nome); });
+
+  var nOnline = itens.filter(function(o) { return o.online; }).length;
+  var nTxt = document.getElementById("sbEquipeN");
+  if (nTxt) nTxt.textContent = nOnline > 0 ? nOnline + " online" : "";
+
   var badgeEquipe = document.getElementById("sbBadgeEquipe");
   if (badgeEquipe) {
-    if (equipe.length > 0) {
-      badgeEquipe.textContent = equipe.length + " online";
-      badgeEquipe.style.display = "";
-    } else {
-      badgeEquipe.style.display = "none";
-    }
+    badgeEquipe.textContent = nOnline;
+    badgeEquipe.title = nOnline + " online";
+    badgeEquipe.style.display = nOnline > 0 ? "" : "none";
   }
-
-  /* Atualiza badge do menu Relatório com data de hoje */
   var badgeRel = document.getElementById("sbBadgeRelatorio");
   if (badgeRel) {
     badgeRel.textContent = new Date().toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
@@ -3504,50 +3641,40 @@ function renderOperadoresOnline(presencas) {
   }
 
   var html = "";
-  if (!equipe.length) {
-    html = '<div class="sb-op-vazio">Nenhuma equipe online</div>';
+  if (!itens.length) {
+    html = '<div class="sb-op-vazio">Ninguém na equipe agora</div>';
   } else {
-    equipe.forEach(function(p) {
-      var lock = locks[p.sessionId];
-      var statusClass = lock ? "executando" : "online";
-      var indicadorCor = lock ? "var(--exec)" : "var(--verde)";
-
-      /* Timer de execução */
-      var timerHtml = "";
-      var avatarDotHtml = "";
-      if (lock) {
-        var _tsTimer = lock.iniciadoEm || lock.timestamp;
-        var minExec = Math.round((new Date() - new Date(_tsTimer)) / 60000);
-        var timerTxt = minExec < 1 ? "<1min" : minExec + "min";
-        timerHtml = '<div style="display:flex;align-items:center;gap:4px;background:var(--cinza-md);border:1px solid var(--borda);border-radius:6px;padding:2px 7px;font-size:10px;font-weight:700;color:var(--exec);">' +
-          '<span style="width:6px;height:6px;border-radius:50%;background:var(--exec);display:inline-block;animation:pulseDot 1.4s ease-in-out infinite;flex-shrink:0;"></span>' +
-          timerTxt + '</div>';
-        avatarDotHtml = '<span class="sb-op-avatar-dot" style="background:' + indicadorCor + '"></span>';
-      } else {
-        avatarDotHtml = '<span class="sb-op-avatar-dot" style="background:' + indicadorCor + '"></span>';
+    itens.forEach(function(o) {
+      var estado = o.lock ? "exec" : (o.online ? "on" : "off");
+      var status = o.lock ? "● executando " + safeText(o.lock.protocolo)
+                 : (o.online ? formatarTempoOp(o.ts) : "offline");
+      var timer = "";
+      if (o.lock) {
+        var min = Math.round((new Date() - new Date(o.lock.iniciadoEm || o.lock.timestamp)) / 60000);
+        timer = '<span class="sb-eq-tm"><i></i>' + (min < 1 ? "<1min" : min + "min") + '</span>';
       }
-
       html +=
-        '<div class="sb-op-item" onclick="window.location.href=\'./equipe.html\'" style="cursor:pointer;" onmouseover="this.style.background=\'var(--cinza-md)\'" onmouseout="this.style.background=\'\'">' +
-          '<div class="sb-op-avatar" style="background:#fff;color:var(--azul)"><i class=\"fa-solid fa-user\" style=\"font-size:14px\"></i>' + avatarDotHtml + '</div>' +
-          '<div class="sb-op-info">' +
-            '<div class="sb-op-nome">' + safeText(p.operador) + '</div>' +
-            '<div class="sb-op-status ' + statusClass + '">' +
-              (lock ? '● executando ' + safeText(lock.protocolo) : formatarTempoOp(p.timestamp)) +
-            '</div>' +
-         '</div>' +
-         timerHtml +
-       '</div>';
+        '<div class="sb-eq-item" role="link" tabindex="0" onclick="window.location.href=\'./equipe.html\'" onkeydown="if(event.key===\'Enter\')window.location.href=\'./equipe.html\'">' +
+          '<div class="sb-eq-av" style="background:' + _corAvatar(o.nome) + '">' + safeText(_iniciaisOperador(o.nome)) + '<span class="sb-eq-dot ' + estado + '"></span></div>' +
+          '<div class="sb-eq-info">' +
+            '<div class="sb-eq-nome">' + safeText(o.nome) + '</div>' +
+            '<div class="sb-eq-st ' + estado + '">' + status + '</div>' +
+          '</div>' +
+          '<div class="sb-eq-fim">' +
+            '<span class="sb-eq-ok' + (o.ok ? '' : ' zero') + '" title="Concluídos hoje"><i class="fa-solid fa-circle-check"></i> ' + o.ok + '</span>' +
+            timer +
+          '</div>' +
+        '</div>';
     });
   }
-
-  document.getElementById("sbOpLista").innerHTML = html;
-  
+  var lista = document.getElementById("sbOpLista");
+  if (lista) lista.innerHTML = html;
 }
 
 var _filtroResumo = "todos";
 function _atualizarResumoClicavel(pen, urg, exec, ok) {
   var valores = { pendente: pen, atrasado: urg, execucao: exec, concluido: ok };
+  var nomes = { pendente: "Pendentes", atrasado: "Atrasados", execucao: "Em execução", concluido: "Concluídos" };
   var els = {
     pendente:  document.getElementById("sbResumoPen"),
     atrasado:  document.getElementById("sbResumoUrg"),
@@ -3559,21 +3686,23 @@ function _atualizarResumoClicavel(pen, urg, exec, ok) {
     if (!el) return;
     var card = el.closest("[data-resumo-tipo]");
     if (!card) return;
-    var zero = valores[tipo] === 0;
-    el.style.opacity = zero ? "0.35" : "1";
-    el.style.fontSize = zero ? "16px" : "22px";
-    el.textContent = zero ? "—" : valores[tipo];
+    var v = valores[tipo];
+    el.textContent = v;                       /* zero aparece como "0", não como traço */
+    card.classList.toggle("zero", v === 0);
+    if (tipo === "atrasado") card.classList.toggle("tem-atraso", v > 0);
+    card.setAttribute("aria-label", nomes[tipo] + ": " + v + ". Clique para filtrar.");
   });
 }
 
 function filtrarResumo(tipo, el) {
+  var cards = document.querySelectorAll("[data-resumo-tipo]");
+  cards.forEach(function(c){ c.classList.remove("ativo-resumo"); c.setAttribute("aria-pressed", "false"); });
   if (_filtroResumo === tipo) {
     _filtroResumo = "todos";
-    document.querySelectorAll("[data-resumo-tipo]").forEach(function(c){ c.classList.remove("ativo-resumo"); });
   } else {
     _filtroResumo = tipo;
-    document.querySelectorAll("[data-resumo-tipo]").forEach(function(c){ c.classList.remove("ativo-resumo"); });
     el.classList.add("ativo-resumo");
+    el.setAttribute("aria-pressed", "true");
   }
   ftFiltro = _filtroResumo;
   document.querySelectorAll(".filtro-tab").forEach(function(b){ b.classList.remove("active"); });
@@ -3583,6 +3712,40 @@ function filtrarResumo(tipo, el) {
   if (tabEl) tabEl.classList.add("active");
   renderTablet(_ultimaLista);
 }
+
+/* ══ Lateral: seções recolhíveis, rodapé e teclado ══ */
+var LS_KEY_SB_SEC = "he_sb_colapsadas";
+function _sbSecEstado() { try { return JSON.parse(localStorage.getItem(LS_KEY_SB_SEC) || "{}"); } catch (e) { return {}; } }
+function _sbAplicarSecoes() {
+  var st = _sbSecEstado();
+  document.querySelectorAll(".sb-bloco[data-sec]").forEach(function(sec) {
+    var c = !!st[sec.getAttribute("data-sec")];
+    sec.classList.toggle("colapsada", c);
+    var b = sec.querySelector(".sb-toggle");
+    if (b) b.setAttribute("aria-expanded", c ? "false" : "true");
+  });
+}
+function sbToggleSec(id) {
+  var st = _sbSecEstado();
+  st[id] = !st[id];
+  try { localStorage.setItem(LS_KEY_SB_SEC, JSON.stringify(st)); } catch (e) {}
+  _sbAplicarSecoes();
+}
+function _atualizarRodapeSb() {
+  var el = document.getElementById("sbAtualizadoTs");
+  if (el) el.textContent = "Atualizado às " + new Date().toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" });
+}
+function sbAtualizarAgora() {
+  var b = document.getElementById("sbBtnAtualizar");
+  if (b) { b.classList.add("spin"); setTimeout(function(){ b.classList.remove("spin"); }, 1200); }
+  try { carregarDados(); } catch (e) {}
+}
+_sbAplicarSecoes();
+document.addEventListener("keydown", function(ev) {
+  if (ev.key !== "Enter" && ev.key !== " ") return;
+  var card = ev.target && ev.target.closest ? ev.target.closest("[data-resumo-tipo]") : null;
+  if (card) { ev.preventDefault(); card.click(); }
+});
 
 function iniciarPresenca() {
   enviarPingPresenca();
@@ -3975,10 +4138,12 @@ function _catmullRom2bezier(pts) {
   return d;
 }
 
-function _renderSpark(svg, values, colorHex) {
+function _renderSpark(svg, values, colorHex, tip) {
   if (!svg) return;
+  var box = svg.parentNode;
+  if (box) box.title = tip || "";
   if (!values.length) { svg.innerHTML = ""; return; }
-  var w = 68, h = 30, pad = 3;
+  var w = 68, h = 30, pad = 4;
   var min = Math.min.apply(null, values), max = Math.max.apply(null, values);
   var range = (max - min) || 1;
   var n = values.length;
@@ -3989,15 +4154,20 @@ function _renderSpark(svg, values, colorHex) {
   });
   var last = pts[n - 1];
   if (n < 2) {
-    svg.innerHTML = '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6" fill="' + colorHex + '"></circle>';
+    svg.innerHTML = '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="3" fill="' + colorHex + '"></circle>';
     return;
   }
-  var linePath = _catmullRom2bezier(pts);
-  var areaPath = linePath + " L" + w.toFixed(1) + "," + h.toFixed(1) + " L0," + h.toFixed(1) + " Z";
+  /* Linhas retas: com 4 pontos, uma curva suave inventaria oscilações que não existem */
+  var linePath = "M" + pts.map(function(p) { return p[0].toFixed(1) + "," + p[1].toFixed(1); }).join(" L");
+  var areaPath = linePath + " L" + last[0].toFixed(1) + "," + h + " L" + pts[0][0].toFixed(1) + "," + h + " Z";
+  var dots = pts.map(function(p, i) {
+    var ult = i === n - 1;
+    return '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="' + (ult ? 3 : 2.2) + '" style="fill:' + (ult ? colorHex : "var(--sb-bg)") + '" stroke="' + colorHex + '" stroke-width="1.5"></circle>';
+  }).join("");
   svg.innerHTML =
     '<path d="' + areaPath + '" fill="' + colorHex + '" opacity="0.15" stroke="none"></path>' +
-    '<path d="' + linePath + '" fill="none" stroke="' + colorHex + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>' +
-    '<circle cx="' + last[0].toFixed(1) + '" cy="' + last[1].toFixed(1) + '" r="2.6" fill="' + colorHex + '"></circle>';
+    '<path d="' + linePath + '" fill="none" stroke="' + colorHex + '" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path>' +
+    dots;
 }
 
 /* Data no formato YYYY-MM-DD (chave do dia, para localStorage) */
@@ -4037,15 +4207,35 @@ function _ultimosNDias(hist, n) {
    Cada dia guarda 1 valor (o mais recente calculado naquele dia), persistido em
    localStorage, para que o sparkline mostre a tendência real dia a dia — não
    variações dentro da mesma sessão/dia. */
+function _fmtDiaCurto(chave) { var p = chave.split("-"); return p[2] + "/" + p[1]; }
+
+/* Variação contra o último dia registrado antes de hoje. menorMelhor: true para taxa de atraso. */
+function _atualizarDelta(idEl, hist, atual, menorMelhor) {
+  var el = document.getElementById(idEl);
+  if (!el) return;
+  var hoje = _dataChaveHoje();
+  var ant = Object.keys(hist).sort().filter(function(k) { return k < hoje; }).pop();
+  if (ant === undefined) { el.style.display = "none"; return; }
+  var diff = atual - hist[ant];
+  var cls = diff === 0 ? "neutro" : (((diff < 0) === !!menorMelhor) ? "bom" : "ruim");
+  el.className = "sb-delta " + cls;
+  el.textContent = (diff > 0 ? "▲ +" : diff < 0 ? "▼ −" : "= ") + Math.abs(diff) + "%";
+  el.title = "vs. último dia registrado (" + _fmtDiaCurto(ant) + ": " + hist[ant] + "%)";
+  el.style.display = "";
+}
+
 function _sampleEstatisticasSpark() {
-  if (_curTaxaPct != null) {
-    var histTaxa = _salvarValorDiario(LS_KEY_TAXA_ATRASO, _curTaxaPct);
-    _renderSpark(document.getElementById("sparkTaxaAtraso"), _ultimosNDias(histTaxa, 4), _curTaxaHex);
-  }
-  if (_curConclusaoPct != null) {
-    var histConclusao = _salvarValorDiario(LS_KEY_TAXA_CONCLUSAO, _curConclusaoPct);
-    _renderSpark(document.getElementById("sparkTaxaConclusao"), _ultimosNDias(histConclusao, 4), _curConclusaoHex);
-  }
+  [
+    [LS_KEY_TAXA_ATRASO,    _curTaxaPct,      _curTaxaHex,      "sparkTaxaAtraso",    "deltaTaxaAtraso",    true],
+    [LS_KEY_TAXA_CONCLUSAO, _curConclusaoPct, _curConclusaoHex, "sparkTaxaConclusao", "deltaTaxaConclusao", false]
+  ].forEach(function(c) {
+    if (c[1] == null) return;
+    var hist = _salvarValorDiario(c[0], c[1]);
+    var chaves = Object.keys(hist).sort().slice(-4);
+    var tip = chaves.map(function(k) { return _fmtDiaCurto(k) + ": " + hist[k] + "%"; }).join("  ·  ");
+    _renderSpark(document.getElementById(c[3]), chaves.map(function(k) { return hist[k]; }), c[2], tip);
+    _atualizarDelta(c[4], hist, c[1], c[5]);
+  });
 }
 
 function _atualizarEstatisticas(lista) {
@@ -4090,33 +4280,28 @@ function _atualizarEstatisticas(lista) {
   }
   _curConclusaoPct = conclusaoPct;
   _curConclusaoHex = conclusaoHex;
+
+  /* Contexto: números absolutos e estado do gráfico */
+  var subAt = document.getElementById("subTaxaAtraso");
+  if (subAt) subAt.textContent = atrasados > 0 ? atrasados + " de " + totalAtivos + " ativos"
+                               : (totalAtivos > 0 ? "Sem atrasos hoje" : "Nenhum serviço ativo");
+  var okAt = document.getElementById("okTaxaAtraso"), chAt = document.getElementById("chartTaxaAtraso");
+  if (okAt && chAt) { var semAtraso = atrasados === 0; okAt.style.display = semAtraso ? "flex" : "none"; chAt.style.display = semAtraso ? "none" : ""; }
+  var subCo = document.getElementById("subTaxaConclusao");
+  if (subCo) subCo.textContent = totalDia > 0 ? concluidos.length + " de " + totalDia + " do dia" : "Sem serviços hoje";
+
   _sampleEstatisticasSpark();
 
 
-  /* Ranking por operador */
+  /* Concluídos por operador — alimenta a lista única "Equipe hoje" */
   var opMap = {};
   concluidos.forEach(function(p) {
     var op = p.operadorConclusao || "";
     if (!op || op === "—") return;
-    if (!opMap[op]) opMap[op] = 0;
-    opMap[op]++;
+    opMap[op] = (opMap[op] || 0) + 1;
   });
-
-  var ops = Object.keys(opMap).sort(function(a,b){ return opMap[b] - opMap[a]; });
-  var opHtml = "";
-  if (!ops.length) {
-    opHtml = '<div style="font-size:11px;color:var(--texto3);text-align:center;padding:6px 0;">Nenhuma conclusão hoje</div>';
-  } else {
-    ops.forEach(function(op) {
-      opHtml += '<div class="sb-ops-item">' +
-        '<span class="sb-ops-nome">' + safeText(op) + '</span>' +
-        '<span class="sb-ops-count"><i class=\"fa-solid fa-circle-check\"></i> ' + opMap[op] + '</span>' +
-      '</div>';
-    });
-  }
-
-  var opLista = document.getElementById("sbOpsLista");
-  if (opLista) opLista.innerHTML = opHtml;
+  _opsConcluidosHoje = opMap;
+  renderOperadoresOnline(_presencasCache);
 }
 
 /* ══ LINHA DO TEMPO ══ */
