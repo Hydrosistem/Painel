@@ -2913,8 +2913,9 @@ function abrirModalConfirmacaoGenerica(opts) {
   document.getElementById("modalConfGenTitulo").textContent = opts.titulo || "Confirmar?";
   document.getElementById("modalConfGenSub").textContent    = opts.sub   || "";
   var btnConf = document.getElementById("btnConfirmacaoGenerica");
-  btnConf.textContent   = opts.labelConfirmar || "Confirmar";
+  btnConf.innerHTML     = opts.labelConfirmar || "Confirmar";
   btnConf.style.background = opts.corConfirmar || "var(--azul)";
+  btnConf.disabled = false;
   _cbConfirmacaoGenerica = opts.onConfirmar || null;
   document.getElementById("modalConfirmacaoGenerica").classList.add("open");
 }
@@ -2925,8 +2926,9 @@ function fecharModalConfirmacaoGenerica() {
 }
 
 function _confirmarGenerica() {
+  var cb = _cbConfirmacaoGenerica;   /* guarda antes de fechar (fechar zera o callback) */
   fecharModalConfirmacaoGenerica();
-  if (_cbConfirmacaoGenerica) _cbConfirmacaoGenerica();
+  if (cb) cb();
 }
 
 /* ══ CARREGAR DADOS — com retry backoff exponencial ══ */
@@ -3093,8 +3095,11 @@ function confirmarObs() {
 }
 
 /* ══ FORÇAR CONCLUSÃO (supervisor) ══ */
+var _forcandoConclusao = {};
+
 function forcarConclusaoSupervisor(protocolo) {
   if (!isSupervisor()) return;
+  if (_forcandoConclusao[protocolo]) return;
   var operador = getOperador() || "Supervisor";
   abrirModalConfirmacaoGenerica({
     icon: "<i class='fa-solid fa-bolt'></i>",
@@ -3103,18 +3108,55 @@ function forcarConclusaoSupervisor(protocolo) {
     labelConfirmar: "<i class='fa-solid fa-check'></i> Confirmar",
     corConfirmar: "var(--verde)",
     onConfirmar: function() {
+      if (!estaOnline()) {
+        toast("<i class='fa-solid fa-wifi'></i> Sem conexão. Tente de novo.", "erro");
+        return;
+      }
+      _forcandoConclusao[protocolo] = true;
+      toast("<i class='fa-solid fa-spinner fa-spin'></i> Concluindo " + protocolo + "…", "exec");
       fetch(tok(API_BASE + "?acao=forcarConclusao&protocolo=" + encodeURIComponent(protocolo) + "&operador=" + encodeURIComponent(operador) + "&t=" + Date.now()), { redirect: "follow" })
-        .then(function(r){ return r.json(); })
-        .then(function(res){
-          if (res.ok) {
-            pararHeartbeat(protocolo);
-            toast("<i class='fa-solid fa-circle-check'></i> Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
-            carregarDados();
-          } else {
-            toast("<i class='fa-solid fa-circle-xmark'></i> Erro: " + (res.erro || "tente novamente"), "erro");
-          }
+        .then(function(r){
+          if (!r.ok) throw new Error("HTTP " + r.status);
+          return r.text().then(function(t){ try { return JSON.parse(t); } catch(e) { throw new Error("Resposta inválida"); } });
         })
-        .catch(function(){ toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao forçar conclusão", "erro"); });
+        .then(function(res){
+          if (!res || res.ok === false) {
+            toast("<i class='fa-solid fa-circle-xmark'></i> Erro: " + ((res && res.erro) || "tente novamente"), "erro");
+            if (res && /conclu|encontrado/i.test(res.erro || "")) carregarDados();  /* lista estava desatualizada */
+            return;
+          }
+          pararHeartbeat(protocolo);
+          delete _optimisticLocks[protocolo];
+          delete _cancelamentosPendentes[protocolo];
+          var agora = new Date().toISOString();
+          for (var i = 0; i < _ultimaLista.length; i++) {
+            if (_ultimaLista[i].protocolo === protocolo) {
+              _ultimaLista[i].status = STATUS.CONCLUIDO;
+              _ultimaLista[i].dataConclusao = agora;
+              _ultimaLista[i].operadorConclusao = operador;
+              _ultimaLista[i].lock = null;
+              break;
+            }
+          }
+          if (_protocoloSelecionado === protocolo) {
+            _protocoloSelecionado = null;
+            _hashDetalheAtual = "";
+            document.getElementById("detailVazio").style.display = "";
+            var dc = document.getElementById("detailContent");
+            dc.classList.remove("show"); dc.innerHTML = "";
+            var df = document.getElementById("detailFooter");
+            df.classList.remove("show"); df.innerHTML = "";
+          }
+          renderFiltrado(_ultimaLista);
+          renderTablet(_ultimaLista);
+          toast("<i class='fa-solid fa-circle-check'></i> Protocolo " + protocolo + " concluído pelo supervisor.", "ok");
+          setTimeout(carregarDados, 1200);
+        })
+        .catch(function(err){
+          console.error("[forcarConclusao]", err);
+          toast("<i class='fa-solid fa-circle-xmark'></i> Erro ao forçar conclusão", "erro");
+        })
+        .finally(function(){ delete _forcandoConclusao[protocolo]; });
     }
   });
 }
