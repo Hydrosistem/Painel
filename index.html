@@ -575,6 +575,34 @@ header .chip-operador:hover { background: rgba(255,255,255,.14); }
   .filtro-tab.active .filtro-tab-badge { background: rgba(255,255,255,.2); color: #fff; }
 
   .centro-scroll { flex: 1; overflow-y: auto; padding: 14px; background: var(--branco); }
+
+  /* ══ FUNDO DE MARCA — H + onda azul atrás dos cards (fixo; os cards rolam por cima) ══ */
+  :root {
+    --marca-h:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 0 260 210'%3E%0A%3Cpath d='M-40 210 L-40 70 C40 40 120 70 230 210 Z' fill='%231469C7' fill-opacity='.045'/%3E%0A%3Cg transform='translate(22 0) skewX(-8)' fill='%231469C7' fill-opacity='.07'%3E%0A%3Cpath d='M0 46 L42 10 L72 10 L72 78 L128 78 L128 10 L190 10 L190 190 L128 190 L128 118 L72 118 L72 190 L42 190 L42 74 L0 74 Z'/%3E%0A%3C/g%3E%3C/svg%3E");
+    --marca-onda: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200' preserveAspectRatio='none'%3E%0A%3Cdefs%3E%0A%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%231469C7'/%3E%3Cstop offset='1' stop-color='%230A3F7F'/%3E%3C/linearGradient%3E%0A%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%231469C7' stop-opacity='.16'/%3E%3Cstop offset='1' stop-color='%231469C7' stop-opacity='0'/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath d='M0 182 C340 182 780 140 1200 22 L1200 200 L0 200 Z' fill='url(%23s)'/%3E%0A%3Cpath d='M0 192 C360 192 800 158 1200 58 L1200 200 L0 200 Z' fill='url(%23g)'/%3E%0A%3Cpath d='M0 192 C360 192 800 158 1200 58' fill='none' stroke='%236FB0F5' stroke-width='2.5' stroke-opacity='.9'/%3E%0A%3C/svg%3E");
+    --marca-h-tam: 250px;
+    --marca-onda-alt: 140px;
+  }
+  body.dark-mode {
+    --marca-h:    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-20 0 260 210'%3E%0A%3Cpath d='M-40 210 L-40 70 C40 40 120 70 230 210 Z' fill='%237FB0E0' fill-opacity='.045'/%3E%0A%3Cg transform='translate(22 0) skewX(-8)' fill='%237FB0E0' fill-opacity='.07'%3E%0A%3Cpath d='M0 46 L42 10 L72 10 L72 78 L128 78 L128 10 L190 10 L190 190 L128 190 L128 118 L72 118 L72 190 L42 190 L42 74 L0 74 Z'/%3E%0A%3C/g%3E%3C/svg%3E");
+    --marca-onda: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 200' preserveAspectRatio='none'%3E%0A%3Cdefs%3E%0A%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0' stop-color='%2312345F'/%3E%3Cstop offset='1' stop-color='%230A1F3D'/%3E%3C/linearGradient%3E%0A%3ClinearGradient id='s' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%237FB0E0' stop-opacity='.16'/%3E%3Cstop offset='1' stop-color='%237FB0E0' stop-opacity='0'/%3E%3C/linearGradient%3E%0A%3C/defs%3E%0A%3Cpath d='M0 182 C340 182 780 140 1200 22 L1200 200 L0 200 Z' fill='url(%23s)'/%3E%0A%3Cpath d='M0 192 C360 192 800 158 1200 58 L1200 200 L0 200 Z' fill='url(%23g)'/%3E%0A%3Cpath d='M0 192 C360 192 800 158 1200 58' fill='none' stroke='%233E72AE' stroke-width='2.5' stroke-opacity='.9'/%3E%0A%3C/svg%3E");
+  }
+  /* supervisor: barra com Relatório/Equipe + estatísticas na lateral → onda mais baixa */
+  body.supervisor-view { --marca-h-tam: 220px; --marca-onda-alt: 120px; }
+  /* operador: só cards → marca maior e onda mais presente */
+  body.operador-view   { --marca-h-tam: 280px; --marca-onda-alt: 170px; }
+
+  .centro { position: relative; isolation: isolate; }
+  .centro::before {
+    content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    background:
+      var(--marca-onda) left bottom / 100% var(--marca-onda-alt) no-repeat,
+      var(--marca-h)    -30px 88% / var(--marca-h-tam) auto no-repeat;
+  }
+  .centro > * { position: relative; z-index: 1; }
+  .centro-top { background: rgba(255,255,255,.80); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+  body.dark-mode .centro-top { background: rgba(31,31,31,.82); }
+  .centro-scroll, body.dark-mode .centro-scroll { background: transparent; }
   .grid-tablet { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
   @media (min-width: 1280px) { .grid-tablet { grid-template-columns: repeat(3, 1fr); } }
   .sec-label-tablet { grid-column: 1/-1; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: var(--texto3); display: flex; align-items: center; gap: 8px; margin-top: 4px; }
