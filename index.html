@@ -1427,16 +1427,7 @@ body.dark-mode .sidebar { --sb-bg: #171717; }
 /* ══ PAINEL DE DETALHE SOB DEMANDA: só aparece com um card selecionado ══ */
 @media (min-width: 768px) {
   .detail-panel:not(:has(.detail-content.show)) { display: none; }
-  .detail-panel { position: relative; animation: detalheEntra .22s ease-out; }
-  .detail-fechar {
-    position: absolute; top: 8px; right: 8px; z-index: 2; width: 26px; height: 26px;
-    border-radius: 50%; border: 1px solid var(--borda); background: var(--branco);
-    color: var(--texto2); font-size: 15px; line-height: 1; cursor: pointer; display: flex;
-    align-items: center; justify-content: center; transition: background .15s, color .15s;
-  }
-  .detail-fechar:hover { background: var(--cinza-md); color: var(--texto); }
-  .detail-fechar:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
-  body.dark-mode .detail-fechar { background: #2a2a2a; }
+  .detail-panel { animation: detalheEntra .22s ease-out; }
 }
 @keyframes detalheEntra { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) { .detail-panel { animation: none !important; } }
@@ -1782,7 +1773,6 @@ function fecharBannerNovidade() {
 
   <!-- ══ TABLET DETALHE ══ -->
   <div class="detail-panel">
-    <button type="button" class="detail-fechar" onclick="fecharDetalhe()" title="Fechar detalhes (Esc)" aria-label="Fechar detalhes">&times;</button>
     <div class="detail-vazio" id="detailVazio">
       <div class="detail-vazio-icon"><i class="fa-solid fa-hand-point-up"></i></div>
       <div class="detail-vazio-txt">Selecione um protocolo</div>
@@ -2537,6 +2527,15 @@ function fecharDetalhe() {
   var df = document.getElementById("detailFooter"); if (df) { df.classList.remove("show"); df.innerHTML = ""; }
   document.querySelectorAll(".card-t.selected").forEach(function(c){ c.classList.remove("selected"); });
 }
+/* Clique em área em branca (fora de cards, botões e do próprio painel) fecha o detalhe */
+document.addEventListener("click", function(ev) {
+  if (!_protocoloSelecionado) return;
+  var t = ev.target;
+  if (!t || !t.closest || !t.closest(".content-row")) return;
+  if (t.closest(".detail-panel, .card-t, button, a, input, select, textarea, label, [onclick], .filtro-tab, .modal-overlay")) return;
+  if (!document.body.contains(t)) return;
+  fecharDetalhe();
+});
 document.addEventListener("keydown", function(ev) {
   if (ev.key !== "Escape" || !_protocoloSelecionado) return;
   if (document.querySelector('[id^="modal"].open, #lb.open')) return;   /* Esc fecha primeiro o modal/foto */
